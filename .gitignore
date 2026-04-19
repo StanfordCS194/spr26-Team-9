@@ -1,2 +1,5 @@
 claude.md
 .env
+
+webscraper/api_keys.py
+data/

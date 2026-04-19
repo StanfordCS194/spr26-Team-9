@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from config import current_api, current_url
+from api_keys import NYT_API_KEY
 
 
 # ---------------------------------------------------------------------------
@@ -57,6 +58,50 @@ class CurrentAPIAdapter:
         }
 
 
+class NYTAdapter:
+    BASE_URL = "https://api.nytimes.com/svc/search/v2/articlesearch.json"
+
+    def fetch(self, query, start, end, **kwargs):
+        """
+        Args:
+            query: keyword string
+            start: ISO 8601 string (e.g. "2026-04-12T00:00:00Z")
+            end:   ISO 8601 string
+            page:  0-indexed page number (10 articles per page)
+        Returns:
+            List of normalized article dicts.
+        """
+        begin_date = start[:10].replace("-", "")
+        end_date   = end[:10].replace("-", "")
+
+        res = requests.get(
+            self.BASE_URL,
+            params={
+                "q":          query,
+                "begin_date": begin_date,
+                "end_date":   end_date,
+                "sort":       "oldest",
+                "page":       kwargs.get("page", 0),
+                "api-key":    NYT_API_KEY,
+            },
+            timeout=15,
+        )
+        res.raise_for_status()
+        docs = res.json().get("response", {}).get("docs", [])
+        return [self._normalize(d) for d in docs]
+
+    def _normalize(self, d):
+        return {
+            "title":          d.get("headline", {}).get("main", ""),
+            "url":            d.get("web_url", ""),
+            "description":    d.get("abstract", "") or d.get("snippet", ""),
+            "lead_paragraph": d.get("lead_paragraph", ""),
+            "date":           d.get("pub_date", ""),
+            "author":         d.get("byline", {}).get("original", ""),
+        }
+
+
 ADAPTERS = {
     "current": CurrentAPIAdapter,
+    "nyt":     NYTAdapter,
 }
