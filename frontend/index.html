@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>News Narrative Tracker</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- LEFT MENU -->
+    <aside class="menu">
+      <div class="menu-title">MENU</div>
+      <nav>
+        <button class="menu-item active" data-view="timeline">
+          <span class="icon">🕒</span> Timeline
+        </button>
+        <button class="menu-item" data-view="channels">
+          <span class="icon">☰</span> Channels
+        </button>
+        <button class="menu-item" data-view="llm">
+          <span class="icon">✴</span> LLM
+        </button>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <!-- TOP BAR -->
+      <header class="topbar">
+        <h1 id="page-title">Coverage Timeline</h1>
+        <div class="profile">👤</div>
+      </header>
+
+      <!-- TIMELINE VIEW -->
+      <section id="view-timeline" class="view active">
+        <div class="timeline-layout">
+          <!-- Filters -->
+          <aside class="filters">
+            <div class="filters-title">▽ Filters</div>
+
+            <div class="filter-group">
+              <label>Political Leaning</label>
+              <div class="slider-row">
+                <span>L</span>
+                <input type="range" min="-5" max="5" value="0" id="lean-slider" />
+                <span>R</span>
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <label>Date Range</label>
+              <div class="date-range">
+                <input type="date" id="start-date-filter" />
+                <input type="date" id="end-date-filter" />
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <label>Source</label>
+              <label class="check"><input type="checkbox" data-src="NYT" checked /> <span class="dot nyt"></span> NYT</label>
+              <label class="check"><input type="checkbox" data-src="CNN" checked /> <span class="dot cnn"></span> CNN</label>
+              <label class="check"><input type="checkbox" data-src="FOX" checked /> <span class="dot fox"></span> FOX</label>
+            </div>
+
+            <button class="filter-apply-btn" id="apply-filters-btn">Apply Filters</button>
+          </aside>
+
+          <!-- Timeline content -->
+          <div class="timeline-content">
+            <h2 class="story-headline">"Dispute Between Pope Leo &amp; Trump"</h2>
+
+            <div class="timeline-axis">
+              <div class="axis-date">March 23rd</div>
+              <div class="axis-date">April 1st</div>
+              <div class="axis-date">April 10th</div>
+              <div class="axis-line"></div>
+            </div>
+
+            <div class="timeline-columns" id="timeline-columns">
+              <!-- Columns injected by JS -->
+            </div>
+
+            <button class="compare-btn" id="compare-btn">COMPARE</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- CHANNELS VIEW -->
+      <section id="view-channels" class="view">
+        <!-- Grid state -->
+        <div id="channels-grid" class="channels-state active">
+          <h2 class="sub-headline">Explore Channels</h2>
+          <div class="channel-cards">
+            <div class="channel-card" data-src="NYT">NYT</div>
+            <div class="channel-card" data-src="CNN">CNN</div>
+            <div class="channel-card" data-src="FOX">FOX</div>
+          </div>
+        </div>
+
+        <!-- Deep-dive state -->
+        <div id="channels-detail" class="channels-state">
+          <button class="back-btn" id="channels-back">← Back to Channels</button>
+          <h2 class="sub-headline">Explore <span id="channel-name">NYT</span>'s Report On</h2>
+          <h3 class="story-headline">"Dispute Between Pope Leo &amp; Trump"</h3>
+
+          <div class="timeline-axis">
+            <div class="axis-date">March 23rd</div>
+            <div class="axis-date">April 1st</div>
+            <div class="axis-date">April 10th</div>
+            <div class="axis-line"></div>
+          </div>
+
+          <div class="channel-timeline" id="channel-timeline">
+            <!-- Cards injected by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- LLM VIEW -->
+      <section id="view-llm" class="view">
+        <h2 class="sub-headline">Analysis on LLM's report on</h2>
+        <h3 class="story-headline">"Dispute Between Pope Leo &amp; Trump"</h3>
+
+        <div class="llm-cards" id="llm-cards">
+          <!-- Cards injected by JS -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- COMPARE MODAL -->
+  <div class="modal-overlay" id="compare-modal">
+    <div class="modal">
+      <button class="modal-close" id="modal-close">×</button>
+      <h3>Select 2 articles or 2 dates to compare</h3>
+      <div class="compare-inputs">
+        <label>1. <input type="text" placeholder="Article or date" /></label>
+        <label>2. <input type="text" placeholder="Article or date" /></label>
+      </div>
+      <div class="analysis-box">
+        <div class="analysis-status">Generating Analysis...</div>
+        <div class="analysis-placeholder"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hover tooltip -->
+  <div id="tooltip" class="tooltip" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
