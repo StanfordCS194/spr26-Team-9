@@ -2,6 +2,7 @@
 const timelineData = [
   {
     date: "March 23rd",
+    isoDate: "2026-03-23",
     articles: [
       { time: "9:00AM", src: "CNN", title: "Title...", summary: "Initial CNN report on the dispute." },
       { time: "10:00AM", src: "NYT", title: "Title...", summary: "NYT breaks the story with additional sourcing." },
@@ -9,6 +10,7 @@ const timelineData = [
   },
   {
     date: "April 1st",
+    isoDate: "2026-04-01",
     articles: [
       { time: "8:52AM", src: "FOX", title: "Title...", summary: "FOX commentary frames the dispute differently." },
       { time: "1:00PM", src: "CNN", title: "Title...", summary: "Follow-up with new quotes from the Vatican." },
@@ -17,6 +19,7 @@ const timelineData = [
   },
   {
     date: "April 10th",
+    isoDate: "2026-04-10",
     articles: [
       { time: "9:00AM", src: "CNN", title: "Title...", summary: "Narrative shifts after new evidence emerges." },
     ],
@@ -45,7 +48,12 @@ const llmData = [
 
 // ---------- View switching ----------
 const views = { timeline: "view-timeline", channels: "view-channels", llm: "view-llm" };
-const titles = { timeline: "News Reported on", channels: "Channels", llm: "LLM Analysis" };
+const titles = { timeline: "Coverage Timeline", channels: "Channels", llm: "LLM Analysis" };
+let selectedTimelineSource = null;
+const timelineColumnsEl = document.getElementById("timeline-columns");
+const startDateFilterEl = document.getElementById("start-date-filter");
+const endDateFilterEl = document.getElementById("end-date-filter");
+const applyFiltersBtn = document.getElementById("apply-filters-btn");
 
 document.querySelectorAll(".menu-item").forEach((btn) => {
   btn.addEventListener("click", () => setView(btn.dataset.view));
@@ -56,46 +64,110 @@ function setView(name) {
   document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
   document.getElementById(views[name]).classList.add("active");
   document.getElementById("page-title").textContent = titles[name];
+  if (name !== "timeline") clearTimelineSourceSelection();
   if (name === "channels") showChannelsGrid();
 }
 
 // ---------- Timeline rendering ----------
 function renderTimeline() {
-  const container = document.getElementById("timeline-columns");
-  container.innerHTML = "";
-  timelineData.forEach((col) => {
+  clearTimelineSourceSelection();
+  const filteredTimeline = getFilteredTimelineData();
+  timelineColumnsEl.innerHTML = "";
+  if (!filteredTimeline.length) {
+    timelineColumnsEl.innerHTML = '<div class="timeline-empty-state">No coverage matches the selected filters.</div>';
+    return;
+  }
+  filteredTimeline.forEach((col, index) => {
     const colEl = document.createElement("div");
     colEl.className = "timeline-column";
+    colEl.appendChild(makeTimelineStage(col.date, index));
     col.articles.forEach((a) => colEl.appendChild(makeArticleCard(a)));
-    container.appendChild(colEl);
+    timelineColumnsEl.appendChild(colEl);
   });
+}
+
+function getFilteredTimelineData() {
+  const selectedSources = new Set(
+    Array.from(document.querySelectorAll('.filters input[type="checkbox"][data-src]:checked')).map((input) => input.dataset.src)
+  );
+  const startDate = startDateFilterEl.value;
+  const endDate = endDateFilterEl.value;
+
+  return timelineData
+    .filter((group) => {
+      if (startDate && group.isoDate < startDate) return false;
+      if (endDate && group.isoDate > endDate) return false;
+      return true;
+    })
+    .map((group) => ({
+      ...group,
+      articles: group.articles.filter((article) => selectedSources.has(article.src)),
+    }))
+    .filter((group) => group.articles.length > 0);
+}
+
+function makeTimelineStage(date, index) {
+  const stage = document.createElement("div");
+  stage.className = "timeline-stage";
+  stage.innerHTML = `
+    <div class="stage-step">Stage ${String(index + 1).padStart(2, "0")}</div>
+    <div class="stage-date">${date}</div>
+  `;
+  return stage;
 }
 
 function makeArticleCard(a) {
   const card = document.createElement("div");
   card.className = "article-card";
+  card.dataset.src = a.src;
   card.innerHTML = `
     <div class="meta">
       <span class="time">${a.time}</span>
       <span class="dot ${a.src.toLowerCase()}"></span>
-      <span class="src ${a.src === "NYT" ? "nyt-hl" : ""}" data-src="${a.src}">${a.src}</span>
+      <span class="src" data-src="${a.src}">${a.src}</span>
     </div>
     <div class="title">${a.title}</div>
   `;
   // Hover tooltip with summary
   card.addEventListener("mousemove", (e) => showTooltip(e, a.summary));
   card.addEventListener("mouseleave", hideTooltip);
-  // Click source dot/name -> jump to channel deep-dive
+  // First click filters timeline, second click opens the channel view.
   card.querySelector(".src").addEventListener("click", (e) => {
     e.stopPropagation();
-    setView("channels");
-    showChannelDetail(a.src);
+    if (selectedTimelineSource === a.src) {
+      clearTimelineSourceSelection();
+      setView("channels");
+      showChannelDetail(a.src);
+      return;
+    }
+    setTimelineSourceSelection(a.src);
   });
   // Click title -> pretend to open article
   card.addEventListener("click", () => {
     window.alert(`Opening ${a.src} article (placeholder).`);
   });
   return card;
+}
+
+function setTimelineSourceSelection(src) {
+  selectedTimelineSource = src;
+  document.querySelectorAll("#timeline-columns .article-card").forEach((card) => {
+    const isMatch = card.dataset.src === src;
+    card.classList.toggle("is-active-source", isMatch);
+    card.classList.toggle("is-dimmed", !isMatch);
+  });
+  document.querySelectorAll("#timeline-columns .src").forEach((label) => {
+    const isMatch = label.dataset.src === src;
+    label.classList.toggle("is-active-source", isMatch);
+    label.classList.toggle("is-dimmed", !isMatch);
+  });
+}
+
+function clearTimelineSourceSelection() {
+  selectedTimelineSource = null;
+  document.querySelectorAll("#timeline-columns .article-card, #timeline-columns .src").forEach((el) => {
+    el.classList.remove("is-active-source", "is-dimmed");
+  });
 }
 
 // ---------- Tooltip ----------
@@ -132,9 +204,10 @@ function showChannelDetail(src) {
   (channelData[src] || []).forEach((a) => {
     if (buckets[a.date]) buckets[a.date].push(a);
   });
-  Object.keys(buckets).forEach((date) => {
+  Object.keys(buckets).forEach((date, index) => {
     const col = document.createElement("div");
     col.className = "timeline-column";
+    col.appendChild(makeTimelineStage(date, index));
     buckets[date].forEach((a) => {
       const card = document.createElement("div");
       card.className = "article-card";
@@ -153,6 +226,13 @@ document.getElementById("channels-back").addEventListener("click", showChannelsG
 document.querySelectorAll(".channel-card").forEach((c) =>
   c.addEventListener("click", () => showChannelDetail(c.dataset.src))
 );
+applyFiltersBtn.addEventListener("click", renderTimeline);
+
+document.getElementById("view-timeline").addEventListener("click", (e) => {
+  if (!selectedTimelineSource) return;
+  if (e.target.closest(".article-card, .timeline-stage, .filters, .compare-btn")) return;
+  clearTimelineSourceSelection();
+});
 
 // ---------- LLM view ----------
 function renderLLM() {

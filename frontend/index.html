@@ -28,7 +28,7 @@
     <main class="main">
       <!-- TOP BAR -->
       <header class="topbar">
-        <h1 id="page-title">News Reported on</h1>
+        <h1 id="page-title">Coverage Timeline</h1>
         <div class="profile">👤</div>
       </header>
 
@@ -49,8 +49,11 @@
             </div>
 
             <div class="filter-group">
-              <label>Date</label>
-              <input type="date" id="date-filter" />
+              <label>Date Range</label>
+              <div class="date-range">
+                <input type="date" id="start-date-filter" />
+                <input type="date" id="end-date-filter" />
+              </div>
             </div>
 
             <div class="filter-group">
@@ -59,6 +62,8 @@
               <label class="check"><input type="checkbox" data-src="CNN" checked /> <span class="dot cnn"></span> CNN</label>
               <label class="check"><input type="checkbox" data-src="FOX" checked /> <span class="dot fox"></span> FOX</label>
             </div>
+
+            <button class="filter-apply-btn" id="apply-filters-btn">Apply Filters</button>
           </aside>
 
           <!-- Timeline content -->
