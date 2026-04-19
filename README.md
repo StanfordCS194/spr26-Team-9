@@ -3,6 +3,8 @@
 
 ## Repository Overview
 
+Julien Darve
+
 ### `frontend/`
 Frontend for the user-facing web application. 
 
