@@ -3,6 +3,7 @@
 
 Brandon Kim<br>
 Sally Lee
+Daniel Shen
 
 ## Repository Overview
 
