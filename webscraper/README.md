@@ -10,9 +10,12 @@ Data ingestion pipeline for the LLM & Media Bias Tracker. Fetches news articles 
 Stores API credentials. Currently holds `NYT_API_KEY` for the New York Times Developer API. This file is listed in `.gitignore` and is never committed to source control.
 
 ### `config.py`
-Loads configuration for the generic `CurrentAPIAdapter` from a `.env` file in the working directory. Exports two variables:
+Loads configuration from a `.env` file in the working directory. 
+Exports:
 - `current_api` — API key for the current/generic news API
 - `current_url` — Base URL for that API
+- `news_api_key` — API key for NewsAPI
+- `news_api_url` — Base URL for NewsAPI 
 
 ### `apis.py`
 Contains all adapter classes and shared utilities. The adapter pattern means adding a new news source is just adding a new class — `scrape.py` does not need to change.
@@ -30,12 +33,21 @@ Adapter for the [New York Times Article Search API](https://developer.nytimes.co
 - Supports pagination via an optional `page` kwarg (each page = 10 articles)
 - Captures `lead_paragraph` in addition to the abstract, which contains dense narrative framing useful for NLP analysis
 
+**`NewsAPIAdapter`**
+Adapter for the [NewsAPI](https://newsapi.org/). Key behaviors:
+- Uses the `/v2/everything` endpoint to search across a wide range of news sources
+- Supports keyword queries, date range filtering, and optional domain filtering
+- Returns results sorted by most recent publication (`publishedAt`)
+- Normalizes the API response into the standard article format, including source name
+
 **`ADAPTERS`**
 A dictionary mapping adapter names to their classes:
 ```python
 ADAPTERS = {
     "current": CurrentAPIAdapter,
     "nyt":     NYTAdapter,
+    "newsapi": NewsAPIAdapter,
+
 }
 ```
 To add a new source, implement a class with a `.fetch(query, start, end, **kwargs)` method that returns a list of normalized article dicts, then register it here.
@@ -93,3 +105,12 @@ Results are saved to `<repo_root>/data/{API}_articles.json` as a JSON array. The
 2. Return a list of dicts matching the normalized article format above
 3. Register it in the `ADAPTERS` dict
 4. Set `API = "<your_adapter_name>"` in `scrape.py` and run
+
+---
+
+## Environment Setup
+
+Create a `.env` file in the project root and include required API keys:
+
+```env
+NEWS_API=your_newsapi_key_here
