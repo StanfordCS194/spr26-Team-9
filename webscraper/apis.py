@@ -62,6 +62,15 @@ class NYTAdapter:
     BASE_URL = "https://api.nytimes.com/svc/search/v2/articlesearch.json"
 
     def fetch(self, query, start, end, **kwargs):
+        """
+        Args:
+            query: keyword string
+            start: ISO 8601 string (e.g. "2026-04-12T00:00:00Z")
+            end:   ISO 8601 string
+            page:  0-indexed page number (10 articles per page)
+        Returns:
+            List of normalized article dicts.
+        """
         begin_date = start[:10].replace("-", "")
         end_date = end[:10].replace("-", "")
 
