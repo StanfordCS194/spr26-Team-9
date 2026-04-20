@@ -16,7 +16,7 @@ This directory will contain the automated data ingestion and NLP analysis pipeli
 Brandon Kim<br>
 Sally Lee
 Daniel Shen
-
+/n Joy Bang
 ## Repository Overview
 
 ### `frontend/`
