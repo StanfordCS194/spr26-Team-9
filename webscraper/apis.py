@@ -91,13 +91,35 @@ class NYTAdapter:
         return [self._normalize(d) for d in docs]
 
     def _normalize(self, d):
+        headline = d.get("headline", {})
+        multimedia = d.get("multimedia", {})
         return {
-            "title":          d.get("headline", {}).get("main", ""),
-            "url":            d.get("web_url", ""),
-            "description":    d.get("abstract", "") or d.get("snippet", ""),
-            "lead_paragraph": d.get("lead_paragraph", ""),
-            "date":           d.get("pub_date", ""),
-            "author":         d.get("byline", {}).get("original", ""),
+            # Core identity
+            "nyt_id":          d.get("_id", ""),
+            "url":             d.get("web_url", ""),
+            "source":          d.get("source", ""),
+            # Headlines
+            "title":           headline.get("main", ""),
+            "print_headline":  headline.get("print_headline", ""),
+            # Text content
+            "description":     d.get("abstract", "") or d.get("snippet", ""),
+            # Metadata
+            "date":            d.get("pub_date", ""),
+            "author":          d.get("byline", {}).get("original", ""),
+            "word_count":      d.get("word_count", 0),
+            "document_type":   d.get("document_type", ""),
+            "type_of_material": d.get("type_of_material", ""),
+            # Editorial classification
+            "news_desk":       d.get("news_desk", ""),
+            "section":         d.get("section_name", ""),
+            "subsection":      d.get("subsection_name", ""),
+            "print_page":      d.get("print_page", ""),
+            "print_section":   d.get("print_section", ""),
+            # Keywords (list of {name, value, rank} dicts — useful for NLP)
+            "keywords":        d.get("keywords", []),
+            # Multimedia
+            "image_url":       multimedia.get("default", {}).get("url", ""),
+            "image_caption":   multimedia.get("caption", ""),
         }
 
 
