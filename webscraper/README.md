@@ -6,16 +6,14 @@ Data ingestion pipeline for the LLM & Media Bias Tracker. Fetches news articles 
 
 ## Files
 
-### `api_keys.py`
-Stores API credentials. Currently holds `NYT_API_KEY` for the New York Times Developer API. This file is listed in `.gitignore` and is never committed to source control.
-
 ### `config.py`
 Loads configuration from a `.env` file in the working directory. 
 Exports:
+- `nyt_api_key` — API key for the New York Times Developer API
 - `current_api` — API key for the current/generic news API
 - `current_url` — Base URL for that API
 - `news_api_key` — API key for NewsAPI
-- `news_api_url` — Base URL for NewsAPI 
+- `news_api_url` — Base URL for NewsAPI
 
 ### `apis.py`
 Contains all adapter classes and shared utilities. The adapter pattern means adding a new news source is just adding a new class — `scrape.py` does not need to change.
@@ -110,7 +108,9 @@ Results are saved to `<repo_root>/data/{API}_articles.json` as a JSON array. The
 
 ## Environment Setup
 
-Create a `.env` file in the project root and include required API keys:
+Copy `.env.example` from the repo root to `.env` and fill in your keys:
 
 ```env
-NEWS_API=your_newsapi_key_here
+NYT_API_KEY=your_nyt_api_key_here
+NEWS_API_KEY=your_newsapi_key_here
+NEWS_API_URL=https://newsapi.org/v2/everything

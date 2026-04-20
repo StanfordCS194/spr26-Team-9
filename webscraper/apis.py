@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from config import current_api, current_url, news_api_key, news_api_url
-from api_keys import NYT_API_KEY
+from config import current_api, current_url, news_api_key, news_api_url, nyt_api_key
 
 
 # ---------------------------------------------------------------------------
@@ -82,7 +81,7 @@ class NYTAdapter:
                 "end_date": end_date,
                 "sort": "oldest",
                 "page": kwargs.get("page", 0),
-                "api-key": NYT_API_KEY,
+                "api-key": nyt_api_key,
             },
             timeout=15,
         )

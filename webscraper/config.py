@@ -8,3 +8,5 @@ current_url = os.getenv("CURRENT_URL")
 
 news_api_key = os.getenv("NEWS_API_KEY")
 news_api_url = os.getenv("NEWS_API_URL")
+
+nyt_api_key = os.getenv("NYT_API_KEY")

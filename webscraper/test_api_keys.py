@@ -1,12 +1,12 @@
 import json
 import requests
-from api_keys import NYT_API_KEY
+from config import nyt_api_key
 
 res = requests.get(
     "https://api.nytimes.com/svc/search/v2/articlesearch.json",
     params={
         "q":       "Trump Pope Leo",
-        "api-key": NYT_API_KEY,
+        "api-key": nyt_api_key,
         "page":    0,
     },
     timeout=15,
