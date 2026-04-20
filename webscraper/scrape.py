@@ -8,6 +8,7 @@ START     = "2026-04-12T00:00:00Z"
 END       = "2026-04-19T00:00:00Z"
 API       = "nyt"   # any key from ADAPTERS in apis.py
 MAX_PAGES = 1       # 1 page = 10 articles; NYT rate limit: 5 req/min
+OVERWRITE = False   # True: replace existing articles with freshly fetched data
 
 REPO_ROOT = os.path.join(os.path.dirname(__file__), "..")
 DATA_PATH = os.path.join(REPO_ROOT, "data", f"{API}_articles.json")
@@ -49,13 +50,23 @@ def main():
         print(f"Author: {article['author']}")
         print("-" * 60)
 
-    existing      = load_existing(DATA_PATH)
-    existing_urls = {a["url"] for a in existing}
-    new_articles  = [a for a in fetched if a["url"] not in existing_urls]
-    all_articles  = existing + new_articles
+    existing     = load_existing(DATA_PATH)
+    fetched_urls = {a["url"] for a in fetched}
+
+    if OVERWRITE:
+        kept     = [a for a in existing if a["url"] not in fetched_urls]
+        all_articles = kept + fetched
+        print(f"\n[{API}] {len(fetched)} articles saved, "
+              f"{len(existing) - len(kept)} overwritten "
+              f"({len(all_articles)} total) → {DATA_PATH}")
+    else:
+        existing_urls = {a["url"] for a in existing}
+        new_articles  = [a for a in fetched if a["url"] not in existing_urls]
+        all_articles  = existing + new_articles
+        print(f"\n[{API}] {len(new_articles)} new articles saved "
+              f"({len(all_articles)} total) → {DATA_PATH}")
+
     save(all_articles, DATA_PATH)
-    print(f"\n[{API}] {len(new_articles)} new articles saved "
-          f"({len(all_articles)} total) → {DATA_PATH}")
 
 
 if __name__ == "__main__":
