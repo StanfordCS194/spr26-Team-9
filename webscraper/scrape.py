@@ -18,7 +18,9 @@ def load_existing(path):
     """Load previously saved articles, or return empty list."""
     if os.path.exists(path):
         with open(path, "r") as f:
-            return json.load(f)
+            content = f.read().strip()
+            if content:
+                return json.loads(content)
     return []
 
 
