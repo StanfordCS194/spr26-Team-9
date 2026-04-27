@@ -6,8 +6,9 @@ from apis import ADAPTERS, get_meta_description
 QUERY     = "Trump Pope Leo"
 START     = "2026-04-12T00:00:00Z"
 END       = "2026-04-19T00:00:00Z"
-API       = "nyt"   # any key from ADAPTERS in apis.py
+API       = "nyt"   # any key from ADAPTERS in apis.py. One of "current", "nyt", "newsapi"
 MAX_PAGES = 1       # 1 page = 10 articles; NYT rate limit: 5 req/min
+DOMAIN = "foxnews.com, bbc.co.uk"         # Specify domains as comma separated string 'foxnews.com, bbc.co.uk'. Leave empty string for no specific domain.
 OVERWRITE = False   # True: replace existing articles with freshly fetched data
 
 REPO_ROOT = os.path.join(os.path.dirname(__file__), "..")
@@ -35,7 +36,7 @@ def main():
     fetched = []
 
     for page in range(MAX_PAGES):
-        fetched.extend(adapter.fetch(QUERY, START, END, page=page))
+        fetched.extend(adapter.fetch(QUERY, START, END, page=page, domain=DOMAIN))
         if page < MAX_PAGES - 1:
             time.sleep(13)  # stay under 5 requests/minute (NYT limit)
 

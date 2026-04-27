@@ -62,6 +62,7 @@ Main entry point. Configure the run at the top of the file:
 | `END` | End date in ISO 8601 format |
 | `API` | Adapter to use — any key from `ADAPTERS` (e.g. `"nyt"`) |
 | `MAX_PAGES` | Number of pages to fetch (1 page = 10 articles). A 13-second sleep is inserted between pages to comply with the NYT rate limit of 5 requests/minute. |
+| `DOMAIN` | Comma separated string of news domains to filter the search for. (e.g., `"foxnews.com, bbc.co.uk"`)|
 
 **What it does:**
 1. Instantiates the selected adapter and fetches articles across `MAX_PAGES` pages
@@ -111,6 +112,10 @@ Results are saved to `<repo_root>/data/{API}_articles.json` as a JSON array. The
 Copy `.env.example` from the repo root to `.env` and fill in your keys:
 
 ```env
-NYT_API_KEY=your_nyt_api_key_here
-NEWS_API_KEY=your_newsapi_key_here
-NEWS_API_URL=https://newsapi.org/v2/everything
+CURRENT_API = "your_current_api_key_here"
+CURRENT_URL = "https://api.currentsapi.services/v1/search"
+
+NEWS_API_KEY = "your_news_api_key_here"
+NEWS_API_URL = "https://newsapi.org/v2/everything"
+
+NYT_API_KEY = "your_nyt_api_key_here"
