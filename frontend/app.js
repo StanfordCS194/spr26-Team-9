@@ -256,6 +256,23 @@ function renderLLM() {
   });
 }
 
+// Hardcode to show comparison results when "Run Comparison" is clicked, since we don't have real LLM outputs in this prototype.
+const runCompareBtn = document.getElementById("run-compare-btn");
+const comparisonResults = document.getElementById("comparison-results");
+if (runCompareBtn && comparisonResults) {
+  runCompareBtn.addEventListener("click", () => {
+    comparisonResults.hidden = false;
+  });
+}
+
+// Hardcode to close the comparison results when "Close" is clicked.
+const modalCloseBtn = document.getElementById("modal-close");
+if (modalCloseBtn && comparisonResults) {
+  modalCloseBtn.addEventListener("click", () => {
+    comparisonResults.hidden = true;
+  });
+}
+
 // ---------- Init ----------
 renderTimeline();
 renderLLM();
