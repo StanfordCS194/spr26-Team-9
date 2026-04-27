@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "final-project-26"
+version = "0.1.0"
+description = ""
+authors = ["DanielSongShen <danielsongshengit@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+requests = "^2.33.1"
+dotenv = "^0.9.9"
+bs4 = "^0.0.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
