@@ -31,7 +31,7 @@ def get_meta_description(url):
 # ---------------------------------------------------------------------------
 
 class CurrentAPIAdapter:
-    def fetch(self, query, start, end, domain="foxnews.com"):
+    def fetch(self, query, start, end, **kwargs):
         res = requests.get(
             current_url,
             params={
@@ -41,7 +41,7 @@ class CurrentAPIAdapter:
                 "start_date": start,
                 "end_date": end,
                 "apiKey": current_api,
-                "domain": domain,
+                "domain": kwargs.get("domain", ""),
             },
         )
         res.raise_for_status()
@@ -102,7 +102,7 @@ class NYTAdapter:
 
 
 class NewsAPIAdapter:
-    def fetch(self, query, start, end, domain=None):
+    def fetch(self, query, start, end, **kwargs):
         params = {
             "q": query,
             "from": start,
@@ -113,8 +113,8 @@ class NewsAPIAdapter:
             "apiKey": news_api_key,
         }
 
-        if domain:
-            params["domains"] = domain
+        if kwargs.get("domain", ""):
+            params["domains"] = kwargs.get("domain", "")
 
         res = requests.get(news_api_url, params=params, timeout=15)
         res.raise_for_status()
