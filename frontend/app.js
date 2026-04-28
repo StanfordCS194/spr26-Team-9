@@ -2,19 +2,23 @@ const TOP_N_PER_DATE = 5;
 
 // Higher number = more credible. Sources not listed default to tier 1.
 const SOURCE_CREDIBILITY = {
-  "NYTAPI":            3,
-  "theguardian.com":   3,
-  "theatlantic.com":   3,
-  "reuters.com":       3,
-  "apnews.com":        3,
-  "CNBC":              2,
-  "independent.co.uk": 2,
-  "independent.ie":    2,
-  "bbc.co.uk":         2,
-  "bbc.com":           2,
-  "standard.co.uk":    2,
-  "detroitnews.com":   2,
+  "New York Times": 3,
+  "theguardian":    3,
+  "theatlantic":    3,
+  "reuters":        3,
+  "apnews":         3,
+  "CNBC":           2,
+  "independent":    2,
+  "bbc":            2,
+  "standard":       2,
+  "detroitnews":    2,
 };
+
+function cleanSourceName(src) {
+  return src
+    .trim()
+    .replace(/\.(com|co\.uk|co\.in|co\.nz|co\.za|co\.jp|org|net|uk|ie|us|io|tv|au|ca|de|fr|gov|edu)$/i, "");
+}
 
 function credibilityScore(src) {
   return SOURCE_CREDIBILITY[src] || 1;
@@ -45,7 +49,7 @@ let channelData  = {};
 // ---------- Data loading ----------
 
 async function loadArticles() {
-  const res = await fetch("/data/articles.json");
+  const res = await fetch("../data/articles.json");
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
@@ -54,11 +58,12 @@ function toTimelineData(articles) {
   // First pass: group by date and track distinct sources per day
   const groups = {};
   for (const a of articles) {
-    const isoDate = a.date.slice(0, 10);
+    const isoDate = (a.date || "").slice(0, 10);
+    if (!isoDate) continue;
     if (!groups[isoDate]) {
       const d = new Date(a.date);
       groups[isoDate] = {
-        date:     d.toLocaleDateString("en-US", { month: "long", day: "numeric" }),
+        date:     isNaN(d) ? isoDate : d.toLocaleDateString("en-US", { month: "long", day: "numeric" }),
         isoDate,
         sources:  new Set(),
         articles: [],
@@ -67,7 +72,7 @@ function toTimelineData(articles) {
     groups[isoDate].sources.add(a.source);
     const d = new Date(a.date);
     groups[isoDate].articles.push({
-      time:    d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
+      time:    isNaN(d) ? "" : d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
       isoTime: a.date,
       src:     a.source,
       title:   a.title,
@@ -105,9 +110,9 @@ function toChannelData(articles) {
     if (!channels[a.source]) channels[a.source] = [];
     const d = new Date(a.date);
     channels[a.source].push({
-      time:    d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
-      date:    d.toLocaleDateString("en-US", { month: "long", day: "numeric" }),
-      isoDate: a.date.slice(0, 10),
+      time:    isNaN(d) ? "" : d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
+      date:    isNaN(d) ? (a.date || "").slice(0, 10) : d.toLocaleDateString("en-US", { month: "long", day: "numeric" }),
+      isoDate: (a.date || "").slice(0, 10),
       title:   a.title,
       summary: a.description || "",
       url:     a.url,
@@ -121,6 +126,25 @@ function toChannelData(articles) {
 function buildSourceFilters(sources) {
   const container = document.getElementById("source-checkboxes");
   container.innerHTML = "";
+
+  const toggleRow = document.createElement("div");
+  toggleRow.className = "source-toggle-row";
+  const allBtn = document.createElement("button");
+  allBtn.className = "source-toggle-btn";
+  allBtn.textContent = "All";
+  const noneBtn = document.createElement("button");
+  noneBtn.className = "source-toggle-btn";
+  noneBtn.textContent = "None";
+  allBtn.addEventListener("click", () => {
+    container.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+  });
+  noneBtn.addEventListener("click", () => {
+    container.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+  });
+  toggleRow.appendChild(allBtn);
+  toggleRow.appendChild(noneBtn);
+  container.appendChild(toggleRow);
+
   sources.forEach((src) => {
     const label = document.createElement("label");
     label.className = "check";
@@ -136,7 +160,10 @@ function buildChannelCards(sources) {
     const card = document.createElement("div");
     card.className = "channel-card";
     card.dataset.src = src;
-    card.textContent = src;
+    card.innerHTML = `
+      <span class="channel-card-dot" style="background:${sourceColor(src)}"></span>
+      <span class="channel-card-name">${src}</span>
+    `;
     card.addEventListener("click", () => showChannelDetail(src));
     container.appendChild(card);
   });
@@ -386,8 +413,9 @@ if (modalCloseBtn && comparisonResults) {
 async function init() {
   try {
     const raw = await loadArticles();
-    timelineData = toTimelineData(raw);
-    channelData  = toChannelData(raw);
+    const normalized = raw.map(a => ({ ...a, source: cleanSourceName(a.source) }));
+    timelineData = toTimelineData(normalized);
+    channelData  = toChannelData(normalized);
     const sources = Object.keys(channelData).sort();
     assignSourceColors(sources);
     buildSourceFilters(sources);

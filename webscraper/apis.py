@@ -1,3 +1,4 @@
+import re
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
@@ -47,9 +48,12 @@ class CurrentAPIAdapter:
         return [self._normalize(a) for a in res.json().get("news", [])]
 
     def _normalize(self, a):
-        # Convert "YYYY-MM-DD HH:MM:SS +0000" → ISO 8601 "YYYY-MM-DDTHH:MM:SS+00:00"
+        # Convert "YYYY-MM-DD HH:MM:SS +HHMM" → ISO 8601 "YYYY-MM-DDTHH:MM:SS+HH:MM"
         raw_date = a.get("published", "")
-        iso_date = raw_date.replace(" ", "T", 1).replace(" +0000", "+00:00") if raw_date else ""
+        if raw_date:
+            iso_date = re.sub(r" \+(\d{2})(\d{2})$", r"+\1:\2", raw_date.replace(" ", "T", 1))
+        else:
+            iso_date = ""
         return {
             "title": a.get("title", ""),
             "url": a.get("url", ""),
@@ -99,7 +103,7 @@ class NYTAdapter:
             "description": d.get("abstract", "") or d.get("snippet", ""),
             "date":        d.get("pub_date", ""),
             "author":      d.get("byline", {}).get("original", ""),
-            "source":      "NYTAPI",
+            "source":      "New York Times",
         }
 
 
