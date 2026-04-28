@@ -67,6 +67,19 @@ Articles are ranked using the following source credibility tiers:
 | Tier 1, default | Everything else |
 
 ---
+## Article Comparison (Demo)
+
+A temporary demo feature allows users to compare two articles.
+
+- Click "COMPARE" in the timeline view
+- Enter the article titles into the text boxes
+- Click "Compare Articles" in the pop-up modal
+- View side-by-side summaries including sources, core arguments, and key points.
+- Note: Current implementation is hardcoded for demonstration purposes
+
+This will later be replaced with dynamic LLM-based comparison.
+
+___
 
 ### Running
 
