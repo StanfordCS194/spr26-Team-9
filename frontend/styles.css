@@ -237,12 +237,19 @@ body {
   height: 10px;
   border-radius: 50%;
   display: inline-block;
+  background: #94a3b8; /* fallback for unknown sources */
   box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.05);
 }
 
 .dot.nyt { background: #38b86b; }
 .dot.cnn { background: #4f9eea; }
 .dot.fox { background: #8b5cf6; }
+.dot.thenewyorktimes { background: #38b86b; }
+.dot.foxnews         { background: #8b5cf6; }
+.dot.bbc             { background: #e84545; }
+.dot.reuters         { background: #f97316; }
+.dot.apnews          { background: #06b6d4; }
+.dot.nytapi          { background: #38b86b; }
 
 .filter-apply-btn {
   width: 100%;

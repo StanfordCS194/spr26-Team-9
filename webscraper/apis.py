@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 from config import current_api, current_url, news_api_key, news_api_url, nyt_api_key
 
 
@@ -32,29 +33,30 @@ def get_meta_description(url):
 
 class CurrentAPIAdapter:
     def fetch(self, query, start, end, **kwargs):
-        res = requests.get(
-            current_url,
-            params={
-                "keywords": query,
-                "language": "en",
-                "page_size": 10,
-                "start_date": start,
-                "end_date": end,
-                "apiKey": current_api,
-                "domain": kwargs.get("domain", ""),
-            },
-        )
+        # Currents API date filtering requires a paid plan; omit date params
+        params = {
+            "keywords": query,
+            "language": "en",
+            "page_size": 10,
+            "apiKey": current_api,
+        }
+        if kwargs.get("domain", ""):
+            params["domain"] = kwargs["domain"]
+        res = requests.get(current_url, params=params)
         res.raise_for_status()
         return [self._normalize(a) for a in res.json().get("news", [])]
 
     def _normalize(self, a):
+        # Convert "YYYY-MM-DD HH:MM:SS +0000" → ISO 8601 "YYYY-MM-DDTHH:MM:SS+00:00"
+        raw_date = a.get("published", "")
+        iso_date = raw_date.replace(" ", "T", 1).replace(" +0000", "+00:00") if raw_date else ""
         return {
             "title": a.get("title", ""),
             "url": a.get("url", ""),
             "description": a.get("description", ""),
-            "date": a.get("publishedAt", ""),
+            "date": iso_date,
             "author": a.get("author", ""),
-            "source": a.get("source", {}).get("name", "CurrentAPI"),
+            "source": urlparse(a.get("url", "")).netloc.removeprefix("www."),
         }
 
 

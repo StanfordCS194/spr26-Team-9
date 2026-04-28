@@ -58,9 +58,7 @@
 
             <div class="filter-group">
               <label>Source</label>
-              <label class="check"><input type="checkbox" data-src="NYT" checked /> <span class="dot nyt"></span> NYT</label>
-              <label class="check"><input type="checkbox" data-src="CNN" checked /> <span class="dot cnn"></span> CNN</label>
-              <label class="check"><input type="checkbox" data-src="FOX" checked /> <span class="dot fox"></span> FOX</label>
+              <div id="source-checkboxes"><!-- populated by app.js --></div>
             </div>
 
             <button class="filter-apply-btn" id="apply-filters-btn">Apply Filters</button>
@@ -91,11 +89,7 @@
         <!-- Grid state -->
         <div id="channels-grid" class="channels-state active">
           <h2 class="sub-headline">Explore Channels</h2>
-          <div class="channel-cards">
-            <div class="channel-card" data-src="NYT">NYT</div>
-            <div class="channel-card" data-src="CNN">CNN</div>
-            <div class="channel-card" data-src="FOX">FOX</div>
-          </div>
+          <div class="channel-cards" id="channel-cards-container"><!-- populated by app.js --></div>
         </div>
 
         <!-- Deep-dive state -->
