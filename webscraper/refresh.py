@@ -3,8 +3,8 @@
 Refresh news articles about the Trump-Pope Leo feud.
 
 Usage:
-    python refresh.py               # fetch from all APIs, merge into data/articles.json
-    python refresh.py --api newsapi # fetch from a single API only
+    python webscraper/refresh.py               # fetch from all APIs, merge into data/articles.json
+    python webscraper/refresh.py --api newsapi # fetch from a single API only
 """
 import argparse
 import json
@@ -19,8 +19,8 @@ APIS     = ["newsapi", "nyt", "current"]
 MAX_PAGES = 2
 
 HERE     = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(HERE, "data")
-SCRAPER  = os.path.join(HERE, "webscraper", "scrape.py")
+DATA_DIR = os.path.join(HERE, "..", "data")
+SCRAPER  = os.path.join(HERE, "scrape.py")
 
 
 def run_scraper(api, end):
