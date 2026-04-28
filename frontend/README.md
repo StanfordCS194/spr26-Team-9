@@ -47,27 +47,46 @@ init() in app.js
         ↓
 toTimelineData()  →  renderTimeline()
 toChannelData()   →  buildChannelCards()
+'''
+`app.js` fetches article data from `../data/articles.json` when the page loads. If `articles.json` is missing or stale, run:
 
-app.js fetches ../data/articles.json on load. If it is missing, an error suggests running: python webscraper/refresh.py
+```bash
+python webscraper/refresh.py
+```
 
+---
 
-Source credibility tiers used for ranking:
+### Source Credibility Ranking
 
-  Tier 3, highest: NYT, Reuters, AP, BBC, NPR, PBS, The Guardian, Washington Post
-  Tier 2: The Atlantic, Politico, Axios, The Hill, CNN, ABC, NBC, CBS
-  Tier 1, default: everything else
+Articles are ranked using the following source credibility tiers:
+
+| Tier | Sources |
+|---|---|
+| Tier 3, highest | NYT, Reuters, AP, BBC, NPR, PBS, The Guardian, Washington Post |
+| Tier 2 | The Atlantic, Politico, Axios, The Hill, CNN, ABC, NBC, CBS |
+| Tier 1, default | Everything else |
+
+---
 
 ### Running
 
-Before running, make sure you ran refresh.py inside webscraper directory
+Before running the frontend, make sure the article data has been generated:
 
-From the repo root:
+```bash
+python webscraper/refresh.py
+```
 
+Then start a local server from the repo root:
+
+```bash
 python -m http.server 8080
+```
 
-Then open:
+Open the frontend in your browser:
 
+```text
 http://localhost:8080/frontend/
+```
 
 
 
