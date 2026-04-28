@@ -1,22 +1,13 @@
+import argparse
 import json
 import os
 import time
 from apis import ADAPTERS, get_meta_description
 
-QUERY     = "Trump Pope Leo"
-START     = "2026-04-12T00:00:00Z"
-END       = "2026-04-19T00:00:00Z"
-API       = "nyt"   # any key from ADAPTERS in apis.py. One of "current", "nyt", "newsapi"
-MAX_PAGES = 1       # 1 page = 10 articles; NYT rate limit: 5 req/min
-DOMAIN = "foxnews.com, bbc.co.uk"         # Specify domains as comma separated string 'foxnews.com, bbc.co.uk'. Leave empty string for no specific domain.
-OVERWRITE = False   # True: replace existing articles with freshly fetched data
-
 REPO_ROOT = os.path.join(os.path.dirname(__file__), "..")
-DATA_PATH = os.path.join(REPO_ROOT, "data", f"{API}_articles.json")
 
 
 def load_existing(path):
-    """Load previously saved articles, or return empty list."""
     if os.path.exists(path):
         with open(path, "r") as f:
             content = f.read().strip()
@@ -32,12 +23,24 @@ def save(articles, path):
 
 
 def main():
-    adapter = ADAPTERS[API]()
+    parser = argparse.ArgumentParser(description="Scrape news articles.")
+    parser.add_argument("--query",     default="Trump Pope Leo")
+    parser.add_argument("--api",       default="newsapi", choices=list(ADAPTERS.keys()))
+    parser.add_argument("--start",     default="2026-04-12T00:00:00Z")
+    parser.add_argument("--end",       default="2026-04-27T00:00:00Z")
+    parser.add_argument("--max-pages", type=int, default=1)
+    parser.add_argument("--domain",    default="")
+    parser.add_argument("--overwrite", action="store_true")
+    args = parser.parse_args()
+
+    data_path = os.path.join(REPO_ROOT, "data", f"{args.api}_articles.json")
+
+    adapter = ADAPTERS[args.api]()
     fetched = []
 
-    for page in range(MAX_PAGES):
-        fetched.extend(adapter.fetch(QUERY, START, END, page=page, domain=DOMAIN))
-        if page < MAX_PAGES - 1:
+    for page in range(args.max_pages):
+        fetched.extend(adapter.fetch(args.query, args.start, args.end, page=page, domain=args.domain))
+        if page < args.max_pages - 1:
             time.sleep(13)  # stay under 5 requests/minute (NYT limit)
 
     if not fetched:
@@ -53,23 +56,23 @@ def main():
         print(f"Author: {article['author']}")
         print("-" * 60)
 
-    existing     = load_existing(DATA_PATH)
+    existing     = load_existing(data_path)
     fetched_urls = {a["url"] for a in fetched}
 
-    if OVERWRITE:
-        kept     = [a for a in existing if a["url"] not in fetched_urls]
+    if args.overwrite:
+        kept         = [a for a in existing if a["url"] not in fetched_urls]
         all_articles = kept + fetched
-        print(f"\n[{API}] {len(fetched)} articles saved, "
+        print(f"\n[{args.api}] {len(fetched)} articles saved, "
               f"{len(existing) - len(kept)} overwritten "
-              f"({len(all_articles)} total) → {DATA_PATH}")
+              f"({len(all_articles)} total) → {data_path}")
     else:
         existing_urls = {a["url"] for a in existing}
         new_articles  = [a for a in fetched if a["url"] not in existing_urls]
         all_articles  = existing + new_articles
-        print(f"\n[{API}] {len(new_articles)} new articles saved "
-              f"({len(all_articles)} total) → {DATA_PATH}")
+        print(f"\n[{args.api}] {len(new_articles)} new articles saved "
+              f"({len(all_articles)} total) → {data_path}")
 
-    save(all_articles, DATA_PATH)
+    save(all_articles, data_path)
 
 
 if __name__ == "__main__":
