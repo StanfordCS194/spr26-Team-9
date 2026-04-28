@@ -1,45 +1,6 @@
-// ---------- Placeholder data ----------
-const timelineData = [
-  {
-    date: "March 23rd",
-    isoDate: "2026-03-23",
-    articles: [
-      { time: "9:00AM", src: "CNN", title: "Title...", summary: "Initial CNN report on the dispute." },
-      { time: "10:00AM", src: "NYT", title: "Title...", summary: "NYT breaks the story with additional sourcing." },
-    ],
-  },
-  {
-    date: "April 1st",
-    isoDate: "2026-04-01",
-    articles: [
-      { time: "8:52AM", src: "FOX", title: "Title...", summary: "FOX commentary frames the dispute differently." },
-      { time: "1:00PM", src: "CNN", title: "Title...", summary: "Follow-up with new quotes from the Vatican." },
-      { time: "2:00PM", src: "NYT", title: "Title...", summary: "Analysis piece covering historical precedent." },
-    ],
-  },
-  {
-    date: "April 10th",
-    isoDate: "2026-04-10",
-    articles: [
-      { time: "9:00AM", src: "CNN", title: "Title...", summary: "Narrative shifts after new evidence emerges." },
-    ],
-  },
-];
-
-const channelData = {
-  NYT: [
-    { time: "9:00AM", date: "March 23rd", title: "Title...", summary: "Summary: early NYT coverage." },
-    { time: "10:00AM", date: "April 1st", title: "Title...", summary: "Summary: NYT follow-up analysis." },
-    { time: "8:01AM", date: "April 10th", title: "Title...", summary: "Summary: NYT retrospective." },
-    { time: "11:00AM", date: "April 10th", title: "Title...", summary: "Summary: additional NYT coverage." },
-  ],
-  CNN: [
-    { time: "9:00AM", date: "March 23rd", title: "Title...", summary: "Summary: CNN initial report." },
-  ],
-  FOX: [
-    { time: "8:52AM", date: "April 1st", title: "Title...", summary: "Summary: FOX commentary." },
-  ],
-};
+// ---------- Data (loaded from frontend_data.json) ----------
+let timelineData = [];
+let channelData  = {};
 
 const llmData = [
   { name: "ChatGPT", summary: "", sources: "", leaning: "" },
@@ -200,10 +161,14 @@ function showChannelDetail(src) {
 
   const wrap = document.getElementById("channel-timeline");
   wrap.innerHTML = "";
-  const buckets = { "March 23rd": [], "April 1st": [], "April 10th": [] };
+
+  // Group articles by date dynamically
+  const buckets = {};
   (channelData[src] || []).forEach((a) => {
-    if (buckets[a.date]) buckets[a.date].push(a);
+    if (!buckets[a.date]) buckets[a.date] = [];
+    buckets[a.date].push(a);
   });
+
   Object.keys(buckets).forEach((date, index) => {
     const col = document.createElement("div");
     col.className = "timeline-column";
@@ -223,9 +188,19 @@ function showChannelDetail(src) {
 }
 
 document.getElementById("channels-back").addEventListener("click", showChannelsGrid);
-document.querySelectorAll(".channel-card").forEach((c) =>
-  c.addEventListener("click", () => showChannelDetail(c.dataset.src))
-);
+
+function renderChannelCards() {
+  const grid = document.querySelector(".channel-cards");
+  grid.innerHTML = "";
+  Object.keys(channelData).forEach((src) => {
+    const card = document.createElement("div");
+    card.className = "channel-card";
+    card.dataset.src = src;
+    card.textContent = src;
+    card.addEventListener("click", () => showChannelDetail(src));
+    grid.appendChild(card);
+  });
+}
 applyFiltersBtn.addEventListener("click", renderTimeline);
 
 document.getElementById("view-timeline").addEventListener("click", (e) => {
@@ -274,5 +249,17 @@ if (modalCloseBtn && comparisonResults) {
 }
 
 // ---------- Init ----------
-renderTimeline();
-renderLLM();
+fetch("frontend_data.json")
+  .then((r) => r.json())
+  .then((data) => {
+    timelineData = data.timelineData || [];
+    channelData  = data.channelData  || {};
+    renderTimeline();
+    renderLLM();
+    renderChannelCards();
+  })
+  .catch((err) => {
+    console.error("Failed to load frontend_data.json:", err);
+    renderTimeline();
+    renderLLM();
+  });
