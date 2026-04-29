@@ -7,3 +7,4 @@ webscraper/__pycache__/*
 data/
 
 .vscode
+.claude
