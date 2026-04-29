@@ -318,10 +318,28 @@ function showChannelsGrid() {
   document.getElementById("channels-detail").classList.remove("active");
 }
 
+const CHANNEL_ANALYSIS = {
+  "New York Times": `The New York Times covered the Trump–Pope Leo dispute primarily as a domestic political story rather than a religious one, with most reporting filed by White House and politics correspondents. The arc unfolds across two days:
+
+<strong>April 13 — Trigger and response.</strong> Coverage opens with Katie Rogers framing Trump's Truth Social attack as showing "no boundaries" on whom the president will target, setting an editorially critical tone from the start. The story expands across multiple fronts the same day: the Pope's restrained pushback from his plane to Algeria, reported sympathetically by Motoko Rich, and Trump's AI-generated Jesus image, which drew bipartisan Catholic backlash that NYT amplified through extensive quotes from bishops, the U.S. Conference of Catholic Bishops, and even Trump-aligned figures like Bishop Robert Barron.
+<strong>April 14 — Political fallout.</strong> The frame shifts decisively to electoral math: Lerer and Epstein cast the feud as a GOP "headache" threatening Catholic swing voters in Michigan, Ohio, Wisconsin, and South Texas, while VP Vance's Fox News defense telling the Vatican to "stick to matters of morality" is covered as administration damage control.
+
+Across all five articles, NYT consistently centers political consequences and Catholic institutional reaction, with less prominent attention to the theological substance of Leo's anti-war message itself.
+`,
+};
+
 function showChannelDetail(src) {
   document.getElementById("channels-grid").classList.remove("active");
   document.getElementById("channels-detail").classList.add("active");
   document.getElementById("channel-name").textContent = src;
+
+  const analysisBox = document.getElementById("channel-analysis-box");
+  if (CHANNEL_ANALYSIS[src]) {
+    analysisBox.innerHTML = CHANNEL_ANALYSIS[src];
+    analysisBox.style.display = "block";
+  } else {
+    analysisBox.style.display = "none";
+  }
 
   const wrap = document.getElementById("channel-timeline");
   wrap.innerHTML = "";

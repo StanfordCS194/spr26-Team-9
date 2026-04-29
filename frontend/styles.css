@@ -863,3 +863,19 @@ body {
   transform: translateY(0);
   box-shadow: 0 8px 14px rgba(15, 23, 42, 0.16);
 }
+/* Channel-specific analysis text box */
+.channel-analysis-box {
+  margin: 16px 0 24px;
+  padding: 20px 24px;
+  background: var(--slate-100);
+  border-left: 4px solid var(--navy-800);
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--navy-950);
+  white-space: pre-wrap;
+}
+
+.channel-analysis-box strong {
+  font-weight: 700;
+}
