@@ -191,12 +191,10 @@ document.querySelectorAll(".menu-item").forEach((btn) => {
   btn.addEventListener("click", () => {
     const name = btn.dataset.view;
     if (name === "timeline" && currentView === "timeline") {
-      // already on Timeline — toggle filters closed
       document.getElementById("filters-panel").classList.toggle("open");
     } else {
       setView(name);
       if (name === "timeline") {
-        // first click on Timeline — open filters immediately
         document.getElementById("filters-panel").classList.add("open");
       } else {
         closeFilters();
@@ -257,10 +255,7 @@ function getFilteredTimelineData() {
 function makeTimelineStage(date) {
   const stage = document.createElement("div");
   stage.className = "timeline-stage";
-  stage.innerHTML = `
-    <div class="stage-date">${date}</div>
-    <div class="stage-count"></div>
-  `;
+  stage.innerHTML = `<div class="stage-date">${date}</div>`;
   return stage;
 }
 
@@ -376,10 +371,10 @@ function showChannelDetail(src) {
 
   Object.entries(byDate)
     .sort(([a], [b]) => a.localeCompare(b))
-    .forEach(([, bucket]) => {
+    .forEach(([, bucket], index) => {
       const col = document.createElement("div");
       col.className = "timeline-column";
-      col.appendChild(makeTimelineStage(bucket.date));
+      col.appendChild(makeTimelineStage(bucket.date, index));
       bucket.articles.forEach((a) => {
         const card = document.createElement("div");
         card.className = "article-card";
