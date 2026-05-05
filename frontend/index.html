@@ -4,22 +4,32 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>News Narrative Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app">
     <!-- LEFT MENU -->
     <aside class="menu">
-      <div class="menu-title">MENU</div>
+      <div class="menu-brand">
+        <div class="menu-logo">NNT</div>
+        <div class="menu-brand-name">News<br>Narrative<br>Tracker</div>
+      </div>
+      <div class="menu-section-label">Views</div>
       <nav>
         <button class="menu-item active" data-view="timeline">
-          <span class="icon">🕒</span> Timeline
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/><circle cx="19" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="17" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="20" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
+          Timeline
         </button>
         <button class="menu-item" data-view="channels">
-          <span class="icon">☰</span> Channels
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+          Channels
         </button>
         <button class="menu-item" data-view="llm">
-          <span class="icon">✴</span> LLM
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.4H20l-4.9 3.6 1.9 5.7L12 14.4l-5 3.3 1.9-5.7L4 8.4h6.2z"/></svg>
+          LLM Analysis
         </button>
       </nav>
     </aside>
@@ -28,59 +38,64 @@
     <main class="main">
       <!-- TOP BAR -->
       <header class="topbar">
-        <h1 id="page-title">Coverage Timeline</h1>
-        <div class="profile">👤</div>
+        <div class="topbar-title-group">
+          <h1 id="page-title">Coverage Timeline</h1>
+          <p class="topbar-subtitle">Tracking media narratives across sources</p>
+        </div>
+        <div class="profile">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
       </header>
 
       <!-- TIMELINE VIEW -->
       <section id="view-timeline" class="view active">
         <div class="timeline-layout">
-          <!-- Filters -->
-          <aside class="filters">
-            <div class="filters-title">▽ Filters</div>
 
-            <div class="filter-group">
-              <label>Political Leaning</label>
-              <div class="slider-row">
-                <span>L</span>
-                <input type="range" min="-5" max="5" value="0" id="lean-slider" />
-                <span>R</span>
+          <!-- Filters sidebar -->
+          <aside class="filters" id="filters-panel">
+            <div class="filters-header">
+              <span class="filters-heading">Filters</span>
+              <button class="filters-close" id="filters-close" aria-label="Close filters">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+
+            <div class="filters-body" id="filters-body">
+              <div class="filter-group">
+                <label>Political Leaning</label>
+                <div class="slider-row">
+                  <span>L</span>
+                  <input type="range" min="-5" max="5" value="0" id="lean-slider" />
+                  <span>R</span>
+                </div>
               </div>
-            </div>
 
-            <div class="filter-group">
-              <label>Date Range</label>
-              <div class="date-range">
-                <input type="date" id="start-date-filter" />
-                <input type="date" id="end-date-filter" />
+              <div class="filter-group">
+                <label>Date Range</label>
+                <div class="date-range">
+                  <input type="date" id="start-date-filter" />
+                  <input type="date" id="end-date-filter" />
+                </div>
               </div>
-            </div>
 
-            <div class="filter-group">
-              <label>Source</label>
-              <div id="source-checkboxes"><!-- populated by app.js --></div>
-            </div>
+              <div class="filter-group">
+                <label>Source</label>
+                <div id="source-checkboxes"><!-- populated by app.js --></div>
+              </div>
 
-            <button class="filter-apply-btn" id="apply-filters-btn">Apply Filters</button>
+              <button class="filter-apply-btn" id="apply-filters-btn">Apply Filters</button>
+            </div>
           </aside>
 
           <!-- Timeline content -->
           <div class="timeline-content">
             <h2 class="story-headline">"Dispute Between Pope Leo &amp; Trump"</h2>
-
-            <div class="timeline-axis">
-              <div class="axis-date">March 23rd</div>
-              <div class="axis-date">April 1st</div>
-              <div class="axis-date">April 10th</div>
-              <div class="axis-line"></div>
-            </div>
-
             <div class="timeline-columns" id="timeline-columns">
               <!-- Columns injected by JS -->
             </div>
-
             <button class="compare-btn" id="compare-btn">COMPARE</button>
           </div>
+
         </div>
       </section>
 
