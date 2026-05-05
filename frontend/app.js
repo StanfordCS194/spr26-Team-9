@@ -25,10 +25,10 @@ function credibilityScore(src) {
 }
 
 const SOURCE_COLORS = [
-  "#38b86b", "#4f9eea", "#8b5cf6", "#f97316",
-  "#e84545", "#06b6d4", "#f59e0b", "#ec4899",
-  "#10b981", "#6366f1", "#84cc16", "#14b8a6",
-  "#f43f5e", "#a855f7", "#0ea5e9", "#fb923c",
+  "#16A34A", "#2563EB", "#7C3AED", "#EA580C",
+  "#DC2626", "#0891B2", "#D97706", "#DB2777",
+  "#059669", "#4F46E5", "#65A30D", "#0D9488",
+  "#E11D48", "#9333EA", "#0284C7", "#C2410C",
 ];
 const sourceColorMap = {};
 
@@ -179,11 +179,34 @@ const startDateFilterEl = document.getElementById("start-date-filter");
 const endDateFilterEl   = document.getElementById("end-date-filter");
 const applyFiltersBtn   = document.getElementById("apply-filters-btn");
 
+let currentView = "timeline";
+
+function closeFilters() {
+  document.getElementById("filters-panel").classList.remove("open");
+}
+
+document.getElementById("filters-close").addEventListener("click", closeFilters);
+
 document.querySelectorAll(".menu-item").forEach((btn) => {
-  btn.addEventListener("click", () => setView(btn.dataset.view));
+  btn.addEventListener("click", () => {
+    const name = btn.dataset.view;
+    if (name === "timeline" && currentView === "timeline") {
+      // already on Timeline — toggle filters closed
+      document.getElementById("filters-panel").classList.toggle("open");
+    } else {
+      setView(name);
+      if (name === "timeline") {
+        // first click on Timeline — open filters immediately
+        document.getElementById("filters-panel").classList.add("open");
+      } else {
+        closeFilters();
+      }
+    }
+  });
 });
 
 function setView(name) {
+  currentView = name;
   document.querySelectorAll(".menu-item").forEach((b) => b.classList.toggle("active", b.dataset.view === name));
   document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
   document.getElementById(views[name]).classList.add("active");
@@ -202,10 +225,10 @@ function renderTimeline() {
     timelineColumnsEl.innerHTML = '<div class="timeline-empty-state">No coverage matches the selected filters.</div>';
     return;
   }
-  filtered.forEach((col, index) => {
+  filtered.forEach((col) => {
     const colEl = document.createElement("div");
     colEl.className = "timeline-column";
-    colEl.appendChild(makeTimelineStage(col.date, index));
+    colEl.appendChild(makeTimelineStage(col.date));
     col.articles.forEach((a) => colEl.appendChild(makeArticleCard(a)));
     timelineColumnsEl.appendChild(colEl);
   });
@@ -231,12 +254,12 @@ function getFilteredTimelineData() {
     .filter((group) => group.articles.length > 0);
 }
 
-function makeTimelineStage(date, index) {
+function makeTimelineStage(date) {
   const stage = document.createElement("div");
   stage.className = "timeline-stage";
   stage.innerHTML = `
-    <div class="stage-step">Stage ${String(index + 1).padStart(2, "0")}</div>
     <div class="stage-date">${date}</div>
+    <div class="stage-count"></div>
   `;
   return stage;
 }
@@ -353,10 +376,10 @@ function showChannelDetail(src) {
 
   Object.entries(byDate)
     .sort(([a], [b]) => a.localeCompare(b))
-    .forEach(([, bucket], index) => {
+    .forEach(([, bucket]) => {
       const col = document.createElement("div");
       col.className = "timeline-column";
-      col.appendChild(makeTimelineStage(bucket.date, index));
+      col.appendChild(makeTimelineStage(bucket.date));
       bucket.articles.forEach((a) => {
         const card = document.createElement("div");
         card.className = "article-card";
