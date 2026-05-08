@@ -92,7 +92,7 @@
             <div class="timeline-columns" id="timeline-columns">
               <!-- Columns injected by JS -->
             </div>
-            <button class="compare-btn" id="compare-btn">COMPARE</button>
+            <button class="compare-btn" id="compare-btn">Article Comparison</button>
           </div>
         </div>
       </section>
@@ -132,18 +132,12 @@
   <div class="modal-overlay" id="compare-modal">
     <div class="modal">
       <button class="modal-close" id="modal-close">×</button>
-      <h3>Select 2 articles or 2 dates to compare</h3>
+      <h3>Selected Articles</h3>
 
-      <div class="compare-inputs">
-        <label>1.
-          <input type="text" value="There Is Much More to Pope vs. President Than Meets the Eye" />
-        </label>
-        <label>2.
-          <input type="text" value="Trump, Pope Leo feud publicly. Here's who said what (and when)" />
-        </label>
+      <div id="selected-article-links" class="selected-article-links">
+        <a href="#" target="_blank">Article 1 title</a>
+        <a href="#" target="_blank">Article 2 title</a>
       </div>
-
-      <button class="run-compare-btn" id="run-compare-btn">Compare Articles</button>
 
       <div class="analysis-box" id="comparison-results" hidden>
         <h4>Article Comparison</h4>
