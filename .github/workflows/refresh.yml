@@ -1,0 +1,40 @@
+name: Refresh Articles
+
+on:
+  schedule:
+    - cron: "0 16 * * *"  # daily at 8am PST (UTC-8)
+  workflow_dispatch:        # allow manual trigger
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4 python-dotenv lxml
+
+      - name: Run pipeline
+        env:
+          NYT_API_KEY: ${{ secrets.NYT_API_KEY }}
+          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
+          NEWS_API_URL: ${{ secrets.NEWS_API_URL }}
+          CURRENT_API: ${{ secrets.CURRENT_API }}
+          CURRENT_URL: ${{ secrets.CURRENT_URL }}
+        run: python webscraper/refresh.py
+
+      - name: Copy articles to frontend
+        run: cp data/articles.json frontend/articles.json
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add frontend/articles.json
+          git diff --cached --quiet || git commit -m "chore: refresh articles [skip ci]"
+          git push

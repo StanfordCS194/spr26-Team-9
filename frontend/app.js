@@ -51,7 +51,7 @@ let selectedCompareArticles = [];
 // ---------- Data loading ----------
 
 async function loadArticles() {
-  const res = await fetch("../data/articles.json");
+  const res = await fetch("./articles.json");
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
@@ -678,6 +678,37 @@ if (modalCloseBtn && comparisonResults) {
   });
 }
 
+// ---------- Refresh ----------
+
+const refreshBtn = document.getElementById("refresh-btn");
+if (refreshBtn) {
+  refreshBtn.addEventListener("click", async () => {
+    refreshBtn.disabled = true;
+    refreshBtn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Fetching...`;
+    try {
+      const res = await fetch("/api/refresh", { method: "POST" });
+      const data = await res.json();
+      if (data.ok) {
+        refreshBtn.innerHTML = "Started! Reload in ~1 min";
+        setTimeout(() => {
+          refreshBtn.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Refresh`;
+          refreshBtn.disabled = false;
+        }, 90000);
+      } else {
+        refreshBtn.innerHTML = "Failed — try again";
+        refreshBtn.disabled = false;
+      }
+    } catch {
+      refreshBtn.innerHTML = "Failed — try again";
+      refreshBtn.disabled = false;
+    }
+  });
+}
+
 // ---------- Init ----------
 
 async function init() {
@@ -693,7 +724,7 @@ async function init() {
   } catch (err) {
     console.error("Could not load articles:", err);
     timelineColumnsEl.innerHTML =
-      '<div class="timeline-empty-state">No articles loaded. Run <code>python refresh.py</code> then serve from repo root with <code>python -m http.server 8080</code>.</div>';
+      '<div class="timeline-empty-state">No articles loaded.</div>';
   }
   renderTimeline();
   renderLLM();

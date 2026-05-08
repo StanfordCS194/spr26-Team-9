@@ -171,6 +171,39 @@ body {
   color: var(--slate-400);
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--slate-200);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--navy-950);
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  box-shadow: var(--shadow-sm);
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: var(--slate-100);
+  transform: translateY(-1px);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .profile {
   width: 34px;
   height: 34px;
