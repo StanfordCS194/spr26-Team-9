@@ -53,7 +53,10 @@ let selectedCompareArticles = [];
 async function loadArticles() {
   const res = await fetch("./articles.json");
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
+  const data = await res.json();
+  // support both plain array and {updatedAt, articles} wrapper
+  if (Array.isArray(data)) return { articles: data, updatedAt: null };
+  return data;
 }
 
 function toTimelineData(articles) {
@@ -689,7 +692,8 @@ if (refreshBtn) {
       Fetching...`;
     try {
       const res = await fetch("/api/refresh", { method: "POST" });
-      const data = await res.json();
+      let data = {};
+      try { data = await res.json(); } catch { data = { ok: false, error: `HTTP ${res.status}` }; }
       if (data.ok) {
         refreshBtn.innerHTML = "Started! Reload in ~1 min";
         setTimeout(() => {
@@ -699,10 +703,12 @@ if (refreshBtn) {
           refreshBtn.disabled = false;
         }, 90000);
       } else {
-        refreshBtn.innerHTML = "Failed — try again";
+        console.error("Refresh failed:", data);
+        refreshBtn.innerHTML = `Error ${data.status || res.status || "—"} — try again`;
         refreshBtn.disabled = false;
       }
-    } catch {
+    } catch (err) {
+      console.error("Refresh error:", err);
       refreshBtn.innerHTML = "Failed — try again";
       refreshBtn.disabled = false;
     }
@@ -711,16 +717,26 @@ if (refreshBtn) {
 
 // ---------- Init ----------
 
+function setLastUpdated(isoString) {
+  const el = document.getElementById("last-updated");
+  if (!el || !isoString) return;
+  const d = new Date(isoString);
+  el.textContent = "Updated " + d.toLocaleString("en-US", {
+    month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short"
+  });
+}
+
 async function init() {
   try {
-    const raw = await loadArticles();
-    const normalized = raw.map(a => ({ ...a, source: cleanSourceName(a.source) }));
+    const { articles, updatedAt } = await loadArticles();
+    const normalized = articles.map(a => ({ ...a, source: cleanSourceName(a.source) }));
     timelineData = toTimelineData(normalized);
     channelData  = toChannelData(normalized);
     const sources = Object.keys(channelData).sort();
     assignSourceColors(sources);
     buildSourceFilters(sources);
     buildChannelCards(sources);
+    setLastUpdated(updatedAt);
   } catch (err) {
     console.error("Could not load articles:", err);
     timelineColumnsEl.innerHTML =

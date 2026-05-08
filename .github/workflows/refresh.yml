@@ -28,8 +28,15 @@ jobs:
           CURRENT_URL: ${{ secrets.CURRENT_URL }}
         run: python webscraper/refresh.py
 
-      - name: Copy articles to frontend
-        run: cp data/articles.json frontend/articles.json
+      - name: Copy articles to frontend with timestamp
+        run: |
+          python - <<'EOF'
+          import json, sys
+          from datetime import datetime, timezone
+          articles = json.load(open("data/articles.json"))
+          output = {"updatedAt": datetime.now(timezone.utc).isoformat(), "articles": articles}
+          json.dump(output, open("frontend/articles.json", "w"), indent=2)
+          EOF
 
       - name: Commit and push if changed
         run: |

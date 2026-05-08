@@ -27,5 +27,6 @@ module.exports = async function handler(req, res) {
   }
 
   const text = await response.text();
-  return res.status(500).json({ ok: false, error: text });
+  console.error("GitHub API error", response.status, text);
+  return res.status(500).json({ ok: false, status: response.status, error: text });
 };
