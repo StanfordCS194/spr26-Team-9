@@ -45,6 +45,8 @@ function sourceColor(src) {
 // Global state — populated after fetch
 let timelineData = [];
 let channelData  = {};
+let selectedCompareTitles = [];
+let selectedCompareArticles = [];
 
 // ---------- Data loading ----------
 
@@ -274,6 +276,7 @@ function makeArticleCard(a) {
   card.addEventListener("mousemove", (e) => showTooltip(e, a.summary));
   card.addEventListener("mouseleave", hideTooltip);
   card.querySelector(".src").addEventListener("click", (e) => {
+    if (document.body.classList.contains("compare-mode")) return;
     e.stopPropagation();
     if (selectedTimelineSource === a.src) {
       clearTimelineSourceSelection();
@@ -284,8 +287,57 @@ function makeArticleCard(a) {
     setTimelineSourceSelection(a.src);
   });
   card.addEventListener("click", () => {
+    if (document.body.classList.contains("compare-mode")) {
+      const title = a.title;
+  
+      if (selectedCompareTitles.includes(title)) {
+
+        // REMOVE TITLE
+        selectedCompareTitles = selectedCompareTitles.filter(t => t !== title);
+      
+        // REMOVE ARTICLE OBJECT
+        selectedCompareArticles =
+          selectedCompareArticles.filter(article => article.title !== title);
+      
+        card.style.border = "";
+        card.style.backgroundColor = "";
+      
+      } else {
+      
+        if (selectedCompareTitles.length >= 2) {
+          alert("You can only select 2 articles.");
+          return;
+        }
+      
+        // ADD TITLE
+        selectedCompareTitles.push(title);
+      
+        // ADD FULL ARTICLE OBJECT
+        selectedCompareArticles.push(a);
+      
+        card.style.border = "4px solid #2563eb";
+        card.style.backgroundColor = "rgba(37, 99, 235, 0.12)";
+      }
+  
+      // BUTTON TEXT LOGIC
+      if (selectedCompareTitles.length === 0) {
+        runCompareBtn.textContent = "Select 2 articles";
+      }
+  
+      if (selectedCompareTitles.length === 1) {
+        runCompareBtn.textContent = "Select 1 more article";
+      }
+  
+      if (selectedCompareTitles.length >= 2) {
+        runCompareBtn.textContent = "Compare Selected Articles";
+      }
+  
+      return;
+    }
+  
     if (a.url) window.open(a.url, "_blank");
   });
+  
   return card;
 }
 
@@ -325,10 +377,33 @@ function hideTooltip() { tooltipEl.hidden = true; }
 // ---------- Compare modal ----------
 
 const modal = document.getElementById("compare-modal");
-document.getElementById("compare-btn").addEventListener("click", () => modal.classList.add("open"));
-document.getElementById("modal-close").addEventListener("click", () => modal.classList.remove("open"));
-modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("open"); });
 
+function resetArticleComparison() {
+  selectedCompareTitles = [];
+  selectedCompareArticles = [];
+
+  document.getElementById("selected-article-links").innerHTML = "";
+
+  document.querySelectorAll(".article-card").forEach(card => {
+    card.style.border = "";
+    card.style.backgroundColor = "";
+  });
+
+  runCompareBtn.textContent = "Article Comparison";
+  document.body.classList.remove("compare-mode");
+}
+
+document.getElementById("modal-close").addEventListener("click", () => {
+  modal.classList.remove("open");
+  resetArticleComparison();
+});
+
+modal.addEventListener("click", (e) => {
+  if (e.target === modal) {
+    modal.classList.remove("open");
+    resetArticleComparison();
+  }
+});
 // ---------- Channels view ----------
 
 function showChannelsGrid() {
@@ -556,12 +631,42 @@ function renderLLM() {
   });
 }
 
-// Hardcode to show comparison results when "Run Comparison" is clicked, since we don't have real LLM outputs in this prototype.
-const runCompareBtn = document.getElementById("run-compare-btn");
+// Show comparison results after selecting articles
+const runCompareBtn = document.getElementById("compare-btn");
 const comparisonResults = document.getElementById("comparison-results");
+
 if (runCompareBtn && comparisonResults) {
   runCompareBtn.addEventListener("click", () => {
+    console.log("compare button clicked");
+    console.log("selected count:", selectedCompareTitles.length);
+
+    if (!document.body.classList.contains("compare-mode")) {
+      document.body.classList.add("compare-mode");
+      selectedCompareTitles = [];
+      runCompareBtn.textContent = "Select 2 articles";
+      return;
+    }
+
+    if (selectedCompareTitles.length < 2) {
+      alert("Select 2 articles to compare.");
+      return;
+    }
+    const selectedLinksEl = document.getElementById("selected-article-links");
+
+    selectedLinksEl.innerHTML = selectedCompareArticles
+      .map((article, index) => `
+        <div style="margin-bottom: 10px;">
+          <strong>Article ${index + 1}:</strong>
+          <strong>${article.title}</strong>
+          <a href="${article.url}" target="_blank">[Link]</a>
+        </div>
+      `)
+      .join("");
+  
+    modal.classList.add("open");
     comparisonResults.hidden = false;
+
+
   });
 }
 
