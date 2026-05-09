@@ -636,7 +636,7 @@ const runCompareBtn = document.getElementById("compare-btn");
 const comparisonResults = document.getElementById("comparison-results");
 
 if (runCompareBtn && comparisonResults) {
-  runCompareBtn.addEventListener("click", () => {
+  runCompareBtn.addEventListener("click", async () => {
     console.log("compare button clicked");
     console.log("selected count:", selectedCompareTitles.length);
 
@@ -663,11 +663,68 @@ if (runCompareBtn && comparisonResults) {
       `)
       .join("");
   
-    modal.classList.add("open");
-    comparisonResults.hidden = false;
+      modal.classList.add("open");
+      comparisonResults.hidden = false;
+      comparisonResults.innerHTML = "<p>Generating comparison...</p>";
+      
+      try {
+        const res = await fetch("/api/compare", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ articles: selectedCompareArticles }),
+        });
+      
+        const comparison = await res.json();
+      
+        if (!res.ok) {
+          throw new Error(comparison.error || "Comparison failed");
+        }
+      
+        renderComparison(comparison);
+      } catch (err) {
+        console.error(err);
+        comparisonResults.innerHTML = "<p>Could not generate comparison.</p>";
+      }
 
 
   });
+
+  function renderComparison(data) {
+    comparisonResults.innerHTML = `
+      <h4>Article Comparison</h4>
+  
+      <div class="compare-articles">
+        <div class="compare-card">
+          <h5>Article 1 Perspective: ${data.article1.perspectiveTitle}</h5>
+          <p><strong>Source:</strong> ${data.article1.source}</p>
+          <p><strong>Core Argument:</strong> ${data.article1.coreArgument}</p>
+          <p><strong>Key Points:</strong></p>
+          <ul>
+            ${data.article1.keyPoints.map(p => `<li>${p}</li>`).join("")}
+          </ul>
+        </div>
+  
+        <div class="compare-card">
+          <h5>Article 2 Perspective: ${data.article2.perspectiveTitle}</h5>
+          <p><strong>Source:</strong> ${data.article2.source}</p>
+          <p><strong>Core Argument:</strong> ${data.article2.coreArgument}</p>
+          <p><strong>Key Points:</strong></p>
+          <ul>
+            ${data.article2.keyPoints.map(p => `<li>${p}</li>`).join("")}
+          </ul>
+        </div>
+      </div>
+  
+      <h4>Key Differences</h4>
+      ${data.keyDifferences.map(diff => `
+        <div class="difference-block">
+          <p><strong>${diff.category}:</strong></p>
+          <p>Article 1 → ${diff.article1View}</p>
+          <p>Article 2 → ${diff.article2View}</p>
+        </div>
+      `).join("")}
+    `;
+  }
 }
 
 // Hardcode to close the comparison results when "Close" is clicked.
