@@ -21,6 +21,10 @@ nltk = "^3.9.4"
 tqdm = "^4.67.3"
 lxml = "^6.1.0"
 justext = "^3.0.2"
+rank-bm25 = "^0.2.2"
+redis = "^7.4.0"
+fastapi = "^0.136.1"
+uvicorn = "^0.46.0"
 
 
 [build-system]
