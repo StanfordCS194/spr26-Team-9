@@ -13,7 +13,6 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 
-QUERY    = "Trump Pope Leo"
 START    = "2026-04-12T00:00:00Z"
 APIS     = ["newsapi", "nyt", "current"]
 MAX_PAGES = 2
@@ -21,6 +20,13 @@ MAX_PAGES = 2
 HERE     = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(HERE, "..", "data")
 SCRAPER  = os.path.join(HERE, "scrape.py")
+
+parser = argparse.ArgumentParser(description="Refresh news articles.")
+parser.add_argument("--api", choices=APIS + ["all"], default="all")
+parser.add_argument("--query", default="Trump Pope Leo")
+args = parser.parse_args()
+
+QUERY = args.query
 
 
 def run_scraper(api, end):
@@ -57,10 +63,6 @@ def merge():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Refresh Trump/Pope Leo news articles.")
-    parser.add_argument("--api", choices=APIS + ["all"], default="all",
-                        help="Which API to fetch from (default: all)")
-    args = parser.parse_args()
 
     end = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     os.makedirs(DATA_DIR, exist_ok=True)

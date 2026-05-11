@@ -747,3 +747,47 @@ async function init() {
 }
 
 init();
+
+
+const searchBtn = document.getElementById("search-btn");
+const searchInput = document.getElementById("search-input");
+
+async function runSearch() {
+  const query = searchInput.value.trim();
+
+  if (!query) {
+    alert("Enter a search topic.");
+    return;
+  }
+
+  searchBtn.disabled = true;
+  searchBtn.textContent = "Searching...";
+
+  try {
+    const response = await fetch("/api/refresh", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query }),
+    });
+
+    const data = await response.json();
+
+    if (data.ok) {
+      alert("Search started. Wait about 1 minute then refresh.");
+    } else {
+      alert("Search failed.");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error running search.");
+  }
+
+  searchBtn.disabled = false;
+  searchBtn.textContent = "Search";
+}
+
+if (searchBtn) {
+  searchBtn.addEventListener("click", runSearch);
+}

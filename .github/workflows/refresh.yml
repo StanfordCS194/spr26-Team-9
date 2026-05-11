@@ -3,7 +3,12 @@ name: Refresh Articles
 on:
   schedule:
     - cron: "0 16 * * *"  # daily at 8am PST (UTC-8)
-  workflow_dispatch:        # allow manual trigger
+  workflow_dispatch:
+  inputs:
+    query:
+      description: "News search query"
+      required: false
+      default: "Trump Pope Leo"
 
 jobs:
   refresh:
@@ -26,7 +31,7 @@ jobs:
           NEWS_API_URL: ${{ secrets.NEWS_API_URL }}
           CURRENT_API: ${{ secrets.CURRENT_API }}
           CURRENT_URL: ${{ secrets.CURRENT_URL }}
-        run: python webscraper/refresh.py
+        run: python webscraper/refresh.py --query "${{ github.event.inputs.query }}"
 
       - name: Copy articles to frontend with timestamp
         run: |
