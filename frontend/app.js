@@ -1,3 +1,15 @@
+// ---------- Supabase ----------
+const SUPABASE_URL  = "https://nlcnbcpnljdizedritaj.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5sY25iY3BubGpkaXplZHJpdGFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTkyMDcsImV4cCI6MjA5NDAzNTIwN30.AU1xSkrfd3efDrsvCHAQXD_jsmWGu62eL9kVIuBxLak";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+let currentUser = null;
+
+sb.auth.onAuthStateChange((_e, session) => {
+  currentUser = session?.user ?? null;
+  updateProfileBtn();
+  if (currentView === "account") renderAccountView();
+});
+
 const TOP_N_PER_DATE = 5;
 
 // Higher number = more credible. Sources not listed default to tier 1.
@@ -176,8 +188,8 @@ function buildChannelCards(sources) {
 
 // ---------- View switching ----------
 
-const views  = { timeline: "view-timeline", channels: "view-channels", llm: "view-llm" };
-const titles = { timeline: "Coverage Timeline", channels: "Channels", llm: "LLM Analysis" };
+const views  = { timeline: "view-timeline", channels: "view-channels", llm: "view-llm", account: "view-account" };
+const titles = { timeline: "Coverage Timeline", channels: "Channels", llm: "LLM Analysis", account: "Account" };
 let selectedTimelineSource = null;
 const timelineColumnsEl = document.getElementById("timeline-columns");
 const startDateFilterEl = document.getElementById("start-date-filter");
@@ -216,6 +228,7 @@ function setView(name) {
   document.getElementById("page-title").textContent = titles[name];
   if (name !== "timeline") clearTimelineSourceSelection();
   if (name === "channels") showChannelsGrid();
+  if (name === "account") renderAccountView();
 }
 
 // ---------- Timeline rendering ----------
@@ -268,6 +281,7 @@ function makeArticleCard(a) {
   const card = document.createElement("div");
   card.className = "article-card";
   card.dataset.src = a.src;
+  card._articleData = a;
   card.innerHTML = `
     <div class="meta">
       <span class="time">${a.time}</span>
@@ -456,6 +470,7 @@ function showChannelDetail(src) {
       bucket.articles.forEach((a) => {
         const card = document.createElement("div");
         card.className = "article-card";
+        card._articleData = { ...a, src };
         card.innerHTML = `
           <div class="meta"><span class="time">${a.time}</span> <strong>${src}</strong></div>
           <div class="title">${a.title}</div>
@@ -678,6 +693,142 @@ const modalCloseBtn = document.getElementById("modal-close");
 if (modalCloseBtn && comparisonResults) {
   modalCloseBtn.addEventListener("click", () => {
     comparisonResults.hidden = true;
+  });
+}
+
+// ---------- Auth / Profile ----------
+
+function updateProfileBtn() {
+  const btn = document.getElementById("profile-btn");
+  if (!btn) return;
+  if (currentUser) {
+    btn.textContent = currentUser.email[0].toUpperCase();
+    btn.classList.add("signed-in");
+  } else {
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+    btn.classList.remove("signed-in");
+  }
+}
+
+document.getElementById("profile-btn").addEventListener("click", () => setView("account"));
+
+// ---------- Context menu ----------
+
+let ctxArticle = null;
+const ctxMenu = document.getElementById("ctx-menu");
+
+document.addEventListener("contextmenu", (e) => {
+  const card = e.target.closest(".article-card");
+  if (!card || !card._articleData) { ctxMenu.classList.remove("open"); return; }
+  e.preventDefault();
+  ctxArticle = card._articleData;
+  ctxMenu.style.left = Math.min(e.pageX, window.innerWidth  - 190) + "px";
+  ctxMenu.style.top  = Math.min(e.pageY, window.innerHeight - 60)  + "px";
+  ctxMenu.classList.add("open");
+});
+
+document.addEventListener("click",   () => ctxMenu.classList.remove("open"));
+document.addEventListener("keydown",  (e) => { if (e.key === "Escape") ctxMenu.classList.remove("open"); });
+
+document.getElementById("ctx-bookmark").addEventListener("click", async () => {
+  ctxMenu.classList.remove("open");
+  if (!currentUser) { setView("account"); showToast("Sign in to bookmark articles"); return; }
+  if (!ctxArticle)  return;
+  const { error } = await sb.from("bookmarks").insert({
+    user_id:         currentUser.id,
+    article_title:   ctxArticle.title,
+    article_url:     ctxArticle.url    || null,
+    article_src:     ctxArticle.src    || "",
+    article_summary: ctxArticle.summary || "",
+  });
+  showToast(error ? "Already bookmarked" : "Bookmarked!");
+});
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2500);
+}
+
+// ---------- Account view ----------
+
+async function renderAccountView() {
+  const container = document.getElementById("account-content");
+  if (!container) return;
+
+  if (!currentUser) {
+    container.innerHTML = `
+      <div class="auth-box">
+        <h2 class="auth-title">Sign in to bookmark articles</h2>
+        <div class="auth-error" id="auth-error" hidden></div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" id="auth-email" placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" type="password" id="auth-password" placeholder="••••••••" />
+        </div>
+        <div class="auth-actions">
+          <button class="auth-btn primary" id="signin-btn">Sign In</button>
+          <button class="auth-btn secondary" id="signup-btn">Create Account</button>
+        </div>
+      </div>`;
+
+    async function handleAuth(mode) {
+      const email    = document.getElementById("auth-email").value.trim();
+      const password = document.getElementById("auth-password").value;
+      const errEl    = document.getElementById("auth-error");
+      errEl.hidden   = true;
+      const { error } = mode === "signin"
+        ? await sb.auth.signInWithPassword({ email, password })
+        : await sb.auth.signUp({ email, password });
+      if (error) { errEl.textContent = error.message; errEl.hidden = false; }
+    }
+
+    document.getElementById("signin-btn").addEventListener("click", () => handleAuth("signin"));
+    document.getElementById("signup-btn").addEventListener("click", () => handleAuth("signup"));
+    return;
+  }
+
+  const { data: bookmarks } = await sb.from("bookmarks")
+    .select("*")
+    .order("bookmarked_at", { ascending: false });
+
+  const cards = (bookmarks || []).map(b => `
+    <div class="bookmark-card">
+      <div class="bookmark-meta">
+        <span class="dot" style="background:${sourceColor(b.article_src)}"></span>
+        <span class="bookmark-src">${b.article_src}</span>
+        <span class="bookmark-date">${new Date(b.bookmarked_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+      </div>
+      <div class="bookmark-title">${b.article_url
+        ? `<a href="${b.article_url}" target="_blank" rel="noopener">${b.article_title}</a>`
+        : b.article_title}</div>
+      ${b.article_summary ? `<div class="bookmark-summary">${b.article_summary}</div>` : ""}
+      <button class="bookmark-remove" data-id="${b.id}">Remove</button>
+    </div>`).join("");
+
+  container.innerHTML = `
+    <div class="account-header">
+      <div>
+        <div class="account-email">${currentUser.email}</div>
+        <div class="account-label">Signed in</div>
+      </div>
+      <button class="signout-btn" id="signout-btn">Sign Out</button>
+    </div>
+    <h3 class="bookmarks-heading">Bookmarks${bookmarks?.length ? ` (${bookmarks.length})` : ""}</h3>
+    ${bookmarks?.length
+      ? `<div class="bookmarks-list">${cards}</div>`
+      : `<div class="bookmarks-empty">No bookmarks yet — right-click any article to bookmark it.</div>`}`;
+
+  document.getElementById("signout-btn").addEventListener("click", () => sb.auth.signOut());
+  container.querySelectorAll(".bookmark-remove").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      await sb.from("bookmarks").delete().eq("id", btn.dataset.id);
+      renderAccountView();
+    });
   });
 }
 
