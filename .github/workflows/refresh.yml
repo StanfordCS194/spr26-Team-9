@@ -2,13 +2,13 @@ name: Refresh Articles
 
 on:
   schedule:
-    - cron: "0 16 * * *"  # daily at 8am PST (UTC-8)
+    - cron: "0 16 * * *"
+
   workflow_dispatch:
-  inputs:
-    query:
-      description: "News search query"
-      required: false
-      default: "Trump Pope Leo"
+    inputs:
+      query:
+        description: "News search query"
+        required: false
 
 jobs:
   refresh:
