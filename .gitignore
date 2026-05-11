@@ -1,15 +1,8 @@
-AGENTS.md
-CLAUDE.md
+claude.md
 .env
 
 webscraper/api_keys.py
-webscraper/__pycache__/
-
-data_analysis_nlp/__pycache__/
-data_analysis_llms/__pycache__/
-
-visualizations/__pycache__/
-backend/__pycache__
+webscraper/__pycache__/*
 
 data/
 
