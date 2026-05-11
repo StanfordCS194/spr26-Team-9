@@ -45,13 +45,18 @@ function sourceColor(src) {
 // Global state — populated after fetch
 let timelineData = [];
 let channelData  = {};
+let selectedCompareTitles = [];
+let selectedCompareArticles = [];
 
 // ---------- Data loading ----------
 
 async function loadArticles() {
-  const res = await fetch("../data/articles.json");
+  const res = await fetch("./articles.json");
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
+  const data = await res.json();
+  // support both plain array and {updatedAt, articles} wrapper
+  if (Array.isArray(data)) return { articles: data, updatedAt: null };
+  return data;
 }
 
 function toTimelineData(articles) {
@@ -191,12 +196,10 @@ document.querySelectorAll(".menu-item").forEach((btn) => {
   btn.addEventListener("click", () => {
     const name = btn.dataset.view;
     if (name === "timeline" && currentView === "timeline") {
-      // already on Timeline — toggle filters closed
       document.getElementById("filters-panel").classList.toggle("open");
     } else {
       setView(name);
       if (name === "timeline") {
-        // first click on Timeline — open filters immediately
         document.getElementById("filters-panel").classList.add("open");
       } else {
         closeFilters();
@@ -257,10 +260,7 @@ function getFilteredTimelineData() {
 function makeTimelineStage(date) {
   const stage = document.createElement("div");
   stage.className = "timeline-stage";
-  stage.innerHTML = `
-    <div class="stage-date">${date}</div>
-    <div class="stage-count"></div>
-  `;
+  stage.innerHTML = `<div class="stage-date">${date}</div>`;
   return stage;
 }
 
@@ -279,6 +279,7 @@ function makeArticleCard(a) {
   card.addEventListener("mousemove", (e) => showTooltip(e, a.summary));
   card.addEventListener("mouseleave", hideTooltip);
   card.querySelector(".src").addEventListener("click", (e) => {
+    if (document.body.classList.contains("compare-mode")) return;
     e.stopPropagation();
     if (selectedTimelineSource === a.src) {
       clearTimelineSourceSelection();
@@ -289,8 +290,57 @@ function makeArticleCard(a) {
     setTimelineSourceSelection(a.src);
   });
   card.addEventListener("click", () => {
+    if (document.body.classList.contains("compare-mode")) {
+      const title = a.title;
+  
+      if (selectedCompareTitles.includes(title)) {
+
+        // REMOVE TITLE
+        selectedCompareTitles = selectedCompareTitles.filter(t => t !== title);
+      
+        // REMOVE ARTICLE OBJECT
+        selectedCompareArticles =
+          selectedCompareArticles.filter(article => article.title !== title);
+      
+        card.style.border = "";
+        card.style.backgroundColor = "";
+      
+      } else {
+      
+        if (selectedCompareTitles.length >= 2) {
+          alert("You can only select 2 articles.");
+          return;
+        }
+      
+        // ADD TITLE
+        selectedCompareTitles.push(title);
+      
+        // ADD FULL ARTICLE OBJECT
+        selectedCompareArticles.push(a);
+      
+        card.style.border = "4px solid #2563eb";
+        card.style.backgroundColor = "rgba(37, 99, 235, 0.12)";
+      }
+  
+      // BUTTON TEXT LOGIC
+      if (selectedCompareTitles.length === 0) {
+        runCompareBtn.textContent = "Select 2 articles";
+      }
+  
+      if (selectedCompareTitles.length === 1) {
+        runCompareBtn.textContent = "Select 1 more article";
+      }
+  
+      if (selectedCompareTitles.length >= 2) {
+        runCompareBtn.textContent = "Compare Selected Articles";
+      }
+  
+      return;
+    }
+  
     if (a.url) window.open(a.url, "_blank");
   });
+  
   return card;
 }
 
@@ -330,10 +380,33 @@ function hideTooltip() { tooltipEl.hidden = true; }
 // ---------- Compare modal ----------
 
 const modal = document.getElementById("compare-modal");
-document.getElementById("compare-btn").addEventListener("click", () => modal.classList.add("open"));
-document.getElementById("modal-close").addEventListener("click", () => modal.classList.remove("open"));
-modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("open"); });
 
+function resetArticleComparison() {
+  selectedCompareTitles = [];
+  selectedCompareArticles = [];
+
+  document.getElementById("selected-article-links").innerHTML = "";
+
+  document.querySelectorAll(".article-card").forEach(card => {
+    card.style.border = "";
+    card.style.backgroundColor = "";
+  });
+
+  runCompareBtn.textContent = "Article Comparison";
+  document.body.classList.remove("compare-mode");
+}
+
+document.getElementById("modal-close").addEventListener("click", () => {
+  modal.classList.remove("open");
+  resetArticleComparison();
+});
+
+modal.addEventListener("click", (e) => {
+  if (e.target === modal) {
+    modal.classList.remove("open");
+    resetArticleComparison();
+  }
+});
 // ---------- Channels view ----------
 
 function showChannelsGrid() {
@@ -376,10 +449,10 @@ function showChannelDetail(src) {
 
   Object.entries(byDate)
     .sort(([a], [b]) => a.localeCompare(b))
-    .forEach(([, bucket]) => {
+    .forEach(([, bucket], index) => {
       const col = document.createElement("div");
       col.className = "timeline-column";
-      col.appendChild(makeTimelineStage(bucket.date));
+      col.appendChild(makeTimelineStage(bucket.date, index));
       bucket.articles.forEach((a) => {
         const card = document.createElement("div");
         card.className = "article-card";
@@ -561,12 +634,42 @@ function renderLLM() {
   });
 }
 
-// Hardcode to show comparison results when "Run Comparison" is clicked, since we don't have real LLM outputs in this prototype.
-const runCompareBtn = document.getElementById("run-compare-btn");
+// Show comparison results after selecting articles
+const runCompareBtn = document.getElementById("compare-btn");
 const comparisonResults = document.getElementById("comparison-results");
+
 if (runCompareBtn && comparisonResults) {
   runCompareBtn.addEventListener("click", () => {
+    console.log("compare button clicked");
+    console.log("selected count:", selectedCompareTitles.length);
+
+    if (!document.body.classList.contains("compare-mode")) {
+      document.body.classList.add("compare-mode");
+      selectedCompareTitles = [];
+      runCompareBtn.textContent = "Select 2 articles";
+      return;
+    }
+
+    if (selectedCompareTitles.length < 2) {
+      alert("Select 2 articles to compare.");
+      return;
+    }
+    const selectedLinksEl = document.getElementById("selected-article-links");
+
+    selectedLinksEl.innerHTML = selectedCompareArticles
+      .map((article, index) => `
+        <div style="margin-bottom: 10px;">
+          <strong>Article ${index + 1}:</strong>
+          <strong>${article.title}</strong>
+          <a href="${article.url}" target="_blank">[Link]</a>
+        </div>
+      `)
+      .join("");
+  
+    modal.classList.add("open");
     comparisonResults.hidden = false;
+
+
   });
 }
 
@@ -578,22 +681,66 @@ if (modalCloseBtn && comparisonResults) {
   });
 }
 
+// ---------- Refresh ----------
+
+const refreshBtn = document.getElementById("refresh-btn");
+if (refreshBtn) {
+  refreshBtn.addEventListener("click", async () => {
+    refreshBtn.disabled = true;
+    refreshBtn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Fetching...`;
+    try {
+      const res = await fetch("/api/refresh", { method: "POST" });
+      let data = {};
+      try { data = await res.json(); } catch { data = { ok: false, error: `HTTP ${res.status}` }; }
+      if (data.ok) {
+        refreshBtn.innerHTML = "Started! Reload in ~1 min";
+        setTimeout(() => {
+          refreshBtn.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Refresh`;
+          refreshBtn.disabled = false;
+        }, 90000);
+      } else {
+        console.error("Refresh failed:", data);
+        refreshBtn.innerHTML = `Error ${data.status || res.status || "—"} — try again`;
+        refreshBtn.disabled = false;
+      }
+    } catch (err) {
+      console.error("Refresh error:", err);
+      refreshBtn.innerHTML = "Failed — try again";
+      refreshBtn.disabled = false;
+    }
+  });
+}
+
 // ---------- Init ----------
+
+function setLastUpdated(isoString) {
+  const el = document.getElementById("last-updated");
+  if (!el || !isoString) return;
+  const d = new Date(isoString);
+  el.textContent = "Updated " + d.toLocaleString("en-US", {
+    month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short"
+  });
+}
 
 async function init() {
   try {
-    const raw = await loadArticles();
-    const normalized = raw.map(a => ({ ...a, source: cleanSourceName(a.source) }));
+    const { articles, updatedAt } = await loadArticles();
+    const normalized = articles.map(a => ({ ...a, source: cleanSourceName(a.source) }));
     timelineData = toTimelineData(normalized);
     channelData  = toChannelData(normalized);
     const sources = Object.keys(channelData).sort();
     assignSourceColors(sources);
     buildSourceFilters(sources);
     buildChannelCards(sources);
+    setLastUpdated(updatedAt);
   } catch (err) {
     console.error("Could not load articles:", err);
     timelineColumnsEl.innerHTML =
-      '<div class="timeline-empty-state">No articles loaded. Run <code>python refresh.py</code> then serve from repo root with <code>python -m http.server 8080</code>.</div>';
+      '<div class="timeline-empty-state">No articles loaded.</div>';
   }
   renderTimeline();
   renderLLM();

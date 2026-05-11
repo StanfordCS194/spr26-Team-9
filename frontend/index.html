@@ -40,18 +40,23 @@
       <header class="topbar">
         <div class="topbar-title-group">
           <h1 id="page-title">Coverage Timeline</h1>
-          <p class="topbar-subtitle">Tracking media narratives across sources</p>
+          <p class="topbar-subtitle">Tracking media narratives across sources &nbsp;·&nbsp; <span id="last-updated"></span></p>
         </div>
-        <div class="profile">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <div class="topbar-actions">
+          <button class="refresh-btn" id="refresh-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Refresh
+          </button>
+          <div class="profile">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
         </div>
       </header>
 
       <!-- TIMELINE VIEW -->
       <section id="view-timeline" class="view active">
         <div class="timeline-layout">
-
-          <!-- Filters sidebar -->
+          <!-- Filters sidebar (toggled by clicking Timeline nav) -->
           <aside class="filters" id="filters-panel">
             <div class="filters-header">
               <span class="filters-heading">Filters</span>
@@ -60,7 +65,7 @@
               </button>
             </div>
 
-            <div class="filters-body" id="filters-body">
+            <div class="filters-body">
               <div class="filter-group">
                 <label>Political Leaning</label>
                 <div class="slider-row">
@@ -93,34 +98,24 @@
             <div class="timeline-columns" id="timeline-columns">
               <!-- Columns injected by JS -->
             </div>
-            <button class="compare-btn" id="compare-btn">COMPARE</button>
+            <button class="compare-btn" id="compare-btn">Article Comparison</button>
           </div>
-
         </div>
       </section>
 
       <!-- CHANNELS VIEW -->
       <section id="view-channels" class="view">
-        <!-- Grid state -->
         <div id="channels-grid" class="channels-state active">
           <h2 class="sub-headline">Explore Channels</h2>
           <div class="channel-cards" id="channel-cards-container"><!-- populated by app.js --></div>
         </div>
 
-        <!-- Deep-dive state -->
         <div id="channels-detail" class="channels-state">
           <button class="back-btn" id="channels-back">← Back to Channels</button>
           <h2 class="sub-headline">Explore <span id="channel-name">NYT</span>'s Report On</h2>
           <h3 class="story-headline">"Dispute Between Pope Leo &amp; Trump"</h3>
 
           <div id="channel-analysis-box" class="channel-analysis-box" style="display:none;"></div>
-
-          <div class="timeline-axis">
-            <div class="axis-date">March 23rd</div>
-            <div class="axis-date">April 1st</div>
-            <div class="axis-date">April 10th</div>
-            <div class="axis-line"></div>
-          </div>
 
           <div class="channel-timeline" id="channel-timeline">
             <!-- Cards injected by JS -->
@@ -132,7 +127,6 @@
       <section id="view-llm" class="view">
         <h2 class="sub-headline">Analysis on LLM's report on:</h2>
         <h3 class="story-headline">"Dispute Between Pope Leo &amp; Trump"</h3>
-
         <div class="llm-cards" id="llm-cards">
           <!-- Cards injected by JS -->
         </div>
@@ -140,64 +134,35 @@
     </main>
   </div>
 
-
-  <!--Edit to hardcode the info into the compare feature. Hardcode articles into text inputs and hardcode the outputs-->
   <!-- COMPARE MODAL -->
   <div class="modal-overlay" id="compare-modal">
     <div class="modal">
       <button class="modal-close" id="modal-close">×</button>
-      <h3>Select 2 articles or 2 dates to compare</h3>
+      <h3>Selected Articles</h3>
 
-      <!--<div class="compare-inputs">
-        <label>1. <input type="text" placeholder="Article or date" /></label>
-        <label>2. <input type="text" placeholder="Article or date" /></label>
-      </div>-->
-
-      <div class="compare-inputs">
-        <label>1. 
-          <input type="text" value="There Is Much More to Pope vs. President Than Meets the Eye" />
-        </label>
-        <label>2. 
-          <input type="text" value="Trump, Pope Leo feud publicly. Here's who said what (and when)" />
-        </label>
+      <div id="selected-article-links" class="selected-article-links">
+        <a href="#" target="_blank">Article 1 title</a>
+        <a href="#" target="_blank">Article 2 title</a>
       </div>
-      
-      <button class="run-compare-btn" id="run-compare-btn">
-        Compare Articles
-      </button>
 
-
-      <!--
-      <div class="analysis-box">
-        <div class="analysis-status">Generating Analysis...</div>
-        <div class="analysis-placeholder"></div>
-      </div>
-      -->
-
-      <!--<div class="analysis-box">-->
       <div class="analysis-box" id="comparison-results" hidden>
-
         <h4>Article Comparison</h4>
-      
         <div class="compare-articles">
           <div class="article-card">
-            <h5>Article 1 Perspective: Pope’s Moral Authority vs. Presidential Misconduct</h5>
+            <h5>Article 1 Perspective: Pope's Moral Authority vs. Presidential Misconduct</h5>
             <p><strong>Source:</strong> The New York Times (Opinion - 04/23/2026)</p>
-            <p><strong>Core Argument:</strong> Trump’s attacks on Pope Leo XIV reveal weak and erratic leadership, while elevating the Pope’s moral authority.</p>
-      
+            <p><strong>Core Argument:</strong> Trump's attacks on Pope Leo XIV reveal weak and erratic leadership, while elevating the Pope's moral authority.</p>
             <p><strong>Key Points:</strong></p>
             <ul>
               <li>Questions morality of the U.S.-Iran war under Catholic "just war" doctrine.</li>
-              <li>Frames Trump’s insults as distraction from real ethical issues.</li>
+              <li>Frames Trump's insults as distraction from real ethical issues.</li>
               <li>Argues misuse of religious imagery undermines political credibility.</li>
             </ul>
           </div>
-      
           <div class="article-card">
             <h5>Article 2 Perspective: A Necessary Challenge to Political Preaching</h5>
             <p><strong>Source:</strong> USA Today (04/16/2026)</p>
             <p><strong>Core Argument:</strong> Pope Leo XIV is acting like a politician and interfering in foreign policy.</p>
-      
             <p><strong>Key Points:</strong></p>
             <ul>
               <li>Trump claims the Pope is "terrible for Foreign Policy".</li>
@@ -206,38 +171,16 @@
             </ul>
           </div>
         </div>
-      
         <div class="differences">
           <h4>Key Differences</h4>
-      
-          <p>
-            <strong>Moral Framing:</strong><br />
-            NYT → Ethical critique of war and leadership<br />
-            USA Today → Practical/political disagreement
-          </p>
-      
-          <p>
-            <strong>View of the Pope:</strong><br />
-            NYT → Moral authority<br />
-            USA Today → Political actor overstepping
-          </p>
-      
-          <p>
-            <strong>View of Trump:</strong><br />
-            NYT → Erratic and deflecting criticism<br />
-            USA Today → Justified in pushing back
-          </p>
-      
-          <p>
-            <strong>Overall Tone:</strong><br />
-            NYT → Critical, moral, analytical<br />
-            USA Today → Defensive, pragmatic, political
-          </p>
+          <p><strong>Moral Framing:</strong><br/>NYT → Ethical critique of war and leadership<br/>USA Today → Practical/political disagreement</p>
+          <p><strong>View of the Pope:</strong><br/>NYT → Moral authority<br/>USA Today → Political actor overstepping</p>
+          <p><strong>View of Trump:</strong><br/>NYT → Erratic and deflecting criticism<br/>USA Today → Justified in pushing back</p>
+          <p><strong>Overall Tone:</strong><br/>NYT → Critical, moral, analytical<br/>USA Today → Defensive, pragmatic, political</p>
         </div>
       </div>
     </div>
   </div>
-   
 
   <!-- Hover tooltip -->
   <div id="tooltip" class="tooltip" hidden></div>
