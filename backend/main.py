@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv("../webscraper/.env", override=True)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,10 +9,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from search import init_index, router as search_router
 from users import router as users_router
 
+from compare import router as compare_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_index()
+    #init_index()
     yield
 
 
@@ -27,3 +29,4 @@ app.add_middleware(
 
 app.include_router(search_router)
 app.include_router(users_router)
+app.include_router(compare_router)
