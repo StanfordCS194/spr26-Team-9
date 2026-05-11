@@ -47,8 +47,16 @@ def run_scraper(api, start, end):
     )
 
 
+def is_relevant(article, keywords):
+    """Return True if the article title or description mentions at least one keyword."""
+    text = (article.get("title", "") + " " + article.get("description", "")).lower()
+    return any(kw in text for kw in keywords)
+
+
 def merge():
+    keywords = [w.lower() for w in QUERY.split() if len(w) > 2]
     all_articles, seen = [], set()
+    skipped = 0
     for fname in sorted(os.listdir(DATA_DIR)):
         if not fname.endswith("_articles.json"):
             continue
@@ -56,12 +64,15 @@ def merge():
             for a in json.load(f):
                 if a["url"] not in seen:
                     seen.add(a["url"])
-                    all_articles.append(a)
+                    if is_relevant(a, keywords):
+                        all_articles.append(a)
+                    else:
+                        skipped += 1
     all_articles.sort(key=lambda a: a.get("date", ""), reverse=True)
     out = os.path.join(DATA_DIR, "articles.json")
     with open(out, "w") as f:
         json.dump(all_articles, f, indent=2)
-    print(f"\nMerged {len(all_articles)} unique articles → {out}")
+    print(f"\nMerged {len(all_articles)} relevant articles ({skipped} off-topic removed) → {out}")
 
 
 def main():
