@@ -10,6 +10,34 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
+  <!-- LANDING PAGE -->
+  <div id="landing">
+    <div class="landing-bg"></div>
+    <div class="landing-card">
+      <div class="landing-logo">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
+      </div>
+      <h1 class="landing-title">News Narrative Tracker</h1>
+      <p class="landing-tagline">See how any story is told across the media — from every angle, all in one place.</p>
+
+      <div class="landing-search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="landing-input" type="text" placeholder='Try "Trump Pope Leo" or "Gaza ceasefire"...' autocomplete="off" />
+      </div>
+      <button id="landing-btn" class="landing-btn">Track This Story →</button>
+      <p class="landing-hint">Pulls the latest articles from NYT, NewsAPI, and more.</p>
+
+      <div id="landing-status" class="landing-status" hidden></div>
+      <div id="landing-progress" class="landing-progress" hidden>
+        <div class="landing-progress-bar">
+          <div id="landing-progress-fill" class="landing-progress-fill"></div>
+        </div>
+        <div id="landing-progress-label" class="landing-progress-label">Starting…</div>
+      </div>
+    </div>
+  </div>
+
   <div class="app">
     <!-- LEFT MENU -->
     <aside class="menu">
@@ -43,12 +71,16 @@
           <p class="topbar-subtitle">Tracking media narratives across sources &nbsp;·&nbsp; <span id="last-updated"></span></p>
         </div>
         <div class="topbar-actions">
+          <button class="new-search-btn" id="new-search-btn">← New Search</button>
           <button class="refresh-btn" id="refresh-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
             Refresh
           </button>
-          <input id="search-input" type="text" placeholder="Search topic..." />
-          <button id="search-btn">Search</button>
+          <div class="search-bar">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input id="search-input" type="text" placeholder="Search topic..." />
+            <button id="search-btn">Search</button>
+          </div>
           <div class="profile">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           </div>
@@ -96,7 +128,7 @@
 
           <!-- Timeline content -->
           <div class="timeline-content">
-            <h2 class="story-headline">"Dispute Between Pope Leo &amp; Trump"</h2>
+            <h2 class="story-headline" id="timeline-headline"></h2>
             <div class="timeline-columns" id="timeline-columns">
               <!-- Columns injected by JS -->
             </div>
@@ -115,7 +147,7 @@
         <div id="channels-detail" class="channels-state">
           <button class="back-btn" id="channels-back">← Back to Channels</button>
           <h2 class="sub-headline">Explore <span id="channel-name">NYT</span>'s Report On</h2>
-          <h3 class="story-headline">"Dispute Between Pope Leo &amp; Trump"</h3>
+          <h3 class="story-headline story-headline-dynamic"></h3>
 
           <div id="channel-analysis-box" class="channel-analysis-box" style="display:none;"></div>
 

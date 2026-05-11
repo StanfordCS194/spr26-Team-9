@@ -9,12 +9,14 @@ Usage:
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
-from datetime import datetime, timezone
 
-START    = "2026-04-12T00:00:00Z"
-APIS     = ["newsapi", "nyt", "current"]
+PYTHON = shutil.which("python") or sys.executable
+from datetime import datetime, timezone, timedelta
+
+APIS      = ["newsapi", "nyt", "current"]
 MAX_PAGES = 2
 
 HERE     = os.path.dirname(os.path.abspath(__file__))
@@ -29,15 +31,15 @@ args = parser.parse_args()
 QUERY = args.query
 
 
-def run_scraper(api, end):
+def run_scraper(api, start, end):
     print(f"\n{'='*60}")
     print(f"Scraping {api.upper()} ...")
     print(f"{'='*60}")
     subprocess.run(
-        [sys.executable, SCRAPER,
+        [PYTHON, SCRAPER,
          "--query", QUERY,
          "--api", api,
-         "--start", START,
+         "--start", start,
          "--end", end,
          "--max-pages", str(MAX_PAGES),
          "--overwrite"],
@@ -63,14 +65,15 @@ def merge():
 
 
 def main():
-
-    end = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    now = datetime.now(timezone.utc)
+    end   = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    start = (now - timedelta(days=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
     os.makedirs(DATA_DIR, exist_ok=True)
 
     apis_to_run = APIS if args.api == "all" else [args.api]
     for api in apis_to_run:
         try:
-            run_scraper(api, end)
+            run_scraper(api, start, end)
         except subprocess.CalledProcessError:
             print(f"\n[{api}] scrape failed — skipping.")
 
