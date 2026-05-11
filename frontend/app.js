@@ -391,9 +391,9 @@ function makeArticleCard(a) {
       return;
     }
   
-    if (a.url) window.open(a.url, "_blank");
+    if (a.url) { recordView(a); window.open(a.url, "_blank"); }
   });
-  
+
   return card;
 }
 
@@ -515,7 +515,7 @@ function showChannelDetail(src) {
           <div class="title">${a.title}</div>
           <div class="summary">${a.summary}</div>
         `;
-        card.addEventListener("click", () => { if (a.url) window.open(a.url, "_blank"); });
+        card.addEventListener("click", () => { if (a.url) { recordView({ ...a, src }); window.open(a.url, "_blank"); } });
         col.appendChild(card);
       });
       wrap.appendChild(col);
@@ -838,9 +838,10 @@ async function renderAccountView() {
     return;
   }
 
-  const { data: bookmarks } = await sb.from("bookmarks")
-    .select("*")
-    .order("bookmarked_at", { ascending: false });
+  const [{ data: bookmarks }, { data: history }] = await Promise.all([
+    sb.from("bookmarks").select("*").order("bookmarked_at", { ascending: false }),
+    sb.from("article_views").select("*").order("viewed_at", { ascending: false }).limit(5),
+  ]);
 
   const cards = (bookmarks || []).map(b => `
     <div class="bookmark-card">
@@ -856,6 +857,18 @@ async function renderAccountView() {
       <button class="bookmark-remove" data-id="${b.id}">Remove</button>
     </div>`).join("");
 
+  const historyCards = (history || []).map(h => `
+    <div class="bookmark-card">
+      <div class="bookmark-meta">
+        <span class="dot" style="background:${sourceColor(h.article_src)}"></span>
+        <span class="bookmark-src">${h.article_src}</span>
+        <span class="bookmark-date">${new Date(h.viewed_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+      </div>
+      <div class="bookmark-title">
+        <a href="${h.article_url}" target="_blank" rel="noopener">${h.article_title}</a>
+      </div>
+    </div>`).join("");
+
   container.innerHTML = `
     <div class="account-header">
       <div>
@@ -864,7 +877,11 @@ async function renderAccountView() {
       </div>
       <button class="signout-btn" id="signout-btn">Sign Out</button>
     </div>
-    <h3 class="bookmarks-heading">Bookmarks${bookmarks?.length ? ` (${bookmarks.length})` : ""}</h3>
+    <h3 class="bookmarks-heading">Recently Viewed</h3>
+    ${history?.length
+      ? `<div class="bookmarks-list">${historyCards}</div>`
+      : `<div class="bookmarks-empty">No history yet — click any article to open it.</div>`}
+    <h3 class="bookmarks-heading" style="margin-top:28px">Bookmarks${bookmarks?.length ? ` (${bookmarks.length})` : ""}</h3>
     ${bookmarks?.length
       ? `<div class="bookmarks-list">${cards}</div>`
       : `<div class="bookmarks-empty">No bookmarks yet — right-click any article to bookmark it.</div>`}`;
@@ -875,6 +892,18 @@ async function renderAccountView() {
       await sb.from("bookmarks").delete().eq("id", btn.dataset.id);
       renderAccountView();
     });
+  });
+}
+
+// ---------- History ----------
+
+async function recordView(a) {
+  if (!currentUser || !a.url) return;
+  await sb.from("article_views").insert({
+    user_id:       currentUser.id,
+    article_title: a.title,
+    article_url:   a.url,
+    article_src:   a.src || "",
   });
 }
 
