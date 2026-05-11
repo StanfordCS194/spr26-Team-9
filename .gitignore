@@ -3,7 +3,11 @@ CLAUDE.md
 .env
 
 webscraper/api_keys.py
-webscraper/__pycache__/*
+webscraper/__pycache__/
+
+experiments/__pycache__/
+visualizations/__pycache__/
+backend/__pycache__
 
 data/
 
