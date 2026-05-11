@@ -962,6 +962,48 @@ body {
   box-shadow: 0 0 12px rgba(37, 99, 235, 0.5);
 }
 
+/* ── LOGIN GATE ───────────────────────────────────────── */
+.login-gate {
+  position: fixed;
+  inset: 0;
+  background: var(--slate-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.login-gate.hidden { display: none; }
+.login-gate-logo {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.04em;
+  margin-bottom: 6px;
+}
+.login-gate-sub {
+  margin: -16px 0 24px;
+  font-size: 13px;
+  color: var(--slate-400);
+}
+
+/* ── BOOKMARK STAR ────────────────────────────────────── */
+.article-card { position: relative; }
+.bookmark-star {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: none;
+  background: none;
+  font-size: 15px;
+  color: #f59e0b;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: transform 0.1s;
+}
+.bookmark-star:hover { transform: scale(1.25); }
+
 /* ── PROFILE BUTTON ───────────────────────────────────── */
 .profile {
   border: none;

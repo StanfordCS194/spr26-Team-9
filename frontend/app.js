@@ -3,12 +3,32 @@ const SUPABASE_URL  = "https://nlcnbcpnljdizedritaj.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5sY25iY3BubGpkaXplZHJpdGFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTkyMDcsImV4cCI6MjA5NDAzNTIwN30.AU1xSkrfd3efDrsvCHAQXD_jsmWGu62eL9kVIuBxLak";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 let currentUser = null;
+let bookmarkedTitles = new Set();
+let bookmarkIdMap    = {};
 
 sb.auth.onAuthStateChange((_e, session) => {
   currentUser = session?.user ?? null;
   updateProfileBtn();
+  const gate = document.getElementById("login-gate");
+  if (currentUser) {
+    gate.classList.add("hidden");
+    loadUserBookmarks();
+  } else {
+    gate.classList.remove("hidden");
+    bookmarkedTitles = new Set();
+    bookmarkIdMap    = {};
+  }
   if (currentView === "account") renderAccountView();
 });
+
+async function loadUserBookmarks() {
+  if (!currentUser) return;
+  const { data } = await sb.from("bookmarks").select("id, article_title");
+  bookmarkedTitles = new Set((data || []).map(b => b.article_title));
+  bookmarkIdMap    = {};
+  (data || []).forEach(b => { bookmarkIdMap[b.article_title] = b.id; });
+  if (timelineData.length) renderTimeline();
+}
 
 const TOP_N_PER_DATE = 5;
 
@@ -290,6 +310,25 @@ function makeArticleCard(a) {
     </div>
     <div class="title">${a.title}</div>
   `;
+  if (bookmarkedTitles.has(a.title)) {
+    const star = document.createElement("button");
+    star.className = "bookmark-star";
+    star.title = "Remove bookmark";
+    star.textContent = "★";
+    star.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const id = bookmarkIdMap[a.title];
+      if (!id) return;
+      await sb.from("bookmarks").delete().eq("id", id);
+      bookmarkedTitles.delete(a.title);
+      delete bookmarkIdMap[a.title];
+      star.remove();
+      showToast("Bookmark removed");
+      if (currentView === "account") renderAccountView();
+    });
+    card.appendChild(star);
+  }
+
   card.addEventListener("mousemove", (e) => showTooltip(e, a.summary));
   card.addEventListener("mouseleave", hideTooltip);
   card.querySelector(".src").addEventListener("click", (e) => {
@@ -734,14 +773,21 @@ document.getElementById("ctx-bookmark").addEventListener("click", async () => {
   ctxMenu.classList.remove("open");
   if (!currentUser) { setView("account"); showToast("Sign in to bookmark articles"); return; }
   if (!ctxArticle)  return;
-  const { error } = await sb.from("bookmarks").insert({
+  const { data, error } = await sb.from("bookmarks").insert({
     user_id:         currentUser.id,
     article_title:   ctxArticle.title,
     article_url:     ctxArticle.url    || null,
     article_src:     ctxArticle.src    || "",
     article_summary: ctxArticle.summary || "",
-  });
-  showToast(error ? "Already bookmarked" : "Bookmarked!");
+  }).select("id").single();
+  if (!error && data) {
+    bookmarkedTitles.add(ctxArticle.title);
+    bookmarkIdMap[ctxArticle.title] = data.id;
+    renderTimeline();
+    showToast("Bookmarked!");
+  } else {
+    showToast("Already bookmarked");
+  }
 });
 
 function showToast(msg) {
@@ -760,7 +806,7 @@ async function renderAccountView() {
   if (!currentUser) {
     container.innerHTML = `
       <div class="auth-box">
-        <h2 class="auth-title">Sign in to bookmark articles</h2>
+        <h2 class="auth-title">Sign in</h2>
         <div class="auth-error" id="auth-error" hidden></div>
         <div class="form-group">
           <label class="form-label">Email</label>
@@ -878,6 +924,21 @@ function setLastUpdated(isoString) {
 }
 
 async function init() {
+  // Wire up login gate buttons
+  async function handleGateAuth(mode) {
+    const email    = document.getElementById("gate-email").value.trim();
+    const password = document.getElementById("gate-password").value;
+    const errEl    = document.getElementById("gate-error");
+    errEl.hidden   = true;
+    const { error } = mode === "signin"
+      ? await sb.auth.signInWithPassword({ email, password })
+      : await sb.auth.signUp({ email, password });
+    if (error) { errEl.textContent = error.message; errEl.hidden = false; }
+  }
+  document.getElementById("gate-signin-btn").addEventListener("click", () => handleGateAuth("signin"));
+  document.getElementById("gate-signup-btn").addEventListener("click", () => handleGateAuth("signup"));
+
+  // Load article data
   try {
     const { articles, updatedAt } = await loadArticles();
     const normalized = articles.map(a => ({ ...a, source: cleanSourceName(a.source) }));

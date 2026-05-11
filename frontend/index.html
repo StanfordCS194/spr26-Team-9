@@ -155,6 +155,28 @@
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
+  <!-- LOGIN GATE -->
+  <div class="login-gate" id="login-gate">
+    <div class="auth-box">
+      <div class="login-gate-logo">NNT</div>
+      <h2 class="auth-title">News Narrative Tracker</h2>
+      <p class="login-gate-sub">Sign in to continue</p>
+      <div class="auth-error" id="gate-error" hidden></div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="gate-email" placeholder="you@example.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="gate-password" placeholder="••••••••" />
+      </div>
+      <div class="auth-actions">
+        <button class="auth-btn primary" id="gate-signin-btn">Sign In</button>
+        <button class="auth-btn secondary" id="gate-signup-btn">Create Account</button>
+      </div>
+    </div>
+  </div>
+
   <!-- COMPARE MODAL -->
   <div class="modal-overlay" id="compare-modal">
     <div class="modal">
