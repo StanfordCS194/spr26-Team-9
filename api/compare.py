@@ -1,38 +1,22 @@
 import json
 import os
 
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from openai import OpenAI
 
+app = FastAPI()
 
-def handler(request):
-    if request.method == "OPTIONS":
-        return {
-            "statusCode": 200,
-            "headers": {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type",
-            },
-            "body": "",
-        }
 
-    if request.method != "POST":
-        return {
-            "statusCode": 405,
-            "headers": {"Content-Type": "application/json"},
-            "body": json.dumps({"error": "Method not allowed"}),
-        }
-
+@app.post("/")
+@app.post("/api/compare")
+async def compare_articles(request: Request):
     try:
-        body = json.loads(request.body)
+        body = await request.json()
         articles = body.get("articles", [])
 
         if len(articles) < 2:
-            return {
-                "statusCode": 400,
-                "headers": {"Content-Type": "application/json"},
-                "body": json.dumps({"error": "Two articles required."}),
-            }
+            return JSONResponse({"error": "Two articles required."}, status_code=400)
 
         a1 = articles[0]
         a2 = articles[1]
@@ -91,30 +75,14 @@ Return ONLY valid JSON with this exact structure:
             model="gpt-4.1-mini",
             response_format={"type": "json_object"},
             messages=[
-                {
-                    "role": "system",
-                    "content": "You compare news articles. Return only valid JSON.",
-                },
-                {
-                    "role": "user",
-                    "content": prompt,
-                },
+                {"role": "system", "content": "You compare news articles. Return only valid JSON."},
+                {"role": "user", "content": prompt},
             ],
             temperature=0.3,
         )
 
-        content = response.choices[0].message.content
-        comparison = json.loads(content)
-
-        return {
-            "statusCode": 200,
-            "headers": {"Content-Type": "application/json"},
-            "body": json.dumps({"comparison": comparison}),
-        }
+        comparison = json.loads(response.choices[0].message.content)
+        return {"comparison": comparison}
 
     except Exception as e:
-        return {
-            "statusCode": 500,
-            "headers": {"Content-Type": "application/json"},
-            "body": json.dumps({"error": str(e)}),
-        }
+        return JSONResponse({"error": str(e)}, status_code=500)
