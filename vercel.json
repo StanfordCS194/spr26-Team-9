@@ -1,3 +1,9 @@
 {
-  "outputDirectory": "frontend"
+  "outputDirectory": "frontend",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://spr26-team-9-5gp5wp9b0-danielsongshens-projects.vercel.app/api/:path*"
+    }
+  ]
 }
