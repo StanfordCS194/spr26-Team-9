@@ -167,13 +167,18 @@ function setStoryHeadline(query) {
 }
 
 async function runSearchQuery(query) {
-  const res = await fetch("/search", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query }),
-  });
+  const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&limit=10`);
   if (!res.ok) throw new Error((await res.json()).error || "Search failed");
-  await loadAndRender();
+  const { results } = await res.json();
+  const normalized = results.map(a => ({ ...a, source: cleanSourceName(a.source) }));
+  timelineData = toTimelineData(normalized, Infinity);
+  channelData = toChannelData(normalized);
+  const sources = Object.keys(channelData).sort();
+  assignSourceColors(sources);
+  buildSourceFilters(sources);
+  buildChannelCards(sources);
+  setLastUpdated(null);
+  renderTimeline();
   setStoryHeadline(query);
 }
 
@@ -1194,7 +1199,6 @@ async function init() {
   document.getElementById("gate-signin-btn").addEventListener("click", () => handleGateAuth("signin"));
   document.getElementById("gate-signup-btn").addEventListener("click", () => handleGateAuth("signup"));
 
-  await loadAndRender();
   renderLLM();
 }
 
