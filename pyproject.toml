@@ -21,6 +21,8 @@ nltk = "^3.9.4"
 tqdm = "^4.67.3"
 lxml = "^6.1.0"
 justext = "^3.0.2"
+fastapi = "^0.115.0"
+uvicorn = "^0.34.0"
 
 
 [build-system]
