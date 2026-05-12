@@ -95,6 +95,29 @@ const API_LABELS = ["NewsAPI", "NYT", "Currents API"];
 const API_DURATIONS = [12, 28, 10]; // newsapi, nyt, current
 const TOTAL_ESTIMATED_SECS = API_DURATIONS.reduce((a, b) => a + b, 0);
 
+// Poll /api/ready on page load; disable search until articles are available
+let _readyPoller = null;
+function startReadyPolling() {
+  landingBtn.disabled = true;
+  landingInput.disabled = true;
+  showLandingStatus("Loading articles… please wait.");
+
+  _readyPoller = setInterval(async () => {
+    try {
+      const res = await fetch("/api/ready");
+      const { ready } = await res.json();
+      if (ready) {
+        clearInterval(_readyPoller);
+        _readyPoller = null;
+        landingBtn.disabled = false;
+        landingInput.disabled = false;
+        landingStatus.hidden = true;
+      }
+    } catch (_) {}
+  }, 3000);
+}
+startReadyPolling();
+
 function showLandingStatus(msg, isError = false) {
   landingStatus.textContent = msg;
   landingStatus.hidden = false;
@@ -167,13 +190,18 @@ function setStoryHeadline(query) {
 }
 
 async function runSearchQuery(query) {
-  const res = await fetch("/search", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query }),
-  });
+  const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&limit=10`);
   if (!res.ok) throw new Error((await res.json()).error || "Search failed");
-  await loadAndRender();
+  const { results } = await res.json();
+  const normalized = results.map(a => ({ ...a, source: cleanSourceName(a.source) }));
+  timelineData = toTimelineData(normalized, Infinity);
+  channelData = toChannelData(normalized);
+  const sources = Object.keys(channelData).sort();
+  assignSourceColors(sources);
+  buildSourceFilters(sources);
+  buildChannelCards(sources);
+  setLastUpdated(null);
+  renderTimeline();
   setStoryHeadline(query);
 }
 
@@ -1194,7 +1222,6 @@ async function init() {
   document.getElementById("gate-signin-btn").addEventListener("click", () => handleGateAuth("signin"));
   document.getElementById("gate-signup-btn").addEventListener("click", () => handleGateAuth("signup"));
 
-  await loadAndRender();
   renderLLM();
 }
 

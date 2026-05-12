@@ -486,7 +486,7 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
-.view.active { display: block; }
+.view.active { display: block; overflow-y: auto; }
 
 .sub-headline {
   margin: 0 0 10px;
