@@ -45,6 +45,12 @@ def init_index() -> None:
     _load_index()
 
 
+@router.get("/api/ready")
+async def ready():
+    _load_index()
+    return {"ready": bool(_articles)}
+
+
 @router.get("/api/search")
 async def search(
     q: str = Query(..., min_length=1),
