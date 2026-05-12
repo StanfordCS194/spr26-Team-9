@@ -6,6 +6,9 @@
 ### `frontend/`
 Frontend for the user-facing web application. 
 
+### `backend/`
+Backend for the user-facing web application. 
+
 ### `webscraper/`
 This directory will contain the automated data ingestion and NLP analysis pipelines.
 

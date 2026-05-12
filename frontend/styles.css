@@ -1220,3 +1220,254 @@ body {
   transform: scale(1.02);
   box-shadow: 0 0 12px rgba(37, 99, 235, 0.5);
 }
+
+/* ── LOGIN GATE ───────────────────────────────────────── */
+.login-gate {
+  position: fixed;
+  inset: 0;
+  background: var(--slate-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.login-gate.hidden { display: none; }
+.login-gate-logo {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.04em;
+  margin-bottom: 6px;
+}
+.login-gate-sub {
+  margin: -16px 0 24px;
+  font-size: 13px;
+  color: var(--slate-400);
+}
+
+/* ── BOOKMARK STAR ────────────────────────────────────── */
+.article-card { position: relative; }
+.bookmark-star {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: none;
+  background: none;
+  font-size: 15px;
+  color: #f59e0b;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: transform 0.1s;
+}
+.bookmark-star:hover { transform: scale(1.25); }
+
+/* ── PROFILE BUTTON ───────────────────────────────────── */
+.profile {
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: 0.01em;
+}
+.profile.signed-in { background: var(--accent); }
+
+/* ── CONTEXT MENU ─────────────────────────────────────── */
+.ctx-menu {
+  position: fixed;
+  z-index: 1000;
+  background: var(--white);
+  border: 1px solid var(--slate-200);
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  padding: 4px;
+  display: none;
+  min-width: 170px;
+}
+.ctx-menu.open { display: block; }
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 7px;
+  background: none;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 500;
+  color: var(--navy-950);
+  cursor: pointer;
+  text-align: left;
+}
+.ctx-item:hover { background: var(--slate-100); }
+
+/* ── TOAST ────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--navy-950);
+  color: var(--white);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 2000;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── AUTH BOX ─────────────────────────────────────────── */
+.auth-box {
+  max-width: 380px;
+  margin: 60px auto;
+  padding: 36px;
+  background: var(--white);
+  border: 1px solid var(--slate-200);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+}
+.auth-title {
+  margin: 0 0 24px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy-950);
+}
+.auth-error {
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #dc2626;
+}
+.form-group { margin-bottom: 16px; }
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy-900);
+}
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--slate-200);
+  border-radius: 9px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--navy-950);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.form-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+}
+.auth-actions { display: flex; gap: 10px; margin-top: 8px; }
+.auth-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 9px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.auth-btn.primary { background: var(--accent); color: var(--white); }
+.auth-btn.primary:hover { background: var(--accent-dark); }
+.auth-btn.secondary { background: var(--slate-100); color: var(--navy-950); }
+.auth-btn.secondary:hover { background: var(--slate-200); }
+
+/* ── ACCOUNT VIEW ─────────────────────────────────────── */
+.account-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding: 18px 22px;
+  background: var(--white);
+  border: 1px solid var(--slate-200);
+  border-radius: 14px;
+  box-shadow: var(--shadow-sm);
+}
+.account-email { font-size: 15px; font-weight: 700; color: var(--navy-950); }
+.account-label { font-size: 12px; color: var(--slate-400); margin-top: 2px; }
+.signout-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--slate-200);
+  border-radius: 9px;
+  background: var(--white);
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--navy-950);
+  cursor: pointer;
+}
+.signout-btn:hover { background: var(--slate-100); }
+.bookmarks-heading {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy-950);
+}
+.bookmarks-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--slate-400);
+  font-size: 14px;
+}
+.bookmarks-list { display: flex; flex-direction: column; gap: 12px; }
+.bookmark-card {
+  padding: 16px 18px;
+  background: var(--white);
+  border: 1px solid var(--slate-200);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.bookmark-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: var(--slate-400);
+}
+.bookmark-src { font-weight: 600; color: var(--navy-800); }
+.bookmark-date { margin-left: auto; }
+.bookmark-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--navy-950);
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+.bookmark-title a { color: inherit; text-decoration: none; }
+.bookmark-title a:hover { color: var(--accent); }
+.bookmark-summary {
+  font-size: 12px;
+  color: var(--slate-600);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+.bookmark-remove {
+  padding: 4px 10px;
+  border: 1px solid var(--slate-200);
+  border-radius: 6px;
+  background: none;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--slate-400);
+  cursor: pointer;
+}
+.bookmark-remove:hover { background: #fef2f2; color: #dc2626; border-color: #fecaca; }

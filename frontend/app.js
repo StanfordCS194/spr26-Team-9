@@ -1,3 +1,35 @@
+// ---------- Supabase ----------
+const SUPABASE_URL  = "https://nlcnbcpnljdizedritaj.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5sY25iY3BubGpkaXplZHJpdGFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTkyMDcsImV4cCI6MjA5NDAzNTIwN30.AU1xSkrfd3efDrsvCHAQXD_jsmWGu62eL9kVIuBxLak";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+let currentUser = null;
+let bookmarkedTitles = new Set();
+let bookmarkIdMap    = {};
+
+sb.auth.onAuthStateChange((_e, session) => {
+  currentUser = session?.user ?? null;
+  updateProfileBtn();
+  const gate = document.getElementById("login-gate");
+  if (currentUser) {
+    gate.classList.add("hidden");
+    loadUserBookmarks();
+  } else {
+    gate.classList.remove("hidden");
+    bookmarkedTitles = new Set();
+    bookmarkIdMap    = {};
+  }
+  if (currentView === "account") renderAccountView();
+});
+
+async function loadUserBookmarks() {
+  if (!currentUser) return;
+  const { data } = await sb.from("bookmarks").select("id, article_title");
+  bookmarkedTitles = new Set((data || []).map(b => b.article_title));
+  bookmarkIdMap    = {};
+  (data || []).forEach(b => { bookmarkIdMap[b.article_title] = b.id; });
+  if (timelineData.length) renderTimeline();
+}
+
 const TOP_N_PER_DATE = 5;
 
 // Higher number = more credible. Sources not listed default to tier 1.
@@ -296,8 +328,8 @@ function buildChannelCards(sources) {
 
 // ---------- View switching ----------
 
-const views  = { timeline: "view-timeline", channels: "view-channels", llm: "view-llm" };
-const titles = { timeline: "Coverage Timeline", channels: "Channels", llm: "LLM Analysis" };
+const views  = { timeline: "view-timeline", channels: "view-channels", llm: "view-llm", account: "view-account" };
+const titles = { timeline: "Coverage Timeline", channels: "Channels", llm: "LLM Analysis", account: "Account" };
 let selectedTimelineSource = null;
 const timelineColumnsEl = document.getElementById("timeline-columns");
 const startDateFilterEl = document.getElementById("start-date-filter");
@@ -336,6 +368,7 @@ function setView(name) {
   document.getElementById("page-title").textContent = titles[name];
   if (name !== "timeline") clearTimelineSourceSelection();
   if (name === "channels") showChannelsGrid();
+  if (name === "account") renderAccountView();
 }
 
 // ---------- Timeline rendering ----------
@@ -388,6 +421,7 @@ function makeArticleCard(a) {
   const card = document.createElement("div");
   card.className = "article-card";
   card.dataset.src = a.src;
+  card._articleData = a;
   card.innerHTML = `
     <div class="meta">
       <span class="time">${a.time}</span>
@@ -396,6 +430,25 @@ function makeArticleCard(a) {
     </div>
     <div class="title">${a.title}</div>
   `;
+  if (bookmarkedTitles.has(a.title)) {
+    const star = document.createElement("button");
+    star.className = "bookmark-star";
+    star.title = "Remove bookmark";
+    star.textContent = "★";
+    star.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const id = bookmarkIdMap[a.title];
+      if (!id) return;
+      await sb.from("bookmarks").delete().eq("id", id);
+      bookmarkedTitles.delete(a.title);
+      delete bookmarkIdMap[a.title];
+      star.remove();
+      showToast("Bookmark removed");
+      if (currentView === "account") renderAccountView();
+    });
+    card.appendChild(star);
+  }
+
   card.addEventListener("mousemove", (e) => showTooltip(e, a.summary));
   card.addEventListener("mouseleave", hideTooltip);
   card.querySelector(".src").addEventListener("click", (e) => {
@@ -458,9 +511,9 @@ function makeArticleCard(a) {
       return;
     }
   
-    if (a.url) window.open(a.url, "_blank");
+    if (a.url) { recordView(a); window.open(a.url, "_blank"); }
   });
-  
+
   return card;
 }
 
@@ -576,12 +629,13 @@ function showChannelDetail(src) {
       bucket.articles.forEach((a) => {
         const card = document.createElement("div");
         card.className = "article-card";
+        card._articleData = { ...a, src };
         card.innerHTML = `
           <div class="meta"><span class="time">${a.time}</span> <strong>${src}</strong></div>
           <div class="title">${a.title}</div>
           <div class="summary">${a.summary}</div>
         `;
-        card.addEventListener("click", () => { if (a.url) window.open(a.url, "_blank"); });
+        card.addEventListener("click", () => { if (a.url) { recordView({ ...a, src }); window.open(a.url, "_blank"); } });
         col.appendChild(card);
       });
       wrap.appendChild(col);
@@ -786,8 +840,38 @@ if (runCompareBtn && comparisonResults) {
       `)
       .join("");
   
-    modal.classList.add("open");
-    comparisonResults.hidden = false;
+      modal.classList.add("open");
+      comparisonResults.hidden = false;
+      comparisonResults.innerHTML = "<h4>Article Comparison</h4><p>Generating comparison...</p>";
+      
+      //fetch("http://127.0.0.1:8000/api/compare", {
+      fetch("/api/compare", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          articles: selectedCompareArticles,
+        }),
+      })
+        .then(async res => {
+          const text = await res.text();
+          console.log("Raw compare response:", text);
+
+          if (!res.ok) {
+            throw new Error(text || "Compare request failed");
+          }
+
+          return JSON.parse(text);
+        })
+        .then(data => {
+          console.log("Parsed compare data:", data);
+          renderComparison(data.comparison);
+        })
+        .catch(err => {
+          console.error("Compare error:", err);
+          comparisonResults.innerHTML = "<p>Could not generate comparison.</p>";
+        });
 
 
   });
@@ -795,9 +879,230 @@ if (runCompareBtn && comparisonResults) {
 
 // Hardcode to close the comparison results when "Close" is clicked.
 const modalCloseBtn = document.getElementById("modal-close");
+
 if (modalCloseBtn && comparisonResults) {
   modalCloseBtn.addEventListener("click", () => {
     comparisonResults.hidden = true;
+  });
+}
+
+function renderComparison(comparison) {
+  comparisonResults.innerHTML = `
+    <h4>Article Comparison</h4>
+
+    <div class="compare-articles">
+      <div class="article-card">
+        <h5>${comparison.article1.title}</h5>
+        <p><strong>Source:</strong> ${comparison.article1.source}</p>
+        <p><strong>Core Argument:</strong> ${comparison.article1.core_argument}</p>
+
+        <ul>
+          ${comparison.article1.key_points
+            .map(point => `<li>${point}</li>`)
+            .join("")}
+        </ul>
+      </div>
+
+      <div class="article-card">
+        <h5>${comparison.article2.title}</h5>
+        <p><strong>Source:</strong> ${comparison.article2.source}</p>
+        <p><strong>Core Argument:</strong> ${comparison.article2.core_argument}</p>
+
+        <ul>
+          ${comparison.article2.key_points
+            .map(point => `<li>${point}</li>`)
+            .join("")}
+        </ul>
+      </div>
+    </div>
+
+    <div class="differences">
+      <h4>Key Differences</h4>
+
+      ${comparison.key_differences
+        .map(diff => `
+          <p>
+            <strong>${diff.label}</strong><br/>
+            Article 1 → ${diff.article1}<br/>
+            Article 2 → ${diff.article2}
+          </p>
+        `)
+        .join("")}
+    </div>
+  `;
+}
+
+
+
+// ---------- Auth / Profile ----------
+
+function updateProfileBtn() {
+  const btn = document.getElementById("profile-btn");
+  if (!btn) return;
+  if (currentUser) {
+    btn.textContent = currentUser.email[0].toUpperCase();
+    btn.classList.add("signed-in");
+  } else {
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+    btn.classList.remove("signed-in");
+  }
+}
+
+document.getElementById("profile-btn").addEventListener("click", () => setView("account"));
+
+// ---------- Context menu ----------
+
+let ctxArticle = null;
+const ctxMenu = document.getElementById("ctx-menu");
+
+document.addEventListener("contextmenu", (e) => {
+  const card = e.target.closest(".article-card");
+  if (!card || !card._articleData) { ctxMenu.classList.remove("open"); return; }
+  e.preventDefault();
+  ctxArticle = card._articleData;
+  ctxMenu.style.left = Math.min(e.pageX, window.innerWidth  - 190) + "px";
+  ctxMenu.style.top  = Math.min(e.pageY, window.innerHeight - 60)  + "px";
+  ctxMenu.classList.add("open");
+});
+
+document.addEventListener("click",   () => ctxMenu.classList.remove("open"));
+document.addEventListener("keydown",  (e) => { if (e.key === "Escape") ctxMenu.classList.remove("open"); });
+
+document.getElementById("ctx-bookmark").addEventListener("click", async () => {
+  ctxMenu.classList.remove("open");
+  if (!currentUser) { setView("account"); showToast("Sign in to bookmark articles"); return; }
+  if (!ctxArticle)  return;
+  const { data, error } = await sb.from("bookmarks").insert({
+    user_id:         currentUser.id,
+    article_title:   ctxArticle.title,
+    article_url:     ctxArticle.url    || null,
+    article_src:     ctxArticle.src    || "",
+    article_summary: ctxArticle.summary || "",
+  }).select("id").single();
+  if (!error && data) {
+    bookmarkedTitles.add(ctxArticle.title);
+    bookmarkIdMap[ctxArticle.title] = data.id;
+    renderTimeline();
+    showToast("Bookmarked!");
+  } else {
+    showToast("Already bookmarked");
+  }
+});
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2500);
+}
+
+// ---------- Account view ----------
+
+async function renderAccountView() {
+  const container = document.getElementById("account-content");
+  if (!container) return;
+
+  if (!currentUser) {
+    container.innerHTML = `
+      <div class="auth-box">
+        <h2 class="auth-title">Sign in</h2>
+        <div class="auth-error" id="auth-error" hidden></div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" id="auth-email" placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" type="password" id="auth-password" placeholder="••••••••" />
+        </div>
+        <div class="auth-actions">
+          <button class="auth-btn primary" id="signin-btn">Sign In</button>
+          <button class="auth-btn secondary" id="signup-btn">Create Account</button>
+        </div>
+      </div>`;
+
+    async function handleAuth(mode) {
+      const email    = document.getElementById("auth-email").value.trim();
+      const password = document.getElementById("auth-password").value;
+      const errEl    = document.getElementById("auth-error");
+      errEl.hidden   = true;
+      const { error } = mode === "signin"
+        ? await sb.auth.signInWithPassword({ email, password })
+        : await sb.auth.signUp({ email, password });
+      if (error) { errEl.textContent = error.message; errEl.hidden = false; }
+    }
+
+    document.getElementById("signin-btn").addEventListener("click", () => handleAuth("signin"));
+    document.getElementById("signup-btn").addEventListener("click", () => handleAuth("signup"));
+    return;
+  }
+
+  const [{ data: bookmarks }, { data: history }] = await Promise.all([
+    sb.from("bookmarks").select("*").order("bookmarked_at", { ascending: false }),
+    sb.from("article_views").select("*").order("viewed_at", { ascending: false }).limit(5),
+  ]);
+
+  const cards = (bookmarks || []).map(b => `
+    <div class="bookmark-card">
+      <div class="bookmark-meta">
+        <span class="dot" style="background:${sourceColor(b.article_src)}"></span>
+        <span class="bookmark-src">${b.article_src}</span>
+        <span class="bookmark-date">${new Date(b.bookmarked_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+      </div>
+      <div class="bookmark-title">${b.article_url
+        ? `<a href="${b.article_url}" target="_blank" rel="noopener">${b.article_title}</a>`
+        : b.article_title}</div>
+      ${b.article_summary ? `<div class="bookmark-summary">${b.article_summary}</div>` : ""}
+      <button class="bookmark-remove" data-id="${b.id}">Remove</button>
+    </div>`).join("");
+
+  const historyCards = (history || []).map(h => `
+    <div class="bookmark-card">
+      <div class="bookmark-meta">
+        <span class="dot" style="background:${sourceColor(h.article_src)}"></span>
+        <span class="bookmark-src">${h.article_src}</span>
+        <span class="bookmark-date">${new Date(h.viewed_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+      </div>
+      <div class="bookmark-title">
+        <a href="${h.article_url}" target="_blank" rel="noopener">${h.article_title}</a>
+      </div>
+    </div>`).join("");
+
+  container.innerHTML = `
+    <div class="account-header">
+      <div>
+        <div class="account-email">${currentUser.email}</div>
+        <div class="account-label">Signed in</div>
+      </div>
+      <button class="signout-btn" id="signout-btn">Sign Out</button>
+    </div>
+    <h3 class="bookmarks-heading">Recently Viewed</h3>
+    ${history?.length
+      ? `<div class="bookmarks-list">${historyCards}</div>`
+      : `<div class="bookmarks-empty">No history yet — click any article to open it.</div>`}
+    <h3 class="bookmarks-heading" style="margin-top:28px">Bookmarks${bookmarks?.length ? ` (${bookmarks.length})` : ""}</h3>
+    ${bookmarks?.length
+      ? `<div class="bookmarks-list">${cards}</div>`
+      : `<div class="bookmarks-empty">No bookmarks yet — right-click any article to bookmark it.</div>`}`;
+
+  document.getElementById("signout-btn").addEventListener("click", () => sb.auth.signOut());
+  container.querySelectorAll(".bookmark-remove").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      await sb.from("bookmarks").delete().eq("id", btn.dataset.id);
+      renderAccountView();
+    });
+  });
+}
+
+// ---------- History ----------
+
+async function recordView(a) {
+  if (!currentUser || !a.url) return;
+  await sb.from("article_views").insert({
+    user_id:       currentUser.id,
+    article_title: a.title,
+    article_url:   a.url,
+    article_src:   a.src || "",
   });
 }
 
@@ -850,21 +1155,50 @@ async function loadAndRender() {
   try {
     const { articles, updatedAt } = await loadArticles();
     const normalized = articles.map(a => ({ ...a, source: cleanSourceName(a.source) }));
+
     timelineData = toTimelineData(normalized);
-    channelData  = toChannelData(normalized);
+    channelData = toChannelData(normalized);
+
     const sources = Object.keys(channelData).sort();
     assignSourceColors(sources);
     buildSourceFilters(sources);
     buildChannelCards(sources);
     setLastUpdated(updatedAt);
+
+    renderTimeline();
   } catch (err) {
     console.error("Could not load articles:", err);
     timelineColumnsEl.innerHTML =
       '<div class="timeline-empty-state">No articles loaded.</div>';
   }
-  renderTimeline();
+}
+
+async function init() {
+  async function handleGateAuth(mode) {
+    const email = document.getElementById("gate-email").value.trim();
+    const password = document.getElementById("gate-password").value;
+    const errEl = document.getElementById("gate-error");
+    errEl.hidden = true;
+
+    const { error } =
+      mode === "signin"
+        ? await sb.auth.signInWithPassword({ email, password })
+        : await sb.auth.signUp({ email, password });
+
+    if (error) {
+      errEl.textContent = error.message;
+      errEl.hidden = false;
+    }
+  }
+
+  document.getElementById("gate-signin-btn").addEventListener("click", () => handleGateAuth("signin"));
+  document.getElementById("gate-signup-btn").addEventListener("click", () => handleGateAuth("signup"));
+
+  await loadAndRender();
   renderLLM();
 }
+
+init();
 
 // Landing page shows first — loadAndRender() is called after a successful search
 
