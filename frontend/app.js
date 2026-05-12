@@ -720,8 +720,38 @@ if (runCompareBtn && comparisonResults) {
       `)
       .join("");
   
-    modal.classList.add("open");
-    comparisonResults.hidden = false;
+      modal.classList.add("open");
+      comparisonResults.hidden = false;
+      comparisonResults.innerHTML = "<h4>Article Comparison</h4><p>Generating comparison...</p>";
+      
+      //fetch("http://127.0.0.1:8000/api/compare", {
+      fetch("/api/compare", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          articles: selectedCompareArticles,
+        }),
+      })
+        .then(async res => {
+          const text = await res.text();
+          console.log("Raw compare response:", text);
+
+          if (!res.ok) {
+            throw new Error(text || "Compare request failed");
+          }
+
+          return JSON.parse(text);
+        })
+        .then(data => {
+          console.log("Parsed compare data:", data);
+          renderComparison(data.comparison);
+        })
+        .catch(err => {
+          console.error("Compare error:", err);
+          comparisonResults.innerHTML = "<p>Could not generate comparison.</p>";
+        });
 
 
   });
@@ -729,11 +759,60 @@ if (runCompareBtn && comparisonResults) {
 
 // Hardcode to close the comparison results when "Close" is clicked.
 const modalCloseBtn = document.getElementById("modal-close");
+
 if (modalCloseBtn && comparisonResults) {
   modalCloseBtn.addEventListener("click", () => {
     comparisonResults.hidden = true;
   });
 }
+
+function renderComparison(comparison) {
+  comparisonResults.innerHTML = `
+    <h4>Article Comparison</h4>
+
+    <div class="compare-articles">
+      <div class="article-card">
+        <h5>${comparison.article1.title}</h5>
+        <p><strong>Source:</strong> ${comparison.article1.source}</p>
+        <p><strong>Core Argument:</strong> ${comparison.article1.core_argument}</p>
+
+        <ul>
+          ${comparison.article1.key_points
+            .map(point => `<li>${point}</li>`)
+            .join("")}
+        </ul>
+      </div>
+
+      <div class="article-card">
+        <h5>${comparison.article2.title}</h5>
+        <p><strong>Source:</strong> ${comparison.article2.source}</p>
+        <p><strong>Core Argument:</strong> ${comparison.article2.core_argument}</p>
+
+        <ul>
+          ${comparison.article2.key_points
+            .map(point => `<li>${point}</li>`)
+            .join("")}
+        </ul>
+      </div>
+    </div>
+
+    <div class="differences">
+      <h4>Key Differences</h4>
+
+      ${comparison.key_differences
+        .map(diff => `
+          <p>
+            <strong>${diff.label}</strong><br/>
+            Article 1 → ${diff.article1}<br/>
+            Article 2 → ${diff.article2}
+          </p>
+        `)
+        .join("")}
+    </div>
+  `;
+}
+
+
 
 // ---------- Auth / Profile ----------
 

@@ -1,36 +1,30 @@
-[tool.poetry]
+[project]
 name = "final-project-26"
 version = "0.1.0"
 description = ""
-authors = ["DanielSongShen <danielsongshengit@gmail.com>"]
-readme = "README.md"
-
-[tool.poetry.dependencies]
-python = ">=3.12,<3.15"
-requests = "^2.33.1"
-dotenv = "^0.9.9"
-bs4 = "^0.0.2"
-spacy = "^3.8.14"
-transformers = "^4.41.0"
-torch = "^2.11.0"
-trafilatura = "^2.0.0"
-vadersentiment = "^3.3.2"
-matplotlib = "^3.10.9"
-numpy = "^1.26.4"
-nltk = "^3.9.4"
-tqdm = "^4.67.3"
-lxml = "^6.1.0"
-justext = "^3.0.2"
-rank-bm25 = "^0.2.2"
-redis = "^7.4.0"
-fastapi = "^0.136.1"
-uvicorn = "^0.46.0"
-sentence-transformers = "^3.0.0"
-hdbscan = "^0.8.40"
-scikit-learn = "^1.6.0"
-scipy = "^1.15.0"
-
+requires-python = ">=3.12,<3.15"
+dependencies = [
+    "requests>=2.33.1",
+    "python-dotenv>=1.0.0",
+    "bs4>=0.0.2",
+    "spacy>=3.8.14",
+    "transformers>=5.7.0",
+    "torch>=2.11.0",
+    "trafilatura>=2.0.0",
+    "vadersentiment>=3.3.2",
+    "matplotlib>=3.10.9",
+    "numpy>=2.4.4",
+    "nltk>=3.9.4",
+    "tqdm>=4.67.3",
+    "lxml>=6.1.0",
+    "justext>=3.0.2",
+    "rank-bm25>=0.2.2",
+    "redis>=7.4.0",
+    "fastapi>=0.136.1",
+    "uvicorn>=0.46.0",
+    "openai>=1.82.0",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
