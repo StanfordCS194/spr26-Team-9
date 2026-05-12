@@ -1,4 +1,6 @@
 import os
+import subprocess
+import sys
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
@@ -13,10 +15,13 @@ from users import router as users_router
 
 from compare import router as compare_router
 
+_REFRESH_SCRIPT = os.path.join(os.path.dirname(__file__), "..", "webscraper", "refresh.py")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    #init_index()
+    init_index()  # serve whatever's already on disk while the refresh runs
+    subprocess.Popen([sys.executable, _REFRESH_SCRIPT])
     yield
 
 
