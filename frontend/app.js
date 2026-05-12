@@ -80,10 +80,130 @@ let channelData  = {};
 let selectedCompareTitles = [];
 let selectedCompareArticles = [];
 
+// ---------- Landing page ----------
+
+const landingEl            = document.getElementById("landing");
+const landingInput         = document.getElementById("landing-input");
+const landingBtn           = document.getElementById("landing-btn");
+const landingStatus        = document.getElementById("landing-status");
+const landingProgress      = document.getElementById("landing-progress");
+const landingProgressFill  = document.getElementById("landing-progress-fill");
+const landingProgressLabel = document.getElementById("landing-progress-label");
+
+const API_LABELS = ["NewsAPI", "NYT", "Currents API"];
+// Estimated seconds each API takes — used to pace the smooth animation
+const API_DURATIONS = [12, 28, 10]; // newsapi, nyt, current
+const TOTAL_ESTIMATED_SECS = API_DURATIONS.reduce((a, b) => a + b, 0);
+
+function showLandingStatus(msg, isError = false) {
+  landingStatus.textContent = msg;
+  landingStatus.hidden = false;
+  landingStatus.classList.toggle("error", isError);
+}
+
+function setProgressUI(pct, label) {
+  landingProgress.hidden = false;
+  landingProgressFill.style.width = pct + "%";
+  landingProgressLabel.textContent = label;
+}
+
+let progressPoller      = null;
+let animationFrame      = null;
+let currentPct          = 0;
+let targetPct           = 0;
+let startTime           = null;
+let progressStatusText  = "Fetching articles…";
+
+function animateProgress() {
+  const elapsed = (Date.now() - startTime) / 1000;
+  const timePct = Math.min(88, (elapsed / TOTAL_ESTIMATED_SECS) * 88);
+  currentPct = Math.max(currentPct, timePct, targetPct);
+  landingProgressFill.style.width = currentPct.toFixed(1) + "%";
+  landingProgressLabel.textContent = `${Math.round(currentPct)}% — ${progressStatusText}`;
+  if (currentPct < 99) {
+    animationFrame = requestAnimationFrame(animateProgress);
+  }
+}
+
+function startProgressPolling() {
+  currentPct = 0;
+  targetPct  = 5;
+  startTime  = Date.now();
+  setProgressUI(0, "Connecting to APIs…");
+  landingProgress.hidden = false;
+  animationFrame = requestAnimationFrame(animateProgress);
+
+  progressPoller = setInterval(async () => {
+    try {
+      const res = await fetch("/api/progress");
+      const { done, total } = await res.json();
+      const milestones = [0, 30, 65, 90];
+      targetPct = Math.max(targetPct, milestones[done] ?? 90);
+      progressStatusText = done === 0
+        ? "Fetching articles from all sources…"
+        : `Fetched ${API_LABELS.slice(0, done).join(", ")} — ${total - done} source${total - done !== 1 ? "s" : ""} left…`;
+    } catch (_) {}
+  }, 1500);
+}
+
+function stopProgressPolling() {
+  if (progressPoller)  { clearInterval(progressPoller); progressPoller = null; }
+  if (animationFrame)  { cancelAnimationFrame(animationFrame); animationFrame = null; }
+}
+
+landingBtn.addEventListener("click", triggerSearch);
+landingInput.addEventListener("keydown", (e) => { if (e.key === "Enter") triggerSearch(); });
+
+document.getElementById("new-search-btn").addEventListener("click", () => {
+  landingEl.classList.remove("hidden");
+  landingStatus.hidden = true;
+  landingBtn.disabled = false;
+});
+
+function setStoryHeadline(query) {
+  const text = `"${query}"`;
+  document.getElementById("timeline-headline").textContent = text;
+  document.querySelectorAll(".story-headline-dynamic").forEach(el => el.textContent = text);
+}
+
+async function runSearchQuery(query) {
+  const res = await fetch("/search", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query }),
+  });
+  if (!res.ok) throw new Error((await res.json()).error || "Search failed");
+  await loadAndRender();
+  setStoryHeadline(query);
+}
+
+async function triggerSearch() {
+  const query = landingInput.value.trim();
+  if (!query) return;
+
+  landingBtn.disabled = true;
+  showLandingStatus("Fetching articles… this may take up to 30 seconds.");
+  startProgressPolling();
+
+  try {
+    await runSearchQuery(query);
+    stopProgressPolling();
+    landingProgressFill.style.width = "100%";
+    landingProgressLabel.textContent = "100% — Done!";
+    await new Promise(r => setTimeout(r, 500));
+    landingEl.classList.add("hidden");
+  } catch (err) {
+    stopProgressPolling();
+    landingProgress.hidden = true;
+    showLandingStatus("Error: " + err.message, true);
+    landingBtn.disabled = false;
+  }
+}
+
 // ---------- Data loading ----------
 
 async function loadArticles() {
-  const res = await fetch("./articles.json");
+  const res = await fetch("/api/articles");
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
   // support both plain array and {updatedAt, articles} wrapper
@@ -1031,39 +1151,79 @@ function setLastUpdated(isoString) {
   });
 }
 
-async function init() {
-  // Wire up login gate buttons
-  async function handleGateAuth(mode) {
-    const email    = document.getElementById("gate-email").value.trim();
-    const password = document.getElementById("gate-password").value;
-    const errEl    = document.getElementById("gate-error");
-    errEl.hidden   = true;
-    const { error } = mode === "signin"
-      ? await sb.auth.signInWithPassword({ email, password })
-      : await sb.auth.signUp({ email, password });
-    if (error) { errEl.textContent = error.message; errEl.hidden = false; }
-  }
-  document.getElementById("gate-signin-btn").addEventListener("click", () => handleGateAuth("signin"));
-  document.getElementById("gate-signup-btn").addEventListener("click", () => handleGateAuth("signup"));
-
-  // Load article data
+async function loadAndRender() {
   try {
     const { articles, updatedAt } = await loadArticles();
     const normalized = articles.map(a => ({ ...a, source: cleanSourceName(a.source) }));
+
     timelineData = toTimelineData(normalized);
-    channelData  = toChannelData(normalized);
+    channelData = toChannelData(normalized);
+
     const sources = Object.keys(channelData).sort();
     assignSourceColors(sources);
     buildSourceFilters(sources);
     buildChannelCards(sources);
     setLastUpdated(updatedAt);
+
+    renderTimeline();
   } catch (err) {
     console.error("Could not load articles:", err);
     timelineColumnsEl.innerHTML =
       '<div class="timeline-empty-state">No articles loaded.</div>';
   }
-  renderTimeline();
+}
+
+async function init() {
+  async function handleGateAuth(mode) {
+    const email = document.getElementById("gate-email").value.trim();
+    const password = document.getElementById("gate-password").value;
+    const errEl = document.getElementById("gate-error");
+    errEl.hidden = true;
+
+    const { error } =
+      mode === "signin"
+        ? await sb.auth.signInWithPassword({ email, password })
+        : await sb.auth.signUp({ email, password });
+
+    if (error) {
+      errEl.textContent = error.message;
+      errEl.hidden = false;
+    }
+  }
+
+  document.getElementById("gate-signin-btn").addEventListener("click", () => handleGateAuth("signin"));
+  document.getElementById("gate-signup-btn").addEventListener("click", () => handleGateAuth("signup"));
+
+  await loadAndRender();
   renderLLM();
 }
 
 init();
+
+// Landing page shows first — loadAndRender() is called after a successful search
+
+
+const searchBtn = document.getElementById("search-btn");
+const searchInput = document.getElementById("search-input");
+
+async function runSearch() {
+  const query = searchInput.value.trim();
+  if (!query) return;
+
+  searchBtn.disabled = true;
+  searchBtn.textContent = "Searching…";
+
+  try {
+    await runSearchQuery(query);
+    searchInput.value = "";
+  } catch (err) {
+    alert("Search failed: " + err.message);
+  }
+
+  searchBtn.disabled = false;
+  searchBtn.textContent = "Search";
+}
+
+if (searchBtn) {
+  searchBtn.addEventListener("click", runSearch);
+}

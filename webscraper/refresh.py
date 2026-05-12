@@ -9,29 +9,37 @@ Usage:
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
-from datetime import datetime, timezone
 
-QUERY    = "Trump Pope Leo"
-START    = "2026-04-12T00:00:00Z"
-APIS     = ["newsapi", "nyt", "current"]
+PYTHON = shutil.which("python") or sys.executable
+from datetime import datetime, timezone, timedelta
+
+APIS      = ["newsapi", "nyt", "current"]
 MAX_PAGES = 2
 
 HERE     = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(HERE, "..", "data")
 SCRAPER  = os.path.join(HERE, "scrape.py")
 
+parser = argparse.ArgumentParser(description="Refresh news articles.")
+parser.add_argument("--api", choices=APIS + ["all"], default="all")
+parser.add_argument("--query", default="Trump Pope Leo")
+args = parser.parse_args()
 
-def run_scraper(api, end):
+QUERY = args.query
+
+
+def run_scraper(api, start, end):
     print(f"\n{'='*60}")
     print(f"Scraping {api.upper()} ...")
     print(f"{'='*60}")
     subprocess.run(
-        [sys.executable, SCRAPER,
+        [PYTHON, SCRAPER,
          "--query", QUERY,
          "--api", api,
-         "--start", START,
+         "--start", start,
          "--end", end,
          "--max-pages", str(MAX_PAGES),
          "--overwrite"],
@@ -39,8 +47,16 @@ def run_scraper(api, end):
     )
 
 
+def is_relevant(article, keywords):
+    """Return True if the article title or description mentions at least one keyword."""
+    text = (article.get("title", "") + " " + article.get("description", "")).lower()
+    return any(kw in text for kw in keywords)
+
+
 def merge():
+    keywords = [w.lower() for w in QUERY.split() if len(w) > 2]
     all_articles, seen = [], set()
+    skipped = 0
     for fname in sorted(os.listdir(DATA_DIR)):
         if not fname.endswith("_articles.json"):
             continue
@@ -48,27 +64,27 @@ def merge():
             for a in json.load(f):
                 if a["url"] not in seen:
                     seen.add(a["url"])
-                    all_articles.append(a)
+                    if is_relevant(a, keywords):
+                        all_articles.append(a)
+                    else:
+                        skipped += 1
     all_articles.sort(key=lambda a: a.get("date", ""), reverse=True)
     out = os.path.join(DATA_DIR, "articles.json")
     with open(out, "w") as f:
         json.dump(all_articles, f, indent=2)
-    print(f"\nMerged {len(all_articles)} unique articles → {out}")
+    print(f"\nMerged {len(all_articles)} relevant articles ({skipped} off-topic removed) → {out}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Refresh Trump/Pope Leo news articles.")
-    parser.add_argument("--api", choices=APIS + ["all"], default="all",
-                        help="Which API to fetch from (default: all)")
-    args = parser.parse_args()
-
-    end = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    now = datetime.now(timezone.utc)
+    end   = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    start = (now - timedelta(days=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
     os.makedirs(DATA_DIR, exist_ok=True)
 
     apis_to_run = APIS if args.api == "all" else [args.api]
     for api in apis_to_run:
         try:
-            run_scraper(api, end)
+            run_scraper(api, start, end)
         except subprocess.CalledProcessError:
             print(f"\n[{api}] scrape failed — skipping.")
 
