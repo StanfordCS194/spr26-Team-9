@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+openai>=1.82.0
+python-dotenv
+pydantic

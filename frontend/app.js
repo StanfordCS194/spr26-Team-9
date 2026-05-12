@@ -724,8 +724,8 @@ if (runCompareBtn && comparisonResults) {
       comparisonResults.hidden = false;
       comparisonResults.innerHTML = "<h4>Article Comparison</h4><p>Generating comparison...</p>";
       
-      //fetch("http://127.0.0.1:8000/api/compare", {
-      fetch("/api/compare", {
+      fetch("http://127.0.0.1:8000/api/compare", {
+      //fetch("/api/compare", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
