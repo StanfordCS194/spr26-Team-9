@@ -1,4 +1,4 @@
 {
   "outputDirectory": "frontend",
-  "rewrites": [{ "source": "/api/compare", "destination": "/api/compare" }]
+  "rewrites": [{ "source": "/api/compare", "destination": "https://spr26-team-9.onrender.com/api/compare" }]
 }
