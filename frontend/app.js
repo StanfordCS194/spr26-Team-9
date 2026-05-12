@@ -724,8 +724,7 @@ if (runCompareBtn && comparisonResults) {
       comparisonResults.hidden = false;
       comparisonResults.innerHTML = "<h4>Article Comparison</h4><p>Generating comparison...</p>";
       
-      //fetch("http://127.0.0.1:8000/api/compare", {
-      fetch("/api/compare", {
+      fetch("https://spr26-team-9-5gp5wp9b0-danielsongshens-projects.vercel.app/api/compare", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
