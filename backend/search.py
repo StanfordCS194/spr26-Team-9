@@ -34,6 +34,8 @@ def _load_index() -> None:
         data = json.load(f)
     # support both plain array and {articles: [...]} wrapper
     _articles = data if isinstance(data, list) else data.get("articles", [])
+    if not _articles:
+        return
     corpus = [_tokenize(f"{a.get('title','')} {a.get('description','')}") for a in _articles]
     _bm25 = BM25Okapi(corpus)
     _mtime = mtime
