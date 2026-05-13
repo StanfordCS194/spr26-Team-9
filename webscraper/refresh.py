@@ -77,7 +77,7 @@ def merge():
     out = os.path.join(DATA_DIR, "articles.json")
     with open(out, "w") as f:
         json.dump(all_articles, f, indent=2)
-    print(f"\nMerged {len(all_articles)} relevant articles ({skipped} off-topic removed) → {out}")
+    print(f"\nMerged {len(all_articles)} relevant articles ({skipped} off-topic removed) -> {out}")
 
 
 def main():

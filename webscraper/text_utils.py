@@ -76,7 +76,7 @@ def scrape_all(
         with open(cache_path, "w", encoding="utf-8") as f:
             json.dump(cache, f, indent=2, ensure_ascii=False)
         if verbose:
-            print(f"Saved {len(cache)} entries → {cache_path}")
+            print(f"Saved {len(cache)} entries -> {cache_path}")
     else:
         if verbose:
             print(f"All {len(articles)} articles already cached.")
