@@ -880,6 +880,11 @@ body {
   pointer-events: none;
 }
 
+.bias-track--unknown {
+  background: var(--slate-200, #e2e8f0);
+  opacity: 0.5;
+}
+
 .bias-labels {
   display: flex;
   justify-content: space-between;

@@ -5,7 +5,7 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
-_BIAS_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "bias_all_articles.json")
+_BIAS_PATH = os.path.join(os.path.dirname(__file__), "..", "data_public", "bias_all_articles.json")
 
 
 @router.get("/api/bias")

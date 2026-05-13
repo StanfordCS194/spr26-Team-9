@@ -1207,11 +1207,18 @@ loadBias(); // fire-and-forget; ready before any search completes
 
 function makeBiasSlider(url) {
   const b = biasMap[url];
-  if (!b) return null;
-  const pct = ((b.bias_signed + 1) / 2 * 100).toFixed(1); // -1→0%, 0→50%, 1→100%
-  const opacity = Math.max(0.25, Math.min(1, b.bias_score)).toFixed(2);
   const el = document.createElement("div");
   el.className = "bias-slider";
+  if (!b) {
+    el.title = "Bias data unavailable";
+    el.innerHTML = `
+      <div class="bias-track bias-track--unknown"></div>
+      <div class="bias-labels"><span>L</span><span>R</span></div>
+    `;
+    return el;
+  }
+  const pct = ((b.bias_signed + 1) / 2 * 100).toFixed(1); // -1→0%, 0→50%, 1→100%
+  const opacity = Math.max(0.25, Math.min(1, b.bias_score)).toFixed(2);
   el.title = `Bias: ${b.bias_label} (score ${b.bias_signed.toFixed(2)})`;
   el.innerHTML = `
     <div class="bias-track" style="opacity:${opacity}">
