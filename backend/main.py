@@ -1,7 +1,3 @@
-import os
-import subprocess
-import sys
-from contextlib import asynccontextmanager
 import json
 import os
 import shutil
@@ -27,13 +23,7 @@ FRONTEND_DIR = os.path.join(HERE, "..", "frontend")
 PYTHON = shutil.which("python") or sys.executable
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    #init_index()
-    yield
-
-
-app = FastAPI(title="News Backend", lifespan=lifespan)
+app = FastAPI(title="News Backend")
 
 app.add_middleware(
     CORSMiddleware,
@@ -48,8 +38,7 @@ app.include_router(bias_router)
 
 @app.get("/api/ready")
 def api_ready():
-    from search import _articles
-    return {"ready": bool(_articles)}
+    return {"ready": True}
 
 
 @app.get("/data/{filename:path}")
