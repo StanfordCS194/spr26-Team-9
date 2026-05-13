@@ -11,6 +11,7 @@ load_dotenv()
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from search import filter_articles
@@ -19,6 +20,7 @@ from compare import router as compare_router
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(HERE, "..", "data")
+FRONTEND_DIR = os.path.join(HERE, "..", "frontend")
 PYTHON = shutil.which("python") or sys.executable
 
 
@@ -97,3 +99,7 @@ def search(payload: SearchRequest):
 
     results = filter_articles(query)
     return {"query": query, "results": results}
+
+
+if os.path.isdir(FRONTEND_DIR):
+    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
