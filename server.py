@@ -14,7 +14,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 FRONTEND_DIR = os.path.join(HERE, "frontend")
 DATA_DIR = os.path.join(HERE, "data")
 
+sys.path.insert(0, os.path.join(HERE, "backend"))
+from search import router as search_router  # noqa: E402
+
 app = FastAPI(title="News Narrative Tracker")
+app.include_router(search_router)
 
 
 class SearchRequest(BaseModel):

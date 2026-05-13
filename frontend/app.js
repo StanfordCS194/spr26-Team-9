@@ -173,7 +173,7 @@ async function runSearchQuery(query) {
     body: JSON.stringify({ query }),
   });
   if (!res.ok) throw new Error((await res.json()).error || "Search failed");
-  await loadAndRender();
+  await loadAndRender(query);
   setStoryHeadline(query);
 }
 
@@ -202,12 +202,14 @@ async function triggerSearch() {
 
 // ---------- Data loading ----------
 
-async function loadArticles() {
-  const res = await fetch("/api/articles");
+async function loadArticles(query) {
+  const url = query ? `/api/search?q=${encodeURIComponent(query)}` : "/api/articles";
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
-  // support both plain array and {updatedAt, articles} wrapper
   if (Array.isArray(data)) return { articles: data, updatedAt: null };
+  // /api/search returns {query, results}; /api/articles returns {articles, updatedAt}
+  if (data.results) return { articles: data.results, updatedAt: null };
   return data;
 }
 
@@ -1151,9 +1153,9 @@ function setLastUpdated(isoString) {
   });
 }
 
-async function loadAndRender() {
+async function loadAndRender(query) {
   try {
-    const { articles, updatedAt } = await loadArticles();
+    const { articles, updatedAt } = await loadArticles(query);
     const normalized = articles.map(a => ({ ...a, source: cleanSourceName(a.source) }));
 
     timelineData = toTimelineData(normalized);
