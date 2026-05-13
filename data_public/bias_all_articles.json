@@ -1,0 +1,320 @@
+{
+  "https://www.today.com/video/trump-heads-to-china-sean-duffy-under-fire-for-reality-show-263092293905": {
+    "source": "today.com",
+    "bias_label": "Left",
+    "bias_score": 0.567,
+    "bias_signed": -0.567
+  },
+  "https://www.aljazeera.com/video/upfront/2026/5/11/is-the-vatican-standing-up-to-trump": {
+    "source": "aljazeera.com",
+    "bias_label": "Left",
+    "bias_score": 0.7713,
+    "bias_signed": -0.7713
+  },
+  "https://flipboard.com/article/https%3A%2F%2Fflipboard.com%2Fvideo%2Fstringershub%2F460c78d19d": {
+    "source": "flipboard.com",
+    "bias_label": "Left",
+    "bias_score": 0.457,
+    "bias_signed": -0.457
+  },
+  "https://abcnews.com/video/132829433/": {
+    "source": "abcnews.com",
+    "bias_label": "Left",
+    "bias_score": 0.9434,
+    "bias_signed": -0.9434
+  },
+  "https://www.independent.co.uk/bulletin/news/trump-pope-robert-jeffress-b2973858.html": {
+    "source": "independent.co.uk",
+    "bias_label": "Center",
+    "bias_score": 0.677,
+    "bias_signed": 0.0
+  },
+  "https://crooksandliars.com/2026/05/maga-pastor-claims-trump-has-better": {
+    "source": "Crooksandliars.com",
+    "bias_label": "Right",
+    "bias_score": 0.6655,
+    "bias_signed": 0.6655
+  },
+  "https://www.independent.co.uk/news/world/americas/us-politics/trump-robert-jeffress-bible-pope-b2973812.html": {
+    "source": "independent.co.uk",
+    "bias_label": "Center",
+    "bias_score": 0.9168,
+    "bias_signed": 0.0
+  },
+  "https://www.huffpost.com/entry/baptist-pastor-robert-jeffress-trump-pope-better-understanding-bible_n_6a006d50e4b0cb033e521809": {
+    "source": "huffpost.com",
+    "bias_label": "Right",
+    "bias_score": 0.6637,
+    "bias_signed": 0.6637
+  },
+  "https://www.mediaite.com/media/baptist-pastor-argues-trump-has-better-understanding-of-the-bible-than-pope-leo/": {
+    "source": "Mediaite",
+    "bias_label": "Right",
+    "bias_score": 0.7005,
+    "bias_signed": 0.7005
+  },
+  "https://www.motherjones.com/politics/2026/04/trump-maga-evangelical-crackup-pope-christian/": {
+    "source": "motherjones.com",
+    "bias_label": "Left",
+    "bias_score": 0.6007,
+    "bias_signed": -0.6007
+  },
+  "https://theconversation.com/in-his-first-year-as-pope-leo-has-emphasised-peace-unity-and-social-responsibility-and-shown-he-wont-be-stared-down-281015": {
+    "source": "theconversation.com",
+    "bias_label": "Left",
+    "bias_score": 0.9901,
+    "bias_signed": -0.9901
+  },
+  "https://www.wwno.org/politics/2026-04-28/louisiana-catholics-balance-faith-and-politics-amid-trump-pope-dispute": {
+    "source": "wwno.org",
+    "bias_label": "Right",
+    "bias_score": 0.4829,
+    "bias_signed": 0.4829
+  },
+  "https://www.independent.ie/world-news/europe/pope-leo-meets-and-prays-with-new-head-of-church-of-england/a1619537615.html": {
+    "source": "Independent.ie",
+    "bias_label": "Right",
+    "bias_score": 0.7177,
+    "bias_signed": 0.7177
+  },
+  "https://japantoday.com/category/world/pope-and-first-female-archbishop-of-canterbury-meet-and-pray-together2": {
+    "source": "Japan Today",
+    "bias_label": "Right",
+    "bias_score": 0.7547,
+    "bias_signed": 0.7547
+  },
+  "https://www.independent.co.uk/bulletin/news/trump-archbishop-of-canterbury-pope-leo-trump-vatican-b2966011.html": {
+    "source": "independent.co.uk",
+    "bias_label": "Right",
+    "bias_score": 0.5295,
+    "bias_signed": 0.5295
+  },
+  "https://www.independent.co.uk/news/uk/home-news/pope-leo-archbishop-of-canterbury-trump-b2965889.html": {
+    "source": "independent.co.uk",
+    "bias_label": "Right",
+    "bias_score": 0.7782,
+    "bias_signed": 0.7782
+  },
+  "https://www.standard.co.uk/news/uk/sarah-mullally-donald-trump-archbishop-of-canterbury-catholic-church-church-of-england-b1280186.html": {
+    "source": "standard.co.uk",
+    "bias_label": "Right",
+    "bias_score": 0.854,
+    "bias_signed": 0.854
+  },
+  "https://www.independent.co.uk/news/uk/home-news/sarah-mullally-donald-trump-archbishop-of-canterbury-catholic-church-church-of-england-b2965867.html": {
+    "source": "independent.co.uk",
+    "bias_label": "Center",
+    "bias_score": 0.958,
+    "bias_signed": 0.0
+  },
+  "https://en.protothema.gr/2026/04/27/bloomberg-merz-says-iran-is-humiliating-the-us-and-questions-trumps-strategy/": {
+    "source": "Protothema.gr",
+    "bias_label": "Right",
+    "bias_score": 0.5757,
+    "bias_signed": 0.5757
+  },
+  "https://cebudailynews.inquirer.net/721592/iran-offers-to-reopen-strait-of-hormuz-if": {
+    "source": "cebudailynews.inquirer.net",
+    "bias_label": "Right",
+    "bias_score": 0.3904,
+    "bias_signed": 0.3904
+  },
+  "https://www.pbs.org/newshour/world/pope-leo-xiv-prays-with-archbishop-of-canterbury-sarah-mullally-in-historic-encounter": {
+    "source": "PBS",
+    "bias_label": "Left",
+    "bias_score": 0.518,
+    "bias_signed": -0.518
+  },
+  "https://nypost.com/2026/04/27/world-news/pope-and-first-female-archbishop-of-canterbury-meet-and-pray-together/": {
+    "source": "New York Post",
+    "bias_label": "Right",
+    "bias_score": 0.8325,
+    "bias_signed": 0.8325
+  },
+  "https://www.theatlantic.com/ideas/2026/04/pope-leo-trump-iran/686964/": {
+    "source": "The Atlantic",
+    "bias_label": "Left",
+    "bias_score": 0.44,
+    "bias_signed": -0.44
+  },
+  "https://www.foxnews.com/politics/trump-border-czar-tom-homan-wants-pope-leo-xiv-ride-along-ice-agents-dont-understand": {
+    "source": "foxnews.com",
+    "bias_label": "Right",
+    "bias_score": 0.7622,
+    "bias_signed": 0.7622
+  },
+  "https://www.foxnews.com/opinion/trump-pushes-shaky-deal-iran-hormuz-shut-again-opponents-give-him-no-credit-progress": {
+    "source": "Fox News",
+    "bias_label": "Right",
+    "bias_score": 0.7697,
+    "bias_signed": 0.7697
+  },
+  "https://www.foxnews.com/politics/vance-says-hes-grateful-pope-leos-statement-wanting-public-debate-trump": {
+    "source": "foxnews.com",
+    "bias_label": "Right",
+    "bias_score": 0.9343,
+    "bias_signed": 0.9343
+  },
+  "https://www.foxnews.com/world/pope-leo-says-remarks-world-ravaged-handful-tyrants-aimed-trump-report": {
+    "source": "foxnews.com",
+    "bias_label": "Right",
+    "bias_score": 0.9212,
+    "bias_signed": 0.9212
+  },
+  "https://www.foxnews.com/politics/pope-leo-slams-manipulate-religion-military-political-gain-trump-responds": {
+    "source": "foxnews.com",
+    "bias_label": "Right",
+    "bias_score": 0.9083,
+    "bias_signed": 0.9083
+  },
+  "https://www.today.com/video/trump-suggests-he-ll-lean-on-china-to-force-iran-to-reopen-strait-263152197537": {
+    "source": "today.com",
+    "bias_label": "Center",
+    "bias_score": 0.5372,
+    "bias_signed": 0.0
+  },
+  "https://www.buzzfeed.com/benblanchet/trump-pope-leo-pastor-jeffress-better-understanding-bible": {
+    "source": "buzzfeed.com",
+    "bias_label": "Right",
+    "bias_score": 0.6943,
+    "bias_signed": 0.6943
+  },
+  "https://truthout.org/articles/far-right-pastor-says-trump-has-a-better-understanding-of-bible-than-pope-leo/": {
+    "source": "Truthout",
+    "bias_label": "Right",
+    "bias_score": 0.7663,
+    "bias_signed": 0.7663
+  },
+  "https://www.globalresearch.ca/pope-leo-xiv-revolt-conscience-violence/5925915": {
+    "source": "Globalresearch.ca",
+    "bias_label": "Left",
+    "bias_score": 0.4635,
+    "bias_signed": -0.4635
+  },
+  "https://www.peoplefor.org/rightwingwatch/christian-nationalist-wishlist": {
+    "source": "Peoplefor.org",
+    "bias_label": "Left",
+    "bias_score": 0.5551,
+    "bias_signed": -0.5551
+  },
+  "https://www.huffpost.com/entry/maggie-haberman-vance-rubio-2028-trump_n_6a017ed7e4b065a1677edaec": {
+    "source": "huffpost.com",
+    "bias_label": "Right",
+    "bias_score": 0.6824,
+    "bias_signed": 0.6824
+  },
+  "https://www.juancole.com/2026/05/americas-christian-autocracy.html": {
+    "source": "Juancole.com",
+    "bias_label": "Left",
+    "bias_score": 0.5665,
+    "bias_signed": -0.5665
+  },
+  "https://www.rawstory.com/trumps-christianity/": {
+    "source": "Raw Story",
+    "bias_label": "Right",
+    "bias_score": 0.6507,
+    "bias_signed": 0.6507
+  },
+  "https://www.nytimes.com/2026/04/14/opinion/pope-president-war-immigration.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.8849,
+    "bias_signed": 0.8849
+  },
+  "https://www.nytimes.com/2026/04/14/us/politics/trump-attacks-pope-midterms.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.5241,
+    "bias_signed": 0.5241
+  },
+  "https://www.nytimes.com/2026/04/14/podcasts/the-headlines/congress-resignations-pope-trump.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.4083,
+    "bias_signed": 0.4083
+  },
+  "https://www.nytimes.com/2026/04/14/arts/television/late-night-trump-pope.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.6921,
+    "bias_signed": 0.6921
+  },
+  "https://www.nytimes.com/2026/04/14/world/africa/pope-leo-algeria-africa-visit.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.6982,
+    "bias_signed": 0.6982
+  },
+  "https://www.nytimes.com/2026/04/13/us/politics/jd-vance-pope-leo-trump.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.8008,
+    "bias_signed": 0.8008
+  },
+  "https://www.nytimes.com/2026/04/13/briefing/the-us-blockades-irans-ports.html": {
+    "source": "New York Times",
+    "bias_label": "Left",
+    "bias_score": 0.4495,
+    "bias_signed": -0.4495
+  },
+  "https://www.nytimes.com/2026/04/13/world/venezuela-oil-us-blockade-hormuz-pope-leo.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.485,
+    "bias_signed": 0.485
+  },
+  "https://www.nytimes.com/2026/04/13/us/politics/trump-jesus-picture-pope-leo.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.5501,
+    "bias_signed": 0.5501
+  },
+  "https://www.nytimes.com/2026/04/13/us/politics/trump-mental-fitness-25th-amendment.html": {
+    "source": "New York Times",
+    "bias_label": "Center",
+    "bias_score": 0.4862,
+    "bias_signed": 0.0
+  },
+  "https://www.nytimes.com/2026/04/13/us/trump-pope-leo.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.5613,
+    "bias_signed": 0.5613
+  },
+  "https://www.nytimes.com/2026/04/13/world/europe/pope-leo-trump-dispute.html": {
+    "source": "New York Times",
+    "bias_label": "Left",
+    "bias_score": 0.4123,
+    "bias_signed": -0.4123
+  },
+  "https://www.nytimes.com/2026/04/13/us/politics/trump-jesus-pope-leo-truth-social-post.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.6064,
+    "bias_signed": 0.6064
+  },
+  "https://www.nytimes.com/2026/04/13/business/dealbook/trump-iran-hormuz-blockade.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.5121,
+    "bias_signed": 0.5121
+  },
+  "https://www.nytimes.com/2026/04/13/us/politics/pope-leo-trump-response.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.7721,
+    "bias_signed": 0.7721
+  },
+  "https://www.nytimes.com/2026/04/13/world/europe/pope-leo-africa-future.html": {
+    "source": "New York Times",
+    "bias_label": "Left",
+    "bias_score": 0.4212,
+    "bias_signed": -0.4212
+  },
+  "https://www.nytimes.com/2026/04/12/us/politics/trump-attacks-pope-leo.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.7101,
+    "bias_signed": 0.7101
+  }
+}
