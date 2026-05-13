@@ -1,3 +1,6 @@
+import os
+import subprocess
+import sys
 from contextlib import asynccontextmanager
 import json
 import os
@@ -8,15 +11,15 @@ import sys
 from dotenv import load_dotenv
 load_dotenv()
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
 
 from search import filter_articles
 from users import router as users_router
 from compare import router as compare_router
+from bias import router as bias_router
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(HERE, "..", "data")
@@ -41,10 +44,12 @@ app.add_middleware(
 
 app.include_router(users_router)
 app.include_router(compare_router)
+app.include_router(bias_router)
 
-
-class SearchRequest(BaseModel):
-    query: str = ""
+@app.get("/api/ready")
+def api_ready():
+    from search import _articles
+    return {"ready": bool(_articles)}
 
 
 @app.get("/data/{filename:path}")
@@ -75,9 +80,9 @@ def api_articles():
         return json.load(f)
 
 
-@app.post("/search")
-def search(payload: SearchRequest):
-    query = payload.query.strip()
+@app.get("/api/search")
+def api_search(q: str = Query(..., min_length=1), limit: int = Query(10, ge=1, le=50)):
+    query = q.strip()
     if not query:
         raise HTTPException(status_code=400, detail="No query provided")
 

@@ -31,10 +31,14 @@ def _load_index() -> None:
     _articles = data if isinstance(data, list) else data.get("articles", [])
     if not _articles:
         return
+    if not _articles:
+        return
     corpus = [_tokenize(f"{a.get('title','')} {a.get('description','')}") for a in _articles]
     _bm25 = BM25Okapi(corpus)
     _mtime = mtime
 
+def init_index() -> None:
+    _load_index()
 
 def filter_articles(query: str, limit: int = 50) -> list[dict]:
     _load_index()
