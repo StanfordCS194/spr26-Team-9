@@ -87,13 +87,19 @@ def search(payload: SearchRequest):
                 os.remove(os.path.join(DATA_DIR, fname))
 
     try:
-        subprocess.run(
+        proc = subprocess.run(
             [PYTHON, os.path.join(HERE, "..", "webscraper", "refresh.py"), "--query", query],
             check=True,
             timeout=180,
+            capture_output=True,
+            text=True,
         )
+        print(proc.stdout)
+        print(proc.stderr)
     except subprocess.CalledProcessError as e:
-        raise HTTPException(status_code=500, detail=str(e)) from e
+        print(e.stdout)
+        print(e.stderr)
+        raise HTTPException(status_code=500, detail=e.stderr or str(e)) from e
     except subprocess.TimeoutExpired as e:
         raise HTTPException(status_code=504, detail="Scraping timed out") from e
 
