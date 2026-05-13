@@ -29,6 +29,8 @@ def _load_index() -> None:
     with open(DATA_PATH, encoding="utf-8") as f:
         data = json.load(f)
     _articles = data if isinstance(data, list) else data.get("articles", [])
+    if not _articles:
+        return
     corpus = [_tokenize(f"{a.get('title','')} {a.get('description','')}") for a in _articles]
     _bm25 = BM25Okapi(corpus)
     _mtime = mtime
