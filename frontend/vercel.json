@@ -1,3 +1,6 @@
 {
-  "rewrites": [{ "source": "/api/:path*", "destination": "https://spr26-team-9-backend.onrender.com/api/:path*" }]
+  "rewrites": [
+    { "source": "/search", "destination": "https://spr26-team-9-backend.onrender.com/search" },
+    { "source": "/api/:path*", "destination": "https://spr26-team-9-backend.onrender.com/api/:path*" }
+  ]
 }
