@@ -16,6 +16,7 @@ Saves:
 Run from repo root: python experiments/bias_by_source.py
 """
 
+import argparse
 import json
 import os
 import sys
@@ -222,6 +223,10 @@ def plot_bias_by_source(results: dict[str, dict], out_dir: str) -> None:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Run politicalBiasBERT bias analysis by source.")
+    parser.add_argument("--plot", action="store_true", help="Generate the bias plot.")
+    args = parser.parse_args()
+
     for path, label in [
         (ARTICLES_PATH, "articles.json"),
         (SCRAPED_TEXT_PATH, "scraped_text.json"),
@@ -252,8 +257,9 @@ def main() -> None:
     print(f"\nLabel distribution: {dict(label_counts)}")
     print(f"Sources: {len(src_counts)}  (top 5: {dict(src_counts.most_common(5))})")
 
-    print("\nGenerating plot...")
-    plot_bias_by_source(results, OUT_DIR)
+    if args.plot:
+        print("\nGenerating plot...")
+        plot_bias_by_source(results, OUT_DIR)
     print("Done.")
 
 
