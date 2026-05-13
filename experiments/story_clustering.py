@@ -47,7 +47,7 @@ def main() -> None:
             "Install with: pip install sentence-transformers hdbscan"
         )
 
-    from text_utils import scrape_all
+    from experiments.text_utils import scrape_all
 
     with open(ARTICLES_PATH, "r", encoding="utf-8") as f:
         articles = json.load(f)
