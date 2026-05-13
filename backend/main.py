@@ -14,6 +14,7 @@ from search import init_index, router as search_router
 from users import router as users_router
 
 from compare import router as compare_router
+from bias import router as bias_router
 
 _REFRESH_SCRIPT = os.path.join(os.path.dirname(__file__), "..", "webscraper", "refresh.py")
 
@@ -37,6 +38,7 @@ app.add_middleware(
 app.include_router(search_router)
 app.include_router(users_router)
 app.include_router(compare_router)
+app.include_router(bias_router)
 
 _frontend = os.path.join(os.path.dirname(__file__), "..", "frontend")
 if os.path.isdir(_frontend):

@@ -371,6 +371,7 @@ function closeFilters() {
 }
 
 document.getElementById("filters-close").addEventListener("click", closeFilters);
+document.getElementById("filters-panel").classList.add("open"); // open by default on first load
 
 document.querySelectorAll(".menu-item").forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -424,6 +425,10 @@ function getFilteredTimelineData() {
   );
   const startDate = startDateFilterEl.value;
   const endDate   = endDateFilterEl.value;
+  const leanValue = parseInt(document.getElementById("lean-slider").value, 10);
+  // |leanValue| 1-2 = mild side, 3-5 = strong side, 0 = all
+  const leanDir    = leanValue < 0 ? "Left" : leanValue > 0 ? "Right" : null;
+  const leanStrong = Math.abs(leanValue) >= 3; // past halfway (2.5) on a -5..5 scale
 
   return timelineData
     .filter((group) => {
@@ -433,7 +438,19 @@ function getFilteredTimelineData() {
     })
     .map((group) => ({
       ...group,
-      articles: group.articles.filter((a) => selectedSources.has(a.src)),
+      articles: group.articles.filter((a) => {
+        if (!selectedSources.has(a.src)) return false;
+        if (leanDir) {
+          const bias = biasMap[a.url];
+          if (bias) {
+            if (bias.bias_label !== leanDir) return false;
+            const magnitude = Math.abs(bias.bias_signed);
+            if (leanStrong  && magnitude < 0.5) return false; // want strong, article is mild
+            if (!leanStrong && magnitude >= 0.5) return false; // want mild, article is strong
+          }
+        }
+        return true;
+      }),
     }))
     .filter((group) => group.articles.length > 0);
 }
@@ -458,6 +475,8 @@ function makeArticleCard(a) {
     </div>
     <div class="title">${a.title}</div>
   `;
+  const slider = makeBiasSlider(a.url);
+  if (slider) card.appendChild(slider);
   if (bookmarkedTitles.has(a.title)) {
     const star = document.createElement("button");
     star.className = "bookmark-star";
@@ -1177,6 +1196,36 @@ function setLastUpdated(isoString) {
   el.textContent = "Updated " + d.toLocaleString("en-US", {
     month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short"
   });
+}
+
+// ---------- Bias data ----------
+
+let biasMap = {}; // url → {bias_label, bias_score, bias_signed}
+
+async function loadBias() {
+  try {
+    const res = await fetch("/api/bias");
+    if (res.ok) biasMap = await res.json();
+  } catch (_) {}
+}
+
+loadBias(); // fire-and-forget; ready before any search completes
+
+function makeBiasSlider(url) {
+  const b = biasMap[url];
+  if (!b) return null;
+  const pct = ((b.bias_signed + 1) / 2 * 100).toFixed(1); // -1→0%, 0→50%, 1→100%
+  const opacity = Math.max(0.25, Math.min(1, b.bias_score)).toFixed(2);
+  const el = document.createElement("div");
+  el.className = "bias-slider";
+  el.title = `Bias: ${b.bias_label} (score ${b.bias_signed.toFixed(2)})`;
+  el.innerHTML = `
+    <div class="bias-track" style="opacity:${opacity}">
+      <div class="bias-marker" style="left:${pct}%"></div>
+    </div>
+    <div class="bias-labels"><span>L</span><span>R</span></div>
+  `;
+  return el;
 }
 
 async function loadAndRender() {
