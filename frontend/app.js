@@ -79,6 +79,7 @@ let timelineData = [];
 let channelData  = {};
 let selectedCompareTitles = [];
 let selectedCompareArticles = [];
+let currentQuery = null;
 
 // ---------- Landing page ----------
 
@@ -193,6 +194,7 @@ async function runSearchQuery(query) {
   const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&limit=10`);
   if (!res.ok) throw new Error((await res.json()).error || "Search failed");
   const { results } = await res.json();
+  currentQuery = query;
   await loadAndRender(query, results);
   setStoryHeadline(query);
 }
@@ -202,7 +204,7 @@ async function triggerSearch() {
   if (!query) return;
 
   landingBtn.disabled = true;
-  showLandingStatus("Fetching articles… this may take up to 30 seconds.");
+  showLandingStatus("Fetching articles… this may take up to 1 minute.");
   startProgressPolling();
 
   try {
@@ -1150,34 +1152,20 @@ async function recordView(a) {
 // ---------- Refresh ----------
 
 const refreshBtn = document.getElementById("refresh-btn");
+const refreshIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>`;
 if (refreshBtn) {
   refreshBtn.addEventListener("click", async () => {
+    if (!currentQuery) return;
     refreshBtn.disabled = true;
-    refreshBtn.innerHTML = `
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      Fetching...`;
+    refreshBtn.innerHTML = `${refreshIcon} Fetching…`;
     try {
-      const res = await fetch("/api/refresh", { method: "POST" });
-      let data = {};
-      try { data = await res.json(); } catch { data = { ok: false, error: `HTTP ${res.status}` }; }
-      if (data.ok) {
-        refreshBtn.innerHTML = "Started! Reload in ~1 min";
-        setTimeout(() => {
-          refreshBtn.innerHTML = `
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-            Refresh`;
-          refreshBtn.disabled = false;
-        }, 90000);
-      } else {
-        console.error("Refresh failed:", data);
-        refreshBtn.innerHTML = `Error ${data.status || res.status || "—"} — try again`;
-        refreshBtn.disabled = false;
-      }
+      await runSearchQuery(currentQuery);
+      refreshBtn.innerHTML = `${refreshIcon} Refresh`;
     } catch (err) {
       console.error("Refresh error:", err);
       refreshBtn.innerHTML = "Failed — try again";
-      refreshBtn.disabled = false;
     }
+    refreshBtn.disabled = false;
   });
 }
 
@@ -1282,27 +1270,3 @@ init();
 // Landing page shows first — loadAndRender() is called after a successful search
 
 
-const searchBtn = document.getElementById("search-btn");
-const searchInput = document.getElementById("search-input");
-
-async function runSearch() {
-  const query = searchInput.value.trim();
-  if (!query) return;
-
-  searchBtn.disabled = true;
-  searchBtn.textContent = "Searching…";
-
-  try {
-    await runSearchQuery(query);
-    searchInput.value = "";
-  } catch (err) {
-    alert("Search failed: " + err.message);
-  }
-
-  searchBtn.disabled = false;
-  searchBtn.textContent = "Search";
-}
-
-if (searchBtn) {
-  searchBtn.addEventListener("click", runSearch);
-}
