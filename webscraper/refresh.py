@@ -26,6 +26,8 @@ SCRAPER  = os.path.join(HERE, "scrape.py")
 parser = argparse.ArgumentParser(description="Refresh news articles.")
 parser.add_argument("--api", choices=APIS + ["all"], default="all")
 parser.add_argument("--query", default="Trump Pope Leo")
+parser.add_argument("--scrape-text", action="store_true", default=False,
+                    help="After fetching APIs, scrape full article text into data/scraped_text.json")
 args = parser.parse_args()
 
 QUERY = args.query
@@ -61,7 +63,10 @@ def merge():
         if not fname.endswith("_articles.json"):
             continue
         with open(os.path.join(DATA_DIR, fname)) as f:
-            for a in json.load(f):
+            data = json.load(f)
+        if not isinstance(data, list):
+            continue
+        for a in data:
                 if a["url"] not in seen:
                     seen.add(a["url"])
                     if is_relevant(a, keywords):
@@ -89,6 +94,18 @@ def main():
             print(f"\n[{api}] scrape failed — skipping.")
 
     merge()
+
+    if args.scrape_text:
+        sys.path.insert(0, HERE)
+        from text_utils import scrape_all
+        articles_path = os.path.join(DATA_DIR, "articles.json")
+        with open(articles_path) as f:
+            articles = json.load(f)
+        print(f"\n{'='*60}")
+        print("Scraping full article text ...")
+        print(f"{'='*60}")
+        scrape_all(articles)
+
     print("\nDone. Start the server with: python -m http.server 8080")
     print("Then open: http://localhost:8080/frontend/")
 
