@@ -173,7 +173,8 @@ async function runSearchQuery(query) {
     body: JSON.stringify({ query }),
   });
   if (!res.ok) throw new Error((await res.json()).error || "Search failed");
-  await loadAndRender(query);
+  const { results } = await res.json();
+  await loadAndRender(query, results);
   setStoryHeadline(query);
 }
 
@@ -1153,9 +1154,11 @@ function setLastUpdated(isoString) {
   });
 }
 
-async function loadAndRender(query) {
+async function loadAndRender(query, prefetchedArticles) {
   try {
-    const { articles, updatedAt } = await loadArticles(query);
+    const { articles, updatedAt } = prefetchedArticles
+      ? { articles: prefetchedArticles, updatedAt: null }
+      : await loadArticles(query);
     const normalized = articles.map(a => ({ ...a, source: cleanSourceName(a.source) }));
 
     timelineData = toTimelineData(normalized);

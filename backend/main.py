@@ -10,11 +10,11 @@ load_dotenv()
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from search import init_index, router as search_router
+from search import filter_articles
 from users import router as users_router
-
 from compare import router as compare_router
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -37,7 +37,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(search_router)
 app.include_router(users_router)
 app.include_router(compare_router)
 
@@ -51,7 +50,6 @@ def data_files(filename: str):
     path = os.path.join(DATA_DIR, filename)
     if not os.path.isfile(path):
         raise HTTPException(status_code=404, detail="File not found")
-    from fastapi.responses import FileResponse
     return FileResponse(path)
 
 
@@ -92,8 +90,10 @@ def search(payload: SearchRequest):
             check=True,
             timeout=180,
         )
-        return {"status": "ok"}
     except subprocess.CalledProcessError as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
     except subprocess.TimeoutExpired as e:
         raise HTTPException(status_code=504, detail="Scraping timed out") from e
+
+    results = filter_articles(query)
+    return {"query": query, "results": results}
