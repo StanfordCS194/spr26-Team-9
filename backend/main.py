@@ -1,15 +1,25 @@
 from contextlib import asynccontextmanager
+import json
+import os
+import shutil
+import subprocess
+import sys
 
 from dotenv import load_dotenv
 load_dotenv()
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from search import init_index, router as search_router
 from users import router as users_router
 
 from compare import router as compare_router
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(HERE, "..", "data")
+PYTHON = shutil.which("python") or sys.executable
 
 
 @asynccontextmanager
@@ -30,3 +40,60 @@ app.add_middleware(
 app.include_router(search_router)
 app.include_router(users_router)
 app.include_router(compare_router)
+
+
+class SearchRequest(BaseModel):
+    query: str = ""
+
+
+@app.get("/data/{filename:path}")
+def data_files(filename: str):
+    path = os.path.join(DATA_DIR, filename)
+    if not os.path.isfile(path):
+        raise HTTPException(status_code=404, detail="File not found")
+    from fastapi.responses import FileResponse
+    return FileResponse(path)
+
+
+@app.get("/api/progress")
+def api_progress():
+    apis = ["newsapi", "nyt", "current"]
+    done = sum(
+        1 for api in apis
+        if os.path.isfile(os.path.join(DATA_DIR, f"{api}_articles.json"))
+    )
+    merged = os.path.isfile(os.path.join(DATA_DIR, "articles.json"))
+    return {"done": done, "total": len(apis), "merged": merged}
+
+
+@app.get("/api/articles")
+def api_articles():
+    path = os.path.join(DATA_DIR, "articles.json")
+    if not os.path.isfile(path):
+        raise HTTPException(status_code=404, detail="articles.json not found")
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+@app.post("/search")
+def search(payload: SearchRequest):
+    query = payload.query.strip()
+    if not query:
+        raise HTTPException(status_code=400, detail="No query provided")
+
+    if os.path.isdir(DATA_DIR):
+        for fname in os.listdir(DATA_DIR):
+            if fname.endswith("_articles.json"):
+                os.remove(os.path.join(DATA_DIR, fname))
+
+    try:
+        subprocess.run(
+            [PYTHON, os.path.join(HERE, "..", "webscraper", "refresh.py"), "--query", query],
+            check=True,
+            timeout=180,
+        )
+        return {"status": "ok"}
+    except subprocess.CalledProcessError as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e
+    except subprocess.TimeoutExpired as e:
+        raise HTTPException(status_code=504, detail="Scraping timed out") from e
