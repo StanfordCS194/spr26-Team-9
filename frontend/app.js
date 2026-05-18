@@ -1267,6 +1267,8 @@ async function init() {
 
 init();
 
+setInterval(() => fetch("/api/ready").catch(() => {}), 30000);
+
 // Landing page shows first — loadAndRender() is called after a successful search
 
 
