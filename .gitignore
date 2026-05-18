@@ -11,6 +11,8 @@ data_analysis_llms/__pycache__
 visualizations/__pycache__/
 backend/__pycache__/
 
+__pycache__/
+
 data/
 
 .vscode
