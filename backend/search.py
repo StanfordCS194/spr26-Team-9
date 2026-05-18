@@ -1,12 +1,8 @@
 import json
 import os
 import re
-import time
 
-from fastapi import APIRouter, Query, HTTPException
 from rank_bm25 import BM25Okapi
-
-router = APIRouter()
 
 DATA_PATH = os.getenv(
     "DATA_PATH",
@@ -32,7 +28,6 @@ def _load_index() -> None:
         return
     with open(DATA_PATH, encoding="utf-8") as f:
         data = json.load(f)
-    # support both plain array and {articles: [...]} wrapper
     _articles = data if isinstance(data, list) else data.get("articles", [])
     if not _articles:
         return
@@ -40,27 +35,15 @@ def _load_index() -> None:
     _bm25 = BM25Okapi(corpus)
     _mtime = mtime
 
-
 def init_index() -> None:
     _load_index()
 
-
-@router.get("/api/ready")
-async def ready():
-    _load_index()
-    return {"ready": bool(_articles)}
-
-
-@router.get("/api/search")
-async def search(
-    q: str = Query(..., min_length=1),
-    limit: int = Query(10, ge=1, le=50),
-):
+def filter_articles(query: str, limit: int = 50) -> list[dict]:
     _load_index()
     if _bm25 is None or not _articles:
-        raise HTTPException(status_code=503, detail="Article index not available")
+        return []
 
-    tokens = _tokenize(q)
+    tokens = _tokenize(query)
     raw_scores = _bm25.get_scores(tokens)
     max_score = float(max(raw_scores)) if len(raw_scores) else 0.0
 
@@ -72,4 +55,4 @@ async def search(
                 results.append({**article, "score": score})
 
     results.sort(key=lambda x: x["score"], reverse=True)
-    return {"query": q, "results": results[:limit]}
+    return results[:limit]

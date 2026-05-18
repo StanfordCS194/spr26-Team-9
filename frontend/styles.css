@@ -851,6 +851,50 @@ body {
   font-weight: 500;
 }
 
+.bias-slider {
+  margin-top: 8px;
+  user-select: none;
+}
+
+.bias-track {
+  position: relative;
+  height: 5px;
+  border-radius: 3px;
+  background: linear-gradient(
+    to right,
+    #4a90d9 0%,
+    #aaaaaa 50%,
+    #e05c4a 100%
+  );
+}
+
+.bias-marker {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #444;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.bias-track--unknown {
+  background: var(--slate-200, #e2e8f0);
+  opacity: 0.5;
+}
+
+.bias-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--slate-400);
+  margin-top: 2px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
 /* COMPARE button — fixed bottom-right */
 .compare-btn {
   position: fixed;
