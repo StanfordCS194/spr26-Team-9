@@ -64,13 +64,13 @@ def main():
         all_articles = kept + fetched
         print(f"\n[{args.api}] {len(fetched)} articles saved, "
               f"{len(existing) - len(kept)} overwritten "
-              f"({len(all_articles)} total) → {data_path}")
+              f"({len(all_articles)} total) -> {data_path}")
     else:
         existing_urls = {a["url"] for a in existing}
         new_articles  = [a for a in fetched if a["url"] not in existing_urls]
         all_articles  = existing + new_articles
         print(f"\n[{args.api}] {len(new_articles)} new articles saved "
-              f"({len(all_articles)} total) → {data_path}")
+              f"({len(all_articles)} total) -> {data_path}")
 
     save(all_articles, data_path)
 

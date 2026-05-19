@@ -5,14 +5,27 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 let currentUser = null;
 let bookmarkedTitles = new Set();
 let bookmarkIdMap    = {};
+let sessionId = crypto.randomUUID();
+let totalVisibleMs = 0;
+let visibleSince = document.visibilityState === "visible" ? Date.now() : null;
 
-sb.auth.onAuthStateChange((_e, session) => {
+function postEvent(event, payload = {}) {
+  if (!currentUser) return;
+  fetch("/api/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: currentUser.id, session_id: sessionId, event, payload }),
+  }).catch((err) => console.error(`[events] ${event} failed:`, err.message));
+}
+
+sb.auth.onAuthStateChange((event, session) => {
   currentUser = session?.user ?? null;
   updateProfileBtn();
   const gate = document.getElementById("login-gate");
   if (currentUser) {
     gate.classList.add("hidden");
     loadUserBookmarks();
+    if (event === "SIGNED_IN" || event === "INITIAL_SESSION") postEvent("new_search");
   } else {
     gate.classList.remove("hidden");
     bookmarkedTitles = new Set();
@@ -79,6 +92,7 @@ let timelineData = [];
 let channelData  = {};
 let selectedCompareTitles = [];
 let selectedCompareArticles = [];
+let currentQuery = null;
 
 // ---------- Landing page ----------
 
@@ -181,6 +195,7 @@ document.getElementById("new-search-btn").addEventListener("click", () => {
   landingEl.classList.remove("hidden");
   landingStatus.hidden = true;
   landingBtn.disabled = false;
+  postEvent("new_search");
 });
 
 function setStoryHeadline(query) {
@@ -193,15 +208,8 @@ async function runSearchQuery(query) {
   const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&limit=10`);
   if (!res.ok) throw new Error((await res.json()).error || "Search failed");
   const { results } = await res.json();
-  const normalized = results.map(a => ({ ...a, source: cleanSourceName(a.source) }));
-  timelineData = toTimelineData(normalized, Infinity);
-  channelData = toChannelData(normalized);
-  const sources = Object.keys(channelData).sort();
-  assignSourceColors(sources);
-  buildSourceFilters(sources);
-  buildChannelCards(sources);
-  setLastUpdated(null);
-  renderTimeline();
+  currentQuery = query;
+  await loadAndRender(query, results);
   setStoryHeadline(query);
 }
 
@@ -210,11 +218,12 @@ async function triggerSearch() {
   if (!query) return;
 
   landingBtn.disabled = true;
-  showLandingStatus("Fetching articles… this may take up to 30 seconds.");
+  showLandingStatus("Fetching articles… this may take up to 1 minute.");
   startProgressPolling();
 
   try {
     await runSearchQuery(query);
+    postEvent("search", { query });
     stopProgressPolling();
     landingProgressFill.style.width = "100%";
     landingProgressLabel.textContent = "100% — Done!";
@@ -230,12 +239,14 @@ async function triggerSearch() {
 
 // ---------- Data loading ----------
 
-async function loadArticles() {
-  const res = await fetch("/api/articles");
+async function loadArticles(query) {
+  const url = query ? `/api/search?q=${encodeURIComponent(query)}` : "/api/articles";
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
-  // support both plain array and {updatedAt, articles} wrapper
   if (Array.isArray(data)) return { articles: data, updatedAt: null };
+  // /api/search returns {query, results}; /api/articles returns {articles, updatedAt}
+  if (data.results) return { articles: data.results, updatedAt: null };
   return data;
 }
 
@@ -371,6 +382,7 @@ function closeFilters() {
 }
 
 document.getElementById("filters-close").addEventListener("click", closeFilters);
+document.getElementById("filters-panel").classList.add("open"); // open by default on first load
 
 document.querySelectorAll(".menu-item").forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -424,6 +436,10 @@ function getFilteredTimelineData() {
   );
   const startDate = startDateFilterEl.value;
   const endDate   = endDateFilterEl.value;
+  const leanValue = parseInt(document.getElementById("lean-slider").value, 10);
+  // |leanValue| 1-2 = mild side, 3-5 = strong side, 0 = all
+  const leanDir    = leanValue < 0 ? "Left" : leanValue > 0 ? "Right" : null;
+  const leanStrong = Math.abs(leanValue) >= 3; // past halfway (2.5) on a -5..5 scale
 
   return timelineData
     .filter((group) => {
@@ -433,7 +449,19 @@ function getFilteredTimelineData() {
     })
     .map((group) => ({
       ...group,
-      articles: group.articles.filter((a) => selectedSources.has(a.src)),
+      articles: group.articles.filter((a) => {
+        if (!selectedSources.has(a.src)) return false;
+        if (leanDir) {
+          const bias = biasMap[a.url];
+          if (bias) {
+            if (bias.bias_label !== leanDir) return false;
+            const magnitude = Math.abs(bias.bias_signed);
+            if (leanStrong  && magnitude < 0.5) return false; // want strong, article is mild
+            if (!leanStrong && magnitude >= 0.5) return false; // want mild, article is strong
+          }
+        }
+        return true;
+      }),
     }))
     .filter((group) => group.articles.length > 0);
 }
@@ -458,6 +486,8 @@ function makeArticleCard(a) {
     </div>
     <div class="title">${a.title}</div>
   `;
+  const slider = makeBiasSlider(a.url);
+  if (slider) card.appendChild(slider);
   if (bookmarkedTitles.has(a.title)) {
     const star = document.createElement("button");
     star.className = "bookmark-star";
@@ -895,6 +925,7 @@ if (runCompareBtn && comparisonResults) {
         .then(data => {
           console.log("Parsed compare data:", data);
           renderComparison(data.comparison);
+          postEvent("comparison", { titles: selectedCompareArticles.map(a => a.title) });
         })
         .catch(err => {
           console.error("Compare error:", err);
@@ -1126,6 +1157,7 @@ async function renderAccountView() {
 
 async function recordView(a) {
   if (!currentUser || !a.url) return;
+  postEvent("article_view", { title: a.title, url: a.url, src: a.src || "" });
   await sb.from("article_views").insert({
     user_id:       currentUser.id,
     article_title: a.title,
@@ -1137,34 +1169,20 @@ async function recordView(a) {
 // ---------- Refresh ----------
 
 const refreshBtn = document.getElementById("refresh-btn");
+const refreshIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>`;
 if (refreshBtn) {
   refreshBtn.addEventListener("click", async () => {
+    if (!currentQuery) return;
     refreshBtn.disabled = true;
-    refreshBtn.innerHTML = `
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      Fetching...`;
+    refreshBtn.innerHTML = `${refreshIcon} Fetching…`;
     try {
-      const res = await fetch("/api/refresh", { method: "POST" });
-      let data = {};
-      try { data = await res.json(); } catch { data = { ok: false, error: `HTTP ${res.status}` }; }
-      if (data.ok) {
-        refreshBtn.innerHTML = "Started! Reload in ~1 min";
-        setTimeout(() => {
-          refreshBtn.innerHTML = `
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-            Refresh`;
-          refreshBtn.disabled = false;
-        }, 90000);
-      } else {
-        console.error("Refresh failed:", data);
-        refreshBtn.innerHTML = `Error ${data.status || res.status || "—"} — try again`;
-        refreshBtn.disabled = false;
-      }
+      await runSearchQuery(currentQuery);
+      refreshBtn.innerHTML = `${refreshIcon} Refresh`;
     } catch (err) {
       console.error("Refresh error:", err);
       refreshBtn.innerHTML = "Failed — try again";
-      refreshBtn.disabled = false;
     }
+    refreshBtn.disabled = false;
   });
 }
 
@@ -1179,9 +1197,48 @@ function setLastUpdated(isoString) {
   });
 }
 
-async function loadAndRender() {
+// ---------- Bias data ----------
+
+let biasMap = {}; // url → {bias_label, bias_score, bias_signed}
+
+async function loadBias() {
   try {
-    const { articles, updatedAt } = await loadArticles();
+    const res = await fetch("/api/bias");
+    if (res.ok) biasMap = await res.json();
+  } catch (_) {}
+}
+
+loadBias(); // fire-and-forget; ready before any search completes
+
+function makeBiasSlider(url) {
+  const b = biasMap[url];
+  const el = document.createElement("div");
+  el.className = "bias-slider";
+  if (!b) {
+    el.title = "Bias data unavailable";
+    el.innerHTML = `
+      <div class="bias-track bias-track--unknown"></div>
+      <div class="bias-labels"><span>L</span><span>R</span></div>
+    `;
+    return el;
+  }
+  const pct = ((b.bias_signed + 1) / 2 * 100).toFixed(1); // -1→0%, 0→50%, 1→100%
+  const opacity = Math.max(0.25, Math.min(1, b.bias_score)).toFixed(2);
+  el.title = `Bias: ${b.bias_label} (score ${b.bias_signed.toFixed(2)})`;
+  el.innerHTML = `
+    <div class="bias-track" style="opacity:${opacity}">
+      <div class="bias-marker" style="left:${pct}%"></div>
+    </div>
+    <div class="bias-labels"><span>L</span><span>R</span></div>
+  `;
+  return el;
+}
+
+async function loadAndRender(query, prefetchedArticles) {
+  try {
+    const { articles, updatedAt } = prefetchedArticles
+      ? { articles: prefetchedArticles, updatedAt: null }
+      : await loadArticles(query);
     const normalized = articles.map(a => ({ ...a, source: cleanSourceName(a.source) }));
 
     timelineData = toTimelineData(normalized);
@@ -1227,30 +1284,32 @@ async function init() {
 
 init();
 
+setInterval(() => fetch("/api/ready").catch(() => {}), 30000);
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    if (visibleSince !== null) {
+      totalVisibleMs += Date.now() - visibleSince;
+      visibleSince = null;
+    }
+  } else {
+    visibleSince = Date.now();
+  }
+});
+
+window.addEventListener("beforeunload", () => {
+  if (!currentUser) return;
+  if (visibleSince !== null) totalVisibleMs += Date.now() - visibleSince;
+  const duration_s = Math.round(totalVisibleMs / 1000);
+  navigator.sendBeacon(
+    "/api/events",
+    new Blob(
+      [JSON.stringify({ user_id: currentUser.id, session_id: sessionId, event: "session_end", payload: { duration_s } })],
+      { type: "application/json" }
+    )
+  );
+});
+
 // Landing page shows first — loadAndRender() is called after a successful search
 
 
-const searchBtn = document.getElementById("search-btn");
-const searchInput = document.getElementById("search-input");
-
-async function runSearch() {
-  const query = searchInput.value.trim();
-  if (!query) return;
-
-  searchBtn.disabled = true;
-  searchBtn.textContent = "Searching…";
-
-  try {
-    await runSearchQuery(query);
-    searchInput.value = "";
-  } catch (err) {
-    alert("Search failed: " + err.message);
-  }
-
-  searchBtn.disabled = false;
-  searchBtn.textContent = "Search";
-}
-
-if (searchBtn) {
-  searchBtn.addEventListener("click", runSearch);
-}
