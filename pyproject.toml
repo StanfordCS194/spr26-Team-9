@@ -19,7 +19,6 @@ dependencies = [
     "lxml>=6.1.0",
     "justext>=3.0.2",
     "rank-bm25>=0.2.2",
-    "redis>=7.4.0",
     "fastapi>=0.136.1",
     "uvicorn>=0.46.0",
     "openai>=1.82.0",
@@ -27,6 +26,7 @@ dependencies = [
     "hdbscan (>=0.8.40,<0.9.0)",
     "scikit-learn (>=1.6.0,<2.0.0)",
     "scipy (>=1.15.0,<2.0.0)",
+    "supabase>=2.30.0",
 ]
 
 [tool.uv]

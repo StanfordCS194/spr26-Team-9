@@ -5,14 +5,27 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 let currentUser = null;
 let bookmarkedTitles = new Set();
 let bookmarkIdMap    = {};
+let sessionId = crypto.randomUUID();
+let totalVisibleMs = 0;
+let visibleSince = document.visibilityState === "visible" ? Date.now() : null;
 
-sb.auth.onAuthStateChange((_e, session) => {
+function postEvent(event, payload = {}) {
+  if (!currentUser) return;
+  fetch("/api/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: currentUser.id, session_id: sessionId, event, payload }),
+  }).catch((err) => console.error(`[events] ${event} failed:`, err.message));
+}
+
+sb.auth.onAuthStateChange((event, session) => {
   currentUser = session?.user ?? null;
   updateProfileBtn();
   const gate = document.getElementById("login-gate");
   if (currentUser) {
     gate.classList.add("hidden");
     loadUserBookmarks();
+    if (event === "SIGNED_IN" || event === "INITIAL_SESSION") postEvent("new_search");
   } else {
     gate.classList.remove("hidden");
     bookmarkedTitles = new Set();
@@ -182,6 +195,7 @@ document.getElementById("new-search-btn").addEventListener("click", () => {
   landingEl.classList.remove("hidden");
   landingStatus.hidden = true;
   landingBtn.disabled = false;
+  postEvent("new_search");
 });
 
 function setStoryHeadline(query) {
@@ -209,6 +223,7 @@ async function triggerSearch() {
 
   try {
     await runSearchQuery(query);
+    postEvent("search", { query });
     stopProgressPolling();
     landingProgressFill.style.width = "100%";
     landingProgressLabel.textContent = "100% — Done!";
@@ -910,6 +925,7 @@ if (runCompareBtn && comparisonResults) {
         .then(data => {
           console.log("Parsed compare data:", data);
           renderComparison(data.comparison);
+          postEvent("comparison", { titles: selectedCompareArticles.map(a => a.title) });
         })
         .catch(err => {
           console.error("Compare error:", err);
@@ -1141,6 +1157,7 @@ async function renderAccountView() {
 
 async function recordView(a) {
   if (!currentUser || !a.url) return;
+  postEvent("article_view", { title: a.title, url: a.url, src: a.src || "" });
   await sb.from("article_views").insert({
     user_id:       currentUser.id,
     article_title: a.title,
@@ -1268,6 +1285,30 @@ async function init() {
 init();
 
 setInterval(() => fetch("/api/ready").catch(() => {}), 30000);
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    if (visibleSince !== null) {
+      totalVisibleMs += Date.now() - visibleSince;
+      visibleSince = null;
+    }
+  } else {
+    visibleSince = Date.now();
+  }
+});
+
+window.addEventListener("beforeunload", () => {
+  if (!currentUser) return;
+  if (visibleSince !== null) totalVisibleMs += Date.now() - visibleSince;
+  const duration_s = Math.round(totalVisibleMs / 1000);
+  navigator.sendBeacon(
+    "/api/events",
+    new Blob(
+      [JSON.stringify({ user_id: currentUser.id, session_id: sessionId, event: "session_end", payload: { duration_s } })],
+      { type: "application/json" }
+    )
+  );
+});
 
 // Landing page shows first — loadAndRender() is called after a successful search
 
