@@ -1,8 +1,11 @@
-claude.md
+CLAUDE.md
+AGENTS.md
+
 .env
 
 webscraper/api_keys.py
-webscraper/__pycache__/*
+
+*/__pycache__/
 
 data/
 
