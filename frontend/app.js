@@ -606,6 +606,9 @@ const modal = document.getElementById("compare-modal");
 function updateCompareControls() {
   if (!runCompareBtn) return;
 
+  const isCompareMode = document.body.classList.contains("compare-mode");
+  const selectedCount = selectedCompareTitles.length;
+
   if (selectedCompareTitles.length === 0) {
     runCompareBtn.textContent = `Select ${MIN_COMPARE_ARTICLES}-${MAX_COMPARE_ARTICLES} articles`;
   }
@@ -619,8 +622,15 @@ function updateCompareControls() {
   }
 
   if (cancelCompareBtn) {
-    cancelCompareBtn.hidden = !document.body.classList.contains("compare-mode");
+    cancelCompareBtn.hidden = !isCompareMode;
   }
+
+  if (compareSelectedCountEl) {
+    compareSelectedCountEl.hidden = !isCompareMode;
+    compareSelectedCountEl.textContent = `${selectedCount} selected`;
+  }
+
+  runCompareBtn.disabled = isCompareMode && selectedCount < MIN_COMPARE_ARTICLES;
 }
 
 function resetArticleComparison() {
@@ -635,7 +645,9 @@ function resetArticleComparison() {
   });
 
   runCompareBtn.textContent = "Article Comparison";
+  runCompareBtn.disabled = false;
   if (cancelCompareBtn) cancelCompareBtn.hidden = true;
+  if (compareSelectedCountEl) compareSelectedCountEl.hidden = true;
   document.body.classList.remove("compare-mode");
 }
 
@@ -881,6 +893,7 @@ function renderLLM() {
 // Show comparison results after selecting articles
 const runCompareBtn = document.getElementById("compare-btn");
 const cancelCompareBtn = document.getElementById("compare-cancel-btn");
+const compareSelectedCountEl = document.getElementById("compare-selected-count");
 const comparisonResults = document.getElementById("comparison-results");
 
 if (cancelCompareBtn) {

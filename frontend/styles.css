@@ -927,6 +927,15 @@ body {
   box-shadow: var(--shadow-xl);
 }
 
+.compare-btn:disabled {
+  background: var(--slate-200);
+  color: var(--slate-600);
+  cursor: not-allowed;
+  box-shadow: var(--shadow-md);
+  opacity: 1;
+  transform: none;
+}
+
 .compare-cancel-btn {
   padding: 12px 20px;
   border: 1px solid var(--slate-200);
@@ -949,6 +958,19 @@ body {
 }
 
 .compare-cancel-btn[hidden] { display: none; }
+
+.compare-selected-count {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--slate-100);
+  color: var(--slate-600);
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+}
+
+.compare-selected-count[hidden] { display: none; }
 
 /* ── CHANNELS ─────────────────────────────────────────── */
 .channels-state { display: none; }
