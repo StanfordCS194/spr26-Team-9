@@ -92,6 +92,8 @@ let timelineData = [];
 let channelData  = {};
 let selectedCompareTitles = [];
 let selectedCompareArticles = [];
+const MIN_COMPARE_ARTICLES = 2;
+const MAX_COMPARE_ARTICLES = 3;
 let currentQuery = null;
 
 // ---------- Landing page ----------
@@ -538,8 +540,8 @@ function makeArticleCard(a) {
       
       } else {
       
-        if (selectedCompareTitles.length >= 2) {
-          alert("You can only select 2 articles.");
+        if (selectedCompareTitles.length >= MAX_COMPARE_ARTICLES) {
+          alert(`You can only select up to ${MAX_COMPARE_ARTICLES} articles.`);
           return;
         }
       
@@ -555,11 +557,11 @@ function makeArticleCard(a) {
   
       // BUTTON TEXT LOGIC
       if (selectedCompareTitles.length === 0) {
-        runCompareBtn.textContent = "Select 2 articles";
+        runCompareBtn.textContent = `Select ${MIN_COMPARE_ARTICLES}-${MAX_COMPARE_ARTICLES} articles`;
       }
   
       if (selectedCompareTitles.length === 1) {
-        runCompareBtn.textContent = "Select 1 more article";
+        runCompareBtn.textContent = "Select 1-2 more articles";
       }
   
       if (selectedCompareTitles.length >= 2) {
@@ -878,12 +880,13 @@ if (runCompareBtn && comparisonResults) {
     if (!document.body.classList.contains("compare-mode")) {
       document.body.classList.add("compare-mode");
       selectedCompareTitles = [];
-      runCompareBtn.textContent = "Select 2 articles";
+      selectedCompareArticles = [];
+      runCompareBtn.textContent = `Select ${MIN_COMPARE_ARTICLES}-${MAX_COMPARE_ARTICLES} articles`;
       return;
     }
 
-    if (selectedCompareTitles.length < 2) {
-      alert("Select 2 articles to compare.");
+    if (selectedCompareTitles.length < MIN_COMPARE_ARTICLES) {
+      alert(`Select at least ${MIN_COMPARE_ARTICLES} articles to compare.`);
       return;
     }
     const selectedLinksEl = document.getElementById("selected-article-links");
@@ -946,47 +949,45 @@ if (modalCloseBtn && comparisonResults) {
 }
 
 function renderComparison(comparison) {
+  const articleKeys = ["article1", "article2", "article3"].filter(key => comparison[key]);
+
+  const articleCards = articleKeys
+    .map(key => `
+      <div class="article-card">
+        <h5>${comparison[key].title}</h5>
+        <p><strong>Source:</strong> ${comparison[key].source}</p>
+        <p><strong>Core Argument:</strong> ${comparison[key].core_argument}</p>
+
+        <ul>
+          ${(comparison[key].key_points || [])
+            .map(point => `<li>${point}</li>`)
+            .join("")}
+        </ul>
+      </div>
+    `)
+    .join("");
+
+  const differenceRows = (comparison.key_differences || [])
+    .map(diff => `
+      <p>
+        <strong>${diff.label}</strong><br/>
+        ${articleKeys
+          .map((key, index) => `Article ${index + 1} → ${diff[key] || ""}`)
+          .join("<br/>")}
+      </p>
+    `)
+    .join("");
+
   comparisonResults.innerHTML = `
     <h4>Article Comparison</h4>
 
     <div class="compare-articles">
-      <div class="article-card">
-        <h5>${comparison.article1.title}</h5>
-        <p><strong>Source:</strong> ${comparison.article1.source}</p>
-        <p><strong>Core Argument:</strong> ${comparison.article1.core_argument}</p>
-
-        <ul>
-          ${comparison.article1.key_points
-            .map(point => `<li>${point}</li>`)
-            .join("")}
-        </ul>
-      </div>
-
-      <div class="article-card">
-        <h5>${comparison.article2.title}</h5>
-        <p><strong>Source:</strong> ${comparison.article2.source}</p>
-        <p><strong>Core Argument:</strong> ${comparison.article2.core_argument}</p>
-
-        <ul>
-          ${comparison.article2.key_points
-            .map(point => `<li>${point}</li>`)
-            .join("")}
-        </ul>
-      </div>
+      ${articleCards}
     </div>
 
     <div class="differences">
       <h4>Key Differences</h4>
-
-      ${comparison.key_differences
-        .map(diff => `
-          <p>
-            <strong>${diff.label}</strong><br/>
-            Article 1 → ${diff.article1}<br/>
-            Article 2 → ${diff.article2}
-          </p>
-        `)
-        .join("")}
+      ${differenceRows}
     </div>
   `;
 }
@@ -1311,5 +1312,3 @@ window.addEventListener("beforeunload", () => {
 });
 
 // Landing page shows first — loadAndRender() is called after a successful search
-
-

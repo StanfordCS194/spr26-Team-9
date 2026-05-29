@@ -1177,13 +1177,12 @@ body {
 }
 
 .compare-articles {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 14px;
   margin-top: 12px;
   margin-bottom: 18px;
 }
-
-.compare-articles .article-card { flex: 1; }
 
 .analysis-status { font-style: italic; color: var(--slate-400); font-size: 13px; }
 
