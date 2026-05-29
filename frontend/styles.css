@@ -895,12 +895,18 @@ body {
   letter-spacing: 0.04em;
 }
 
-/* COMPARE button — fixed bottom-right */
-.compare-btn {
+.compare-actions {
   position: fixed;
   right: 28px;
   bottom: 28px;
   z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* COMPARE button — fixed bottom-right */
+.compare-btn {
   padding: 12px 26px;
   border: none;
   background: var(--navy-950);
@@ -920,6 +926,29 @@ body {
   transform: translateY(-2px);
   box-shadow: var(--shadow-xl);
 }
+
+.compare-cancel-btn {
+  padding: 12px 20px;
+  border: 1px solid var(--slate-200);
+  background: var(--white);
+  color: var(--navy-950);
+  border-radius: 999px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+.compare-cancel-btn:hover {
+  background: var(--slate-100);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.compare-cancel-btn[hidden] { display: none; }
 
 /* ── CHANNELS ─────────────────────────────────────────── */
 .channels-state { display: none; }

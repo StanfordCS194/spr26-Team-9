@@ -555,18 +555,7 @@ function makeArticleCard(a) {
         card.style.backgroundColor = "rgba(37, 99, 235, 0.12)";
       }
   
-      // BUTTON TEXT LOGIC
-      if (selectedCompareTitles.length === 0) {
-        runCompareBtn.textContent = `Select ${MIN_COMPARE_ARTICLES}-${MAX_COMPARE_ARTICLES} articles`;
-      }
-  
-      if (selectedCompareTitles.length === 1) {
-        runCompareBtn.textContent = "Select 1-2 more articles";
-      }
-  
-      if (selectedCompareTitles.length >= 2) {
-        runCompareBtn.textContent = "Compare Selected Articles";
-      }
+      updateCompareControls();
   
       return;
     }
@@ -614,6 +603,26 @@ function hideTooltip() { tooltipEl.hidden = true; }
 
 const modal = document.getElementById("compare-modal");
 
+function updateCompareControls() {
+  if (!runCompareBtn) return;
+
+  if (selectedCompareTitles.length === 0) {
+    runCompareBtn.textContent = `Select ${MIN_COMPARE_ARTICLES}-${MAX_COMPARE_ARTICLES} articles`;
+  }
+
+  if (selectedCompareTitles.length === 1) {
+    runCompareBtn.textContent = "Select 1-2 more articles";
+  }
+
+  if (selectedCompareTitles.length >= MIN_COMPARE_ARTICLES) {
+    runCompareBtn.textContent = "Compare Selected Articles";
+  }
+
+  if (cancelCompareBtn) {
+    cancelCompareBtn.hidden = !document.body.classList.contains("compare-mode");
+  }
+}
+
 function resetArticleComparison() {
   selectedCompareTitles = [];
   selectedCompareArticles = [];
@@ -626,6 +635,7 @@ function resetArticleComparison() {
   });
 
   runCompareBtn.textContent = "Article Comparison";
+  if (cancelCompareBtn) cancelCompareBtn.hidden = true;
   document.body.classList.remove("compare-mode");
 }
 
@@ -870,7 +880,18 @@ function renderLLM() {
 
 // Show comparison results after selecting articles
 const runCompareBtn = document.getElementById("compare-btn");
+const cancelCompareBtn = document.getElementById("compare-cancel-btn");
 const comparisonResults = document.getElementById("comparison-results");
+
+if (cancelCompareBtn) {
+  cancelCompareBtn.addEventListener("click", resetArticleComparison);
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && document.body.classList.contains("compare-mode")) {
+    resetArticleComparison();
+  }
+});
 
 if (runCompareBtn && comparisonResults) {
   runCompareBtn.addEventListener("click", () => {
@@ -881,7 +902,7 @@ if (runCompareBtn && comparisonResults) {
       document.body.classList.add("compare-mode");
       selectedCompareTitles = [];
       selectedCompareArticles = [];
-      runCompareBtn.textContent = `Select ${MIN_COMPARE_ARTICLES}-${MAX_COMPARE_ARTICLES} articles`;
+      updateCompareControls();
       return;
     }
 
