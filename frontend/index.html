@@ -56,6 +56,10 @@
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
           Channels
         </button>
+        <button class="menu-item" data-view="clusters">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="3"/><circle cx="17" cy="6" r="3"/><circle cx="15" cy="17" r="3"/><path d="M8.7 8.4l3.7 6.2"/><path d="M8.9 6.8l5.2-.5"/></svg>
+          Story Clusters
+        </button>
         <button class="menu-item" data-view="llm">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.4H20l-4.9 3.6 1.9 5.7L12 14.4l-5 3.3 1.9-5.7L4 8.4h6.2z"/></svg>
           LLM Analysis
@@ -160,6 +164,15 @@
           <div class="channel-timeline" id="channel-timeline">
             <!-- Cards injected by JS -->
           </div>
+        </div>
+      </section>
+
+      <!-- STORY CLUSTERS VIEW -->
+      <section id="view-clusters" class="view">
+        <h2 class="sub-headline">Story Clusters</h2>
+        <h3 class="story-headline story-headline-dynamic"></h3>
+        <div class="cluster-list" id="cluster-list">
+          <!-- Clusters injected by JS -->
         </div>
       </section>
 

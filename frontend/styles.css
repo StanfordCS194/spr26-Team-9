@@ -1010,6 +1010,106 @@ body {
   color: var(--slate-400);
 }
 
+/* ── STORY CLUSTERS ───────────────────────────────────── */
+.cluster-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 980px;
+}
+
+.story-cluster {
+  background: var(--white);
+  border: 1px solid var(--slate-200);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.cluster-header {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  border: none;
+  background: var(--white);
+  color: var(--navy-950);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cluster-header:hover { background: var(--slate-50); }
+
+.cluster-chevron {
+  width: 20px;
+  color: var(--slate-400);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.cluster-title {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.cluster-meta {
+  color: var(--slate-400);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cluster-articles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  padding: 0 18px 18px;
+}
+
+.story-cluster.collapsed .cluster-articles { display: none; }
+
+.cluster-article-card {
+  padding: 14px;
+  border: 1px solid var(--slate-200);
+  border-radius: 10px;
+  background: var(--slate-50);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.cluster-article-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-mid);
+  box-shadow: var(--shadow-md);
+}
+
+.cluster-article-meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--slate-400);
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.cluster-article-card h4 {
+  margin: 0 0 8px;
+  color: var(--navy-900);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.cluster-article-card p {
+  margin: 0;
+  color: var(--slate-600);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 /* ── LLM ──────────────────────────────────────────────── */
 .llm-cards {
   display: flex;
