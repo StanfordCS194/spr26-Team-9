@@ -192,6 +192,7 @@ landingBtn.addEventListener("click", triggerSearch);
 landingInput.addEventListener("keydown", (e) => { if (e.key === "Enter") triggerSearch(); });
 
 document.getElementById("new-search-btn").addEventListener("click", () => {
+  sessionStorage.removeItem("lastSearch");
   landingEl.classList.remove("hidden");
   landingStatus.hidden = true;
   landingBtn.disabled = false;
@@ -209,6 +210,7 @@ async function runSearchQuery(query) {
   if (!res.ok) throw new Error((await res.json()).error || "Search failed");
   const { results } = await res.json();
   currentQuery = query;
+  try { sessionStorage.setItem("lastSearch", JSON.stringify({ query, results })); } catch (_) {}
   await loadAndRender(query, results);
   setStoryHeadline(query);
 }
@@ -1098,8 +1100,68 @@ async function renderAccountView() {
 
   const [{ data: bookmarks }, { data: history }] = await Promise.all([
     sb.from("bookmarks").select("*").order("bookmarked_at", { ascending: false }),
-    sb.from("article_views").select("*").order("viewed_at", { ascending: false }).limit(5),
+    sb.from("article_views").select("*").order("viewed_at", { ascending: false }).limit(50),
   ]);
+
+  // --- Reading profile ---
+  const viewedUrls = new Set((history || []).map(h => h.article_url));
+  const leanCounts = { Left: 0, Center: 0, Right: 0 };
+  const sourceCounts = {};
+  for (const h of (history || [])) {
+    const src = h.article_src || "Unknown";
+    sourceCounts[src] = (sourceCounts[src] || 0) + 1;
+    const bias = biasMap[h.article_url];
+    if (bias?.bias_label && leanCounts[bias.bias_label] !== undefined) leanCounts[bias.bias_label]++;
+  }
+  const topSources = Object.entries(sourceCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  const maxCount = topSources[0]?.[1] || 1;
+  const totalLean = leanCounts.Left + leanCounts.Center + leanCounts.Right;
+  const dominantLean = totalLean > 0
+    ? Object.entries(leanCounts).sort((a, b) => b[1] - a[1])[0][0] : null;
+  const blindSpotLean = dominantLean === "Left" ? "Right" : dominantLean === "Right" ? "Left" : null;
+
+  const allCurrentArticles = Object.entries(channelData).flatMap(([src, arts]) => arts.map(a => ({ ...a, src })));
+  const blindSpotArticles = [];
+  if (blindSpotLean) {
+    for (const a of allCurrentArticles) {
+      const bias = biasMap[a.url];
+      if (bias?.bias_label === blindSpotLean && !viewedUrls.has(a.url)) {
+        blindSpotArticles.push(a);
+        if (blindSpotArticles.length >= 2) break;
+      }
+    }
+  }
+
+  const profileHTML = topSources.length > 0 ? `
+    <div class="reading-profile-card">
+      <h3 class="bookmarks-heading">Your Reading Profile</h3>
+      <div class="profile-grid">
+        <div class="profile-block">
+          <div class="profile-block-label">Top Sources</div>
+          ${topSources.map(([src, count]) => `
+            <div class="source-bar-row">
+              <span class="source-bar-name"><span class="dot" style="background:${sourceColor(src)}"></span>${src}</span>
+              <div class="source-bar-track">
+                <div class="source-bar-fill" style="width:${(count / maxCount * 100).toFixed(0)}%;background:${sourceColor(src)}"></div>
+              </div>
+              <span class="source-bar-count">${count}</span>
+            </div>`).join("")}
+        </div>
+        ${blindSpotLean ? `
+        <div class="profile-block">
+          <div class="profile-block-label">Your Blind Spot</div>
+          <div class="blindspot-desc">You mostly read <strong>${dominantLean}-leaning</strong> sources. These ${blindSpotLean}-leaning articles haven't been on your radar:</div>
+          ${blindSpotArticles.length ? `
+            <div class="blindspot-list">
+              ${blindSpotArticles.map(a => `
+                <a href="${a.url}" target="_blank" rel="noopener" class="blindspot-article">
+                  <span class="blindspot-src"><span class="dot" style="background:${sourceColor(a.src)}"></span>${a.src}</span>
+                  <span class="blindspot-title">${a.title}</span>
+                </a>`).join("")}
+            </div>` : `<div class="bookmarks-empty" style="padding:16px 0">Search for articles to see suggestions here.</div>`}
+        </div>` : ""}
+      </div>
+    </div>` : "";
 
   const cards = (bookmarks || []).map(b => `
     <div class="bookmark-card">
@@ -1115,7 +1177,7 @@ async function renderAccountView() {
       <button class="bookmark-remove" data-id="${b.id}">Remove</button>
     </div>`).join("");
 
-  const historyCards = (history || []).map(h => `
+  const historyCards = (history || []).slice(0, 5).map(h => `
     <div class="bookmark-card">
       <div class="bookmark-meta">
         <span class="dot" style="background:${sourceColor(h.article_src)}"></span>
@@ -1135,7 +1197,8 @@ async function renderAccountView() {
       </div>
       <button class="signout-btn" id="signout-btn">Sign Out</button>
     </div>
-    <h3 class="bookmarks-heading">Recently Viewed</h3>
+    ${profileHTML}
+    <h3 class="bookmarks-heading" style="margin-top:28px">Recently Viewed</h3>
     ${history?.length
       ? `<div class="bookmarks-list">${historyCards}</div>`
       : `<div class="bookmarks-empty">No history yet — click any article to open it.</div>`}
@@ -1280,6 +1343,19 @@ async function init() {
   document.getElementById("gate-signup-btn").addEventListener("click", () => handleGateAuth("signup"));
 
   renderLLM();
+
+  const savedSearch = sessionStorage.getItem("lastSearch");
+  if (savedSearch) {
+    try {
+      const { query, results } = JSON.parse(savedSearch);
+      currentQuery = query;
+      landingEl.classList.add("hidden");
+      await loadAndRender(query, results);
+      setStoryHeadline(query);
+    } catch (_) {
+      sessionStorage.removeItem("lastSearch");
+    }
+  }
 }
 
 init();
