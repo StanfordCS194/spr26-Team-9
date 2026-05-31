@@ -156,6 +156,7 @@ function sourceColor(src) {
 // Global state — populated after fetch
 let timelineData = [];
 let channelData  = {};
+let clusterData  = [];
 let selectedCompareTitles = [];
 let selectedCompareArticles = [];
 const MIN_COMPARE_ARTICLES = 2;
@@ -387,6 +388,179 @@ function toChannelData(articles) {
   return channels;
 }
 
+const CLUSTER_STOP_WORDS = new Set([
+  "about", "after", "again", "against", "also", "amid", "among", "and", "are",
+  "article", "been", "before", "being", "between", "but", "can", "could",
+  "for", "from", "has", "have", "him", "his", "her", "how", "into", "its",
+  "may", "more", "new", "news", "not", "now", "off", "one", "over", "says",
+  "said", "say", "that", "the", "their", "this", "through", "too", "under",
+  "was", "were", "what", "when", "where", "which", "who", "why", "will",
+  "with", "you", "your",
+]);
+
+const CLUSTER_LABEL_STOP_WORDS = new Set(["trump", "pope", "leo", "xiv", "president"]);
+
+function clusterTokens(article, extraStopWords = new Set()) {
+  return `${article.title || ""} ${article.description || ""}`
+    .toLowerCase()
+    .match(/[a-z0-9]+/g)
+    ?.filter(token => (
+      token.length > 2 &&
+      !CLUSTER_STOP_WORDS.has(token) &&
+      !extraStopWords.has(token)
+    )) || [];
+}
+
+function weightedClusterTokens(article) {
+  return [
+    ...clusterTokens(article),
+    ...clusterTokens({ title: article.title || "" }),
+  ];
+}
+
+function tokenSimilarity(aTokens, bTokens, docFreq, totalArticles) {
+  const a = {};
+  const b = {};
+  aTokens.forEach(token => { a[token] = (a[token] || 0) + 1; });
+  bTokens.forEach(token => { b[token] = (b[token] || 0) + 1; });
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+  if (!aKeys.length || !bKeys.length) return 0;
+  const weight = token => Math.log((totalArticles + 1) / ((docFreq[token] || 0) + 1)) + 1;
+  let dotProduct = 0;
+  let aMagnitude = 0;
+  let bMagnitude = 0;
+  aKeys.forEach(token => {
+    const value = a[token] * weight(token);
+    aMagnitude += value * value;
+    if (b[token]) dotProduct += value * b[token] * weight(token);
+  });
+  bKeys.forEach(token => {
+    const value = b[token] * weight(token);
+    bMagnitude += value * value;
+  });
+  return dotProduct / Math.sqrt(aMagnitude * bMagnitude);
+}
+
+function buildClusterDocumentFrequency(articles) {
+  const docFreq = {};
+  articles.forEach(article => {
+    [...new Set(clusterTokens(article))].forEach(token => {
+      docFreq[token] = (docFreq[token] || 0) + 1;
+    });
+  });
+  return docFreq;
+}
+
+function formatClusterTerm(token) {
+  return token.toUpperCase() === token || token.length <= 3
+    ? token.toUpperCase()
+    : token[0].toUpperCase() + token.slice(1);
+}
+
+function formatClusterPhrase(phrase) {
+  return phrase.split(" ").map(formatClusterTerm).join(" ");
+}
+
+function clusterPhrases(article) {
+  const tokens = clusterTokens(article, CLUSTER_LABEL_STOP_WORDS);
+  const phrases = [];
+  for (let size = 3; size >= 2; size -= 1) {
+    for (let i = 0; i <= tokens.length - size; i += 1) {
+      phrases.push(tokens.slice(i, i + size).join(" "));
+    }
+  }
+  return phrases;
+}
+
+function formatClusterLabel(phrases, terms) {
+  if (phrases.length) return formatClusterPhrase(phrases[0]);
+  if (!terms.length) return "Related Coverage";
+  if (terms.length === 1) return `${formatClusterTerm(terms[0])} Coverage`;
+  return `${formatClusterTerm(terms[0])} and ${formatClusterTerm(terms[1])}`;
+}
+
+function labelCluster(articles, docFreq, totalArticles) {
+  const counts = {};
+  const phraseCounts = {};
+  articles.forEach(article => {
+    [...new Set(clusterTokens(article, CLUSTER_LABEL_STOP_WORDS))].forEach(token => {
+      counts[token] = (counts[token] || 0) + 1;
+    });
+    [...new Set(clusterPhrases(article))].forEach(phrase => {
+      phraseCounts[phrase] = (phraseCounts[phrase] || 0) + 1;
+    });
+  });
+
+  const maxGlobalShare = articles.length > 2 ? 0.45 : 0.65;
+  const phrases = Object.entries(phraseCounts)
+    .filter(([, count]) => count > 1)
+    .sort((a, b) => b[1] - a[1] || b[0].length - a[0].length)
+    .slice(0, 1)
+    .map(([phrase]) => phrase);
+
+  const terms = Object.entries(counts)
+    .filter(([token, count]) => count > 1 || articles.length === 1)
+    .filter(([token]) => ((docFreq[token] || 0) / totalArticles) <= maxGlobalShare)
+    .map(([token, count]) => {
+      const inverseFrequency = Math.log((totalArticles + 1) / ((docFreq[token] || 0) + 1)) + 1;
+      return [token, count * inverseFrequency];
+    })
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 3)
+    .map(([token]) => token);
+
+  return formatClusterLabel(phrases, terms);
+}
+
+function toClusterData(articles) {
+  const clusters = [];
+  const sorted = [...articles].sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+  const docFreq = buildClusterDocumentFrequency(sorted);
+
+  sorted.forEach(article => {
+    const tokens = weightedClusterTokens(article);
+    let bestCluster = null;
+    let bestScore = 0;
+
+    clusters.forEach(cluster => {
+      const score = tokenSimilarity(tokens, cluster.tokens, docFreq, sorted.length);
+      if (score > bestScore) {
+        bestScore = score;
+        bestCluster = cluster;
+      }
+    });
+
+    if (bestCluster && bestScore >= 0.12) {
+      bestCluster.articles.push(article);
+      bestCluster.tokens = bestCluster.articles.flatMap(weightedClusterTokens);
+    } else {
+      clusters.push({ articles: [article], tokens });
+    }
+  });
+
+  const grouped = clusters.map((cluster, index) => ({
+      id: index + 1,
+      label: labelCluster(cluster.articles, docFreq, sorted.length),
+      articles: cluster.articles,
+      sourceCount: new Set(cluster.articles.map(a => a.source)).size,
+    }))
+    .sort((a, b) => b.articles.length - a.articles.length || b.sourceCount - a.sourceCount);
+
+  const storyClusters = grouped.filter(cluster => cluster.articles.length > 1);
+  const singletons = grouped.filter(cluster => cluster.articles.length === 1);
+  if (singletons.length) {
+    storyClusters.push({
+      id: "other",
+      label: "Other Coverage",
+      articles: singletons.flatMap(cluster => cluster.articles),
+      sourceCount: new Set(singletons.flatMap(cluster => cluster.articles.map(a => a.source))).size,
+    });
+  }
+
+  return storyClusters;
+}
+
 // ---------- Dynamic UI builders ----------
 
 function buildSourceFilters(sources) {
@@ -437,8 +611,8 @@ function buildChannelCards(sources) {
 
 // ---------- View switching ----------
 
-const views  = { timeline: "view-timeline", channels: "view-channels", llm: "view-llm", account: "view-account" };
-const titles = { timeline: "Coverage Timeline", channels: "Channels", llm: "LLM Analysis", account: "Account" };
+const views  = { timeline: "view-timeline", channels: "view-channels", clusters: "view-clusters", llm: "view-llm", account: "view-account" };
+const titles = { timeline: "Coverage Timeline", channels: "Channels", clusters: "Story Clusters", llm: "LLM Analysis", account: "Account" };
 let selectedTimelineSource = null;
 const timelineColumnsEl = document.getElementById("timeline-columns");
 const startDateFilterEl = document.getElementById("start-date-filter");
@@ -478,6 +652,7 @@ function setView(name) {
   document.getElementById("page-title").textContent = titles[name];
   if (name !== "timeline") clearTimelineSourceSelection();
   if (name === "channels") showChannelsGrid();
+  if (name === "clusters") renderStoryClusters();
   if (name === "account") renderAccountView();
 }
 
@@ -800,6 +975,69 @@ document.getElementById("view-timeline").addEventListener("click", (e) => {
   if (e.target.closest(".article-card, .timeline-stage, .filters, .compare-btn")) return;
   clearTimelineSourceSelection();
 });
+
+// ---------- Story clusters ----------
+
+function formatArticleDate(isoString) {
+  const d = new Date(isoString);
+  if (isNaN(d)) return "";
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function renderStoryClusters() {
+  const container = document.getElementById("cluster-list");
+  if (!container) return;
+  container.innerHTML = "";
+
+  if (!clusterData.length) {
+    container.innerHTML = '<div class="timeline-empty-state">No story clusters loaded yet.</div>';
+    return;
+  }
+
+  clusterData.forEach((cluster, index) => {
+    const clusterEl = document.createElement("section");
+    clusterEl.className = "story-cluster";
+    if (index > 0) clusterEl.classList.add("collapsed");
+
+    const sourceText = `${cluster.sourceCount} source${cluster.sourceCount === 1 ? "" : "s"}`;
+    const articleText = `${cluster.articles.length} article${cluster.articles.length === 1 ? "" : "s"}`;
+    clusterEl.innerHTML = `
+      <button class="cluster-header">
+        <span class="cluster-chevron">${index === 0 ? "⌄" : "›"}</span>
+        <span class="cluster-title">${cluster.label}</span>
+        <span class="cluster-meta">${articleText} · ${sourceText}</span>
+      </button>
+      <div class="cluster-articles"></div>
+    `;
+
+    const articleWrap = clusterEl.querySelector(".cluster-articles");
+    cluster.articles.forEach(article => {
+      const card = document.createElement("article");
+      card.className = "cluster-article-card";
+      card.innerHTML = `
+        <div class="cluster-article-meta">
+          <span class="dot" style="background:${sourceColor(article.source)}"></span>
+          <span>${article.source}</span>
+          <span>${formatArticleDate(article.date)}</span>
+        </div>
+        <h4>${article.title}</h4>
+        <p>${article.description || "No summary available."}</p>
+      `;
+      card.addEventListener("click", () => {
+        if (article.url) { recordView({ ...article, src: article.source, summary: article.description || "" }); window.open(article.url, "_blank"); }
+      });
+      articleWrap.appendChild(card);
+    });
+
+    clusterEl.querySelector(".cluster-header").addEventListener("click", () => {
+      clusterEl.classList.toggle("collapsed");
+      clusterEl.querySelector(".cluster-chevron").textContent =
+        clusterEl.classList.contains("collapsed") ? "›" : "⌄";
+    });
+
+    container.appendChild(clusterEl);
+  });
+}
 
 // ---------- LLM view ----------
 
@@ -1422,6 +1660,7 @@ async function loadAndRender(query, prefetchedArticles) {
 
     timelineData = toTimelineData(normalized);
     channelData = toChannelData(normalized);
+    clusterData = toClusterData(normalized);
 
     const sources = Object.keys(channelData).sort();
     assignSourceColors(sources);
@@ -1430,6 +1669,7 @@ async function loadAndRender(query, prefetchedArticles) {
     setLastUpdated(updatedAt);
 
     renderTimeline();
+    if (currentView === "clusters") renderStoryClusters();
   } catch (err) {
     console.error("Could not load articles:", err);
     timelineColumnsEl.innerHTML =
