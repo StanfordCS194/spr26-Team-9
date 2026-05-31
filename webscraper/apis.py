@@ -86,7 +86,7 @@ class NYTAdapter:
                 "q": query,
                 "begin_date": begin_date,
                 "end_date": end_date,
-                "sort": "oldest",
+                "sort": "newest",
                 "page": kwargs.get("page", 0),
                 "api-key": nyt_api_key,
             },
