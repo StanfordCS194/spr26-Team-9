@@ -168,6 +168,7 @@ let currentQuery = null;
 const landingEl            = document.getElementById("landing");
 const landingInput         = document.getElementById("landing-input");
 const landingBtn           = document.getElementById("landing-btn");
+const landingBypassBtn     = document.getElementById("landing-bypass-btn");
 const landingStatus        = document.getElementById("landing-status");
 const landingProgress      = document.getElementById("landing-progress");
 const landingProgressFill  = document.getElementById("landing-progress-fill");
@@ -257,11 +258,28 @@ function stopProgressPolling() {
   if (animationFrame)  { cancelAnimationFrame(animationFrame); animationFrame = null; }
 }
 
+function updateLandingBypassLabel() {
+  landingBypassBtn.textContent = timelineData.length
+    ? "Return Without Searching"
+    : "Continue Without Search";
+}
+
 landingBtn.addEventListener("click", triggerSearch);
+landingBypassBtn.addEventListener("click", () => {
+  landingStatus.hidden = true;
+  landingProgress.hidden = true;
+  if (!timelineData.length) {
+    currentQuery = null;
+    sessionStorage.removeItem("lastSearch");
+    setStoryHeadline("No Search Selected");
+  }
+  landingEl.classList.add("hidden");
+});
 landingInput.addEventListener("keydown", (e) => { if (e.key === "Enter") triggerSearch(); });
 
 document.getElementById("new-search-btn").addEventListener("click", () => {
   sessionStorage.removeItem("lastSearch");
+  updateLandingBypassLabel();
   landingEl.classList.remove("hidden");
   landingStatus.hidden = true;
   landingBtn.disabled = false;
