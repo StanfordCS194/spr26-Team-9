@@ -3,6 +3,8 @@ import os
 import shutil
 import subprocess
 import sys
+import threading
+import time
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -21,6 +23,59 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(HERE, "..", "data")
 FRONTEND_DIR = os.path.join(HERE, "..", "frontend")
 PYTHON = shutil.which("python") or sys.executable
+
+SUGGESTED_QUERIES = [
+    "Trump trade war tariffs",
+    "Gaza ceasefire deal",
+    "AI regulation Congress",
+]
+_SUGGESTED_LOWER = {q.lower() for q in SUGGESTED_QUERIES}
+
+CACHE_TTL = 86400  # 24 hours
+
+_search_cache: dict[str, dict] = {}  # normalized_query -> {results, cached_at}
+_scraper_lock = threading.Lock()
+
+
+def _run_scraper_and_cache(query: str) -> list[dict]:
+    """Run webscraper for query, store in cache if it's a suggested query, and return results."""
+    if os.path.isdir(DATA_DIR):
+        for fname in os.listdir(DATA_DIR):
+            if fname.endswith("_articles.json"):
+                os.remove(os.path.join(DATA_DIR, fname))
+
+    proc = subprocess.run(
+        [PYTHON, os.path.join(HERE, "..", "webscraper", "refresh.py"), "--query", query],
+        check=True,
+        timeout=180,
+        capture_output=True,
+        text=True,
+    )
+    print(proc.stdout)
+    print(proc.stderr)
+
+    results = filter_articles(query)
+
+    if query.strip().lower() in _SUGGESTED_LOWER:
+        _search_cache[query.strip().lower()] = {"results": results, "cached_at": time.time()}
+
+    return results
+
+
+def _prewarm_worker():
+    """Background thread: sequentially pre-warm cache for all suggested queries."""
+    for query in SUGGESTED_QUERIES:
+        key = query.lower()
+        cached = _search_cache.get(key)
+        if cached and (time.time() - cached["cached_at"]) < CACHE_TTL:
+            continue
+        try:
+            print(f"[prewarm] Starting cache warm for: {query!r}")
+            with _scraper_lock:
+                _run_scraper_and_cache(query)
+            print(f"[prewarm] Done: {query!r}")
+        except Exception as exc:
+            print(f"[prewarm] Failed for {query!r}: {exc}")
 
 
 app = FastAPI(title="News Backend")
