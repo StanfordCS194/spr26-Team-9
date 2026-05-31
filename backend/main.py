@@ -22,7 +22,7 @@ from bias import router as bias_router
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(HERE, "..", "data")
-CACHE_DIR = os.path.join(DATA_DIR, "search_cache")
+CACHE_DIR = os.path.join(HERE, "..", "data_public", "search_cache")
 FRONTEND_DIR = os.path.join(HERE, "..", "frontend")
 PYTHON = shutil.which("python") or sys.executable
 
