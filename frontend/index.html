@@ -22,9 +22,15 @@
       <h1 class="landing-title">News Narrative Tracker</h1>
       <p class="landing-tagline">See how any story is told across the media — from every angle, all in one place.</p>
 
-      <div class="landing-search">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input id="landing-input" type="text" placeholder='Try "Trump Pope Leo" or "Gaza ceasefire"...' autocomplete="off" />
+      <div class="search-container" id="search-container">
+        <div class="landing-search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="landing-input" type="text" placeholder='Try "Trump Pope Leo" or "Gaza ceasefire"...' autocomplete="off" />
+        </div>
+        <div class="search-suggestions-divider" id="search-suggestions-divider" hidden></div>
+        <div class="landing-suggestions" id="landing-suggestions" hidden>
+          <div id="suggestions-chips"></div>
+        </div>
       </div>
       <button id="landing-btn" class="landing-btn">Track This Story →</button>
       <button id="landing-bypass-btn" class="landing-bypass-btn">Continue Without Search</button>

@@ -38,7 +38,7 @@ class CurrentAPIAdapter:
         params = {
             "keywords": query,
             "language": "en",
-            "page_size": 10,
+            "page_size": 25,
             "apiKey": current_api,
         }
         if kwargs.get("domain", ""):
@@ -61,6 +61,7 @@ class CurrentAPIAdapter:
             "date": iso_date,
             "author": a.get("author", ""),
             "source": urlparse(a.get("url", "")).netloc.removeprefix("www."),
+            "api": "currents",
         }
 
 
@@ -86,7 +87,7 @@ class NYTAdapter:
                 "q": query,
                 "begin_date": begin_date,
                 "end_date": end_date,
-                "sort": "oldest",
+                "sort": "newest",
                 "page": kwargs.get("page", 0),
                 "api-key": nyt_api_key,
             },
@@ -104,6 +105,7 @@ class NYTAdapter:
             "date":        d.get("pub_date", ""),
             "author":      d.get("byline", {}).get("original", ""),
             "source":      "New York Times",
+            "api":         "nyt",
         }
 
 
@@ -135,6 +137,7 @@ class NewsAPIAdapter:
             "date": a.get("publishedAt", ""),
             "author": a.get("author", ""),
             "source": a.get("source", {}).get("name", "NewsAPI"),
+            "api": "newsapi",
         }
 
 

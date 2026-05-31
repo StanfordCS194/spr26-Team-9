@@ -12,6 +12,7 @@ import os
 import shutil
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 PYTHON = shutil.which("python") or sys.executable
 from datetime import datetime, timezone, timedelta
@@ -87,11 +88,15 @@ def main():
     os.makedirs(DATA_DIR, exist_ok=True)
 
     apis_to_run = APIS if args.api == "all" else [args.api]
-    for api in apis_to_run:
-        try:
-            run_scraper(api, start, end)
-        except subprocess.CalledProcessError:
-            print(f"\n[{api}] scrape failed — skipping.")
+
+    with ThreadPoolExecutor(max_workers=len(apis_to_run)) as executor:
+        futures = {executor.submit(run_scraper, api, start, end): api for api in apis_to_run}
+        for future in as_completed(futures):
+            api = futures[future]
+            try:
+                future.result()
+            except subprocess.CalledProcessError:
+                print(f"\n[{api}] scrape failed — skipping.")
 
     merge()
 
