@@ -1,7 +1,11 @@
 // ---------- Supabase ----------
 const SUPABASE_URL  = "https://nlcnbcpnljdizedritaj.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5sY25iY3BubGpkaXplZHJpdGFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTkyMDcsImV4cCI6MjA5NDAzNTIwN30.AU1xSkrfd3efDrsvCHAQXD_jsmWGu62eL9kVIuBxLak";
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
+  auth: {
+    storage: window.sessionStorage,
+  },
+});
 let currentUser = null;
 let bookmarkedTitles = new Set();
 let bookmarkIdMap    = {};
@@ -1464,5 +1468,3 @@ window.addEventListener("beforeunload", () => {
 });
 
 // Landing page shows first — loadAndRender() is called after a successful search
-
-
