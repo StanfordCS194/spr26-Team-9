@@ -33,8 +33,6 @@ SUGGESTED_QUERIES = [
 ]
 _SUGGESTED_LOWER = {q.lower() for q in SUGGESTED_QUERIES}
 
-CACHE_TTL = 86400  # 24 hours
-
 _search_cache: dict[str, dict] = {}  # normalized_query -> {results, cached_at}
 _scraper_lock = threading.Lock()
 
@@ -53,7 +51,6 @@ def _save_cache_to_disk(query: str, results: list[dict], cached_at: float) -> No
 def _load_cache_from_disk() -> None:
     if not os.path.isdir(CACHE_DIR):
         return
-    now = time.time()
     for fname in os.listdir(CACHE_DIR):
         if not fname.endswith(".json"):
             continue
@@ -61,11 +58,10 @@ def _load_cache_from_disk() -> None:
         try:
             with open(path, encoding="utf-8") as f:
                 data = json.load(f)
-            if now - data.get("cached_at", 0) < CACHE_TTL:
-                key = data["query"].strip().lower()
-                if key in _SUGGESTED_LOWER:
-                    _search_cache[key] = {"results": data["results"], "cached_at": data["cached_at"]}
-                    print(f"[cache] Loaded from disk: {data['query']!r}")
+            key = data["query"].strip().lower()
+            if key in _SUGGESTED_LOWER:
+                _search_cache[key] = {"results": data["results"], "cached_at": data["cached_at"]}
+                print(f"[cache] Loaded from disk: {data['query']!r}")
         except Exception as exc:
             print(f"[cache] Failed to load {fname}: {exc}")
 
@@ -102,7 +98,7 @@ def _prewarm_worker():
     for query in SUGGESTED_QUERIES:
         key = query.lower()
         cached = _search_cache.get(key)
-        if cached and (time.time() - cached["cached_at"]) < CACHE_TTL:
+        if cached:
             continue
         try:
             print(f"[prewarm] Starting cache warm for: {query!r}")
@@ -183,7 +179,7 @@ def api_search(q: str = Query(..., min_length=1), limit: int = Query(10, ge=1, l
         if key not in _SUGGESTED_LOWER:
             return None
         cached = _search_cache.get(key)
-        if cached and (time.time() - cached["cached_at"]) < CACHE_TTL:
+        if cached:
             return cached["results"]
         return None
 
