@@ -38,7 +38,7 @@ class CurrentAPIAdapter:
         params = {
             "keywords": query,
             "language": "en",
-            "page_size": 10,
+            "page_size": 25,
             "apiKey": current_api,
         }
         if kwargs.get("domain", ""):
