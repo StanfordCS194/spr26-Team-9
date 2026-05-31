@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -21,13 +22,14 @@ from bias import router as bias_router
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(HERE, "..", "data")
+CACHE_DIR = os.path.join(DATA_DIR, "search_cache")
 FRONTEND_DIR = os.path.join(HERE, "..", "frontend")
 PYTHON = shutil.which("python") or sys.executable
 
 SUGGESTED_QUERIES = [
     "Trump trade war tariffs",
     "Gaza ceasefire deal",
-    "AI regulation Congress",
+    "Trump Pope Leo",
 ]
 _SUGGESTED_LOWER = {q.lower() for q in SUGGESTED_QUERIES}
 
@@ -35,6 +37,37 @@ CACHE_TTL = 86400  # 24 hours
 
 _search_cache: dict[str, dict] = {}  # normalized_query -> {results, cached_at}
 _scraper_lock = threading.Lock()
+
+
+def _slug(query: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", query.lower()).strip("_")
+
+
+def _save_cache_to_disk(query: str, results: list[dict], cached_at: float) -> None:
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    path = os.path.join(CACHE_DIR, f"{_slug(query)}.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump({"query": query, "results": results, "cached_at": cached_at}, f)
+
+
+def _load_cache_from_disk() -> None:
+    if not os.path.isdir(CACHE_DIR):
+        return
+    now = time.time()
+    for fname in os.listdir(CACHE_DIR):
+        if not fname.endswith(".json"):
+            continue
+        path = os.path.join(CACHE_DIR, fname)
+        try:
+            with open(path, encoding="utf-8") as f:
+                data = json.load(f)
+            if now - data.get("cached_at", 0) < CACHE_TTL:
+                key = data["query"].strip().lower()
+                if key in _SUGGESTED_LOWER:
+                    _search_cache[key] = {"results": data["results"], "cached_at": data["cached_at"]}
+                    print(f"[cache] Loaded from disk: {data['query']!r}")
+        except Exception as exc:
+            print(f"[cache] Failed to load {fname}: {exc}")
 
 
 def _run_scraper_and_cache(query: str) -> list[dict]:
@@ -57,7 +90,9 @@ def _run_scraper_and_cache(query: str) -> list[dict]:
     results = filter_articles(query)
 
     if query.strip().lower() in _SUGGESTED_LOWER:
-        _search_cache[query.strip().lower()] = {"results": results, "cached_at": time.time()}
+        cached_at = time.time()
+        _search_cache[query.strip().lower()] = {"results": results, "cached_at": cached_at}
+        _save_cache_to_disk(query, results, cached_at)
 
     return results
 
@@ -93,6 +128,7 @@ app.include_router(bias_router)
 
 @app.on_event("startup")
 async def prewarm_cache():
+    _load_cache_from_disk()
     t = threading.Thread(target=_prewarm_worker, daemon=True)
     t.start()
 
@@ -142,13 +178,25 @@ def api_search(q: str = Query(..., min_length=1), limit: int = Query(10, ge=1, l
         raise HTTPException(status_code=400, detail="No query provided")
 
     key = query.lower()
-    if key in _SUGGESTED_LOWER:
+
+    def _cache_hit():
+        if key not in _SUGGESTED_LOWER:
+            return None
         cached = _search_cache.get(key)
         if cached and (time.time() - cached["cached_at"]) < CACHE_TTL:
-            return {"query": query, "results": cached["results"]}
+            return cached["results"]
+        return None
+
+    results = _cache_hit()
+    if results is not None:
+        return {"query": query, "results": results}
 
     try:
         with _scraper_lock:
+            # Re-check after acquiring lock — pre-warm may have just finished
+            results = _cache_hit()
+            if results is not None:
+                return {"query": query, "results": results}
             results = _run_scraper_and_cache(query)
     except subprocess.CalledProcessError as e:
         print(e.stdout)
