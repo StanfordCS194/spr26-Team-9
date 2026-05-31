@@ -316,5 +316,341 @@
     "bias_label": "Right",
     "bias_score": 0.7101,
     "bias_signed": 0.7101
+  },
+  "https://cryptobriefing.com/polymarket-us-ai-safety-bill-2027/": {
+    "source": "Crypto Briefing",
+    "bias_label": "Center",
+    "bias_score": 0.6959,
+    "bias_signed": 0.0
+  },
+  "https://yro.slashdot.org/story/26/05/28/186254/trump-loses-more-control-over-ai-regulation-as-illinois-passes-landmark-law": {
+    "source": "yro.slashdot.org",
+    "bias_label": "Right",
+    "bias_score": 0.5391,
+    "bias_signed": 0.5391
+  },
+  "https://sanjosespotlight.com/silicon-valley-lawmaker-favors-ai-tech-partnerships-over-regulations/": {
+    "source": "sanjosespotlight.com",
+    "bias_label": "Left",
+    "bias_score": 0.9951,
+    "bias_signed": -0.9951
+  },
+  "https://www.paloaltoonline.com/technology/2026/05/27/as-silicon-valley-faces-ai-disruption-liccardo-favors-tech-partnerships-over-regulations/": {
+    "source": "paloaltoonline.com",
+    "bias_label": "Left",
+    "bias_score": 0.9947,
+    "bias_signed": -0.9947
+  },
+  "https://www.commondreams.org/news/ai-tax-unemployment": {
+    "source": "commondreams.org",
+    "bias_label": "Left",
+    "bias_score": 0.8835,
+    "bias_signed": -0.8835
+  },
+  "https://www.nytimes.com/2026/05/01/us/politics/alex-bores-chris-larsen-open-ai-jack-schlossberg.html": {
+    "source": "New York Times",
+    "bias_label": "Left",
+    "bias_score": 0.4198,
+    "bias_signed": -0.4198
+  },
+  "https://www.nbcnews.com/now/video/bessent-teases-250-bill-with-trump-s-image-if-congress-approves-264108613836": {
+    "source": "nbcnews.com",
+    "bias_label": "Left",
+    "bias_score": 0.5195,
+    "bias_signed": -0.5195
+  },
+  "https://www.nbcnews.com/video/trump-admin-prepares-to-put-his-face-on-250-bill-even-as-law-prohibits-it-264207941535": {
+    "source": "nbcnews.com",
+    "bias_label": "Center",
+    "bias_score": 0.4924,
+    "bias_signed": 0.0
+  },
+  "https://www.bernama.com/en/news.php/?id=2563236": {
+    "source": "bernama.com",
+    "bias_label": "Right",
+    "bias_score": 0.7894,
+    "bias_signed": 0.7894
+  },
+  "https://www.aljazeera.com/news/2026/5/30/egypt-warns-israel-that-dangerous-gaza-escalations-threaten-ceasefire": {
+    "source": "aljazeera.com",
+    "bias_label": "Center",
+    "bias_score": 0.7125,
+    "bias_signed": 0.0
+  },
+  "https://www.chicagotribune.com/2026/05/30/israeli-soldiers-accounts-from-gaza/": {
+    "source": "chicagotribune.com",
+    "bias_label": "Left",
+    "bias_score": 0.7373,
+    "bias_signed": -0.7373
+  },
+  "https://www.independent.co.uk/news/world/middle-east/israel-ceasefire-gaza-yellow-line-b2986524.html": {
+    "source": "independent.co.uk",
+    "bias_label": "Left",
+    "bias_score": 0.5869,
+    "bias_signed": -0.5869
+  },
+  "https://www.sfgate.com/news/world/article/israeli-soldiers-share-rare-accounts-from-gaza-22283629.php": {
+    "source": "sfgate.com",
+    "bias_label": "Left",
+    "bias_score": 0.8676,
+    "bias_signed": -0.8676
+  },
+  "https://www.sott.net/article/506620-Netanyahu-orders-expansion-of-Gaza-occupation": {
+    "source": "sott.net",
+    "bias_label": "Right",
+    "bias_score": 0.749,
+    "bias_signed": 0.749
+  },
+  "https://www.sott.net/article/506603-Netanyahu-orders-IDF-to-occupy-70-percent-of-Gaza-far-beyond-terms-of-ceasefire-deal": {
+    "source": "sott.net",
+    "bias_label": "Right",
+    "bias_score": 0.6406,
+    "bias_signed": 0.6406
+  },
+  "https://globalnation.inquirer.net/325340/to-call-it-a-ceasefire-is-a-joke-say-israeli-soldiers-in-gaza": {
+    "source": "globalnation.inquirer.net",
+    "bias_label": "Left",
+    "bias_score": 0.4093,
+    "bias_signed": -0.4093
+  },
+  "https://www.independent.ie/world-news/benjamin-netanyahus-growing-expansion-of-gaza-control-a-dangerous-escalation/a/154000392.html": {
+    "source": "independent.ie",
+    "bias_label": "Right",
+    "bias_score": 0.6714,
+    "bias_signed": 0.6714
+  },
+  "https://www.independent.co.uk/bulletin/news/trump-pope-leo-iran-war-b2986583.html": {
+    "source": "independent.co.uk",
+    "bias_label": "Right",
+    "bias_score": 0.6689,
+    "bias_signed": 0.6689
+  },
+  "https://ktla.com/news/nationworld/trump-calls-out-pope-leo-for-meeting-with-useless-chicago-mayor/": {
+    "source": "ktla.com",
+    "bias_label": "Right",
+    "bias_score": 0.6266,
+    "bias_signed": 0.6266
+  },
+  "https://www.ktsm.com/news/trump-calls-out-pope-leo-for-meeting-with-useless-chicago-mayor/": {
+    "source": "ktsm.com",
+    "bias_label": "Right",
+    "bias_score": 0.6266,
+    "bias_signed": 0.6266
+  },
+  "https://fox40.com/news/national-and-world-news/trump-calls-out-pope-leo-for-meeting-with-useless-chicago-mayor/": {
+    "source": "fox40.com",
+    "bias_label": "Right",
+    "bias_score": 0.6266,
+    "bias_signed": 0.6266
+  },
+  "https://www.keloland.com/news/national-world-news/trump-calls-out-pope-leo-for-meeting-with-useless-chicago-mayor/": {
+    "source": "keloland.com",
+    "bias_label": "Right",
+    "bias_score": 0.6266,
+    "bias_signed": 0.6266
+  },
+  "https://www.cbs42.com/news/trump-calls-out-pope-leo-for-meeting-with-useless-chicago-mayor/": {
+    "source": "cbs42.com",
+    "bias_label": "Right",
+    "bias_score": 0.6266,
+    "bias_signed": 0.6266
+  },
+  "https://www.benzinga.com/news/politics/26/05/52893602/the-mayor-of-chicago-is-useless-trump-attacks-pope-leo-and-brandon-johnson-as-iran-dispute-escalates": {
+    "source": "benzinga.com",
+    "bias_label": "Right",
+    "bias_score": 0.8952,
+    "bias_signed": 0.8952
+  },
+  "https://thehill.com/homenews/administration/5902784-trump-slams-pope-johnson/": {
+    "source": "thehill.com",
+    "bias_label": "Right",
+    "bias_score": 0.8714,
+    "bias_signed": 0.8714
+  },
+  "https://www.snopes.com//fact-check/trump-pope-leo-cage-fight/": {
+    "source": "Snopes.com",
+    "bias_label": "Right",
+    "bias_score": 0.5912,
+    "bias_signed": 0.5912
+  },
+  "https://www.nytimes.com/2026/05/07/us/politics/rubio-pope-meeting.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.66,
+    "bias_signed": 0.66
+  },
+  "https://news.meaww.com/trump-calls-out-pope-leo-xiv-for-meeting-with-useless-chicago-mayor-brandon-johnson": {
+    "source": "news.meaww.com",
+    "bias_label": "Right",
+    "bias_score": 0.7997,
+    "bias_signed": 0.7997
+  },
+  "https://www.nytimes.com/2026/05/04/world/europe/rubio-rome-trump-pope-italy.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.5537,
+    "bias_signed": 0.5537
+  },
+  "https://www.nytimes.com/2026/05/08/us/politics/rubio-meloni-italy-us-trump-pope.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.7804,
+    "bias_signed": 0.7804
+  },
+  "https://www.nytimes.com/2026/05/08/arts/television/late-night-rubio-pope.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.6651,
+    "bias_signed": 0.6651
+  },
+  "https://www.thewrap.com/culture-lifestyle/culture/pope-leo-ai-dangers-tweets/": {
+    "source": "TheWrap",
+    "bias_label": "Right",
+    "bias_score": 0.904,
+    "bias_signed": 0.904
+  },
+  "https://www.nytimes.com/2026/05/06/world/europe/leo-first-american-pope.html": {
+    "source": "New York Times",
+    "bias_label": "Left",
+    "bias_score": 0.3972,
+    "bias_signed": -0.3972
+  },
+  "https://www.nytimes.com/2026/05/07/world/americas/trump-brazil-lula-meeting.html": {
+    "source": "New York Times",
+    "bias_label": "Left",
+    "bias_score": 0.4664,
+    "bias_signed": -0.4664
+  },
+  "https://www.nytimes.com/2026/05/09/opinion/iran-war-global-economy-risk-green-energy-shift.html": {
+    "source": "New York Times",
+    "bias_label": "Left",
+    "bias_score": 0.4656,
+    "bias_signed": -0.4656
+  },
+  "https://www.independent.co.uk/news/world/middle-east/iran-us-war-live-trump-peace-deal-strait-of-hormuz-b2986621.html": {
+    "source": "independent.co.uk",
+    "bias_label": "Right",
+    "bias_score": 0.8447,
+    "bias_signed": 0.8447
+  },
+  "https://www.nytimes.com/2026/05/10/us/politics/vance-rubio-trump-succession.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.5176,
+    "bias_signed": 0.5176
+  },
+  "https://www.nytimes.com/2026/05/01/us/politics/trump-tariffs-eu-cars.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.7235,
+    "bias_signed": 0.7235
+  },
+  "https://www.nytimes.com/2026/05/01/business/iran-war-interest-rates-central-banks.html": {
+    "source": "New York Times",
+    "bias_label": "Center",
+    "bias_score": 0.6857,
+    "bias_signed": 0.0
+  },
+  "https://www.edie.net/report-global-clean-energy-trade-rose-to-479bn-in-2025/": {
+    "source": "edie.net",
+    "bias_label": "Left",
+    "bias_score": 0.9888,
+    "bias_signed": -0.9888
+  },
+  "https://www.bbc.com/news/articles/c2l22ypl909o": {
+    "source": "bbc.com",
+    "bias_label": "Left",
+    "bias_score": 0.492,
+    "bias_signed": -0.492
+  },
+  "https://www.politico.com/news/2026/05/30/trump-china-businesses-tariff-opening-00943303": {
+    "source": "politico.com",
+    "bias_label": "Right",
+    "bias_score": 0.5897,
+    "bias_signed": 0.5897
+  },
+  "https://www.independent.co.uk/voices/trump-oman-iran-strait-of-hormuz-israel-lebanon-b2985668.html": {
+    "source": "independent.co.uk",
+    "bias_label": "Center",
+    "bias_score": 0.9385,
+    "bias_signed": 0.0
+  },
+  "https://www.reddit.com/r/foreignpolicy/comments/1trs5wu/what_a_disaster_that_was_the_end_of_the_american/": {
+    "source": "reddit.com",
+    "bias_label": "Left",
+    "bias_score": 0.4083,
+    "bias_signed": -0.4083
+  },
+  "https://www.nytimes.com/2026/05/02/us/politics/trump-garden-of-heroes-national-statues-list.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.6375,
+    "bias_signed": 0.6375
+  },
+  "https://www.breitbart.com/economy/2026/05/29/bessent-lays-out-sweeping-intellectual-case-for-trumps-economic-doctrine/": {
+    "source": "breitbart.com",
+    "bias_label": "Right",
+    "bias_score": 0.9055,
+    "bias_signed": 0.9055
+  },
+  "https://www.nytimes.com/2026/05/01/opinion/donald-trump-animal-spirits.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.51,
+    "bias_signed": 0.51
+  },
+  "https://hotair.com/tree-hugging-sister/2026/05/29/the-carney-val-continues-i-spy-with-my-little-eye-a-syrupian-recession-n3815410": {
+    "source": "hotair.com",
+    "bias_label": "Right",
+    "bias_score": 0.4605,
+    "bias_signed": 0.4605
+  },
+  "https://www.nytimes.com/2026/05/03/opinion/iran-us-empire.html": {
+    "source": "New York Times",
+    "bias_label": "Left",
+    "bias_score": 0.4061,
+    "bias_signed": -0.4061
+  },
+  "https://www.nytimes.com/2026/05/01/business/dealbook/openai-anthropic-compute.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.6582,
+    "bias_signed": 0.6582
+  },
+  "https://www.nytimes.com/2026/05/01/business/central-banks-gold-storage.html": {
+    "source": "New York Times",
+    "bias_label": "Left",
+    "bias_score": 0.5826,
+    "bias_signed": -0.5826
+  },
+  "https://www.nytimes.com/2026/05/02/opinion/trump-thomas-jefferson-founding-fathers.html": {
+    "source": "New York Times",
+    "bias_label": "Right",
+    "bias_score": 0.4989,
+    "bias_signed": 0.4989
+  },
+  "https://www.ndtv.com/world-news/india-commits-to-buying-500-billion-worth-of-us-goods-experts-weigh-in-11562538": {
+    "source": "ndtv.com",
+    "bias_label": "Left",
+    "bias_score": 0.4913,
+    "bias_signed": -0.4913
+  },
+  "https://www.nytimes.com/2026/05/01/briefing/trump-iran-proposal-spirit-airlines.html": {
+    "source": "New York Times",
+    "bias_label": "Left",
+    "bias_score": 0.4121,
+    "bias_signed": -0.4121
+  },
+  "https://www.nytimes.com/2026/05/01/business/spirit-airlines-shutting-down.html": {
+    "source": "New York Times",
+    "bias_label": "Left",
+    "bias_score": 0.4506,
+    "bias_signed": -0.4506
+  },
+  "https://www.nytimes.com/2026/05/03/opinion/china-us-trump-summit.html": {
+    "source": "New York Times",
+    "bias_label": "Left",
+    "bias_score": 0.4897,
+    "bias_signed": -0.4897
   }
 }
