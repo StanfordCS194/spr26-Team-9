@@ -411,13 +411,35 @@ function clusterTokens(article, extraStopWords = new Set()) {
     )) || [];
 }
 
-function tokenSimilarity(aTokens, bTokens) {
-  const a = new Set(aTokens);
-  const b = new Set(bTokens);
-  if (!a.size || !b.size) return 0;
-  let overlap = 0;
-  a.forEach(token => { if (b.has(token)) overlap += 1; });
-  return overlap / Math.sqrt(a.size * b.size);
+function weightedClusterTokens(article) {
+  return [
+    ...clusterTokens(article),
+    ...clusterTokens({ title: article.title || "" }),
+  ];
+}
+
+function tokenSimilarity(aTokens, bTokens, docFreq, totalArticles) {
+  const a = {};
+  const b = {};
+  aTokens.forEach(token => { a[token] = (a[token] || 0) + 1; });
+  bTokens.forEach(token => { b[token] = (b[token] || 0) + 1; });
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+  if (!aKeys.length || !bKeys.length) return 0;
+  const weight = token => Math.log((totalArticles + 1) / ((docFreq[token] || 0) + 1)) + 1;
+  let dotProduct = 0;
+  let aMagnitude = 0;
+  let bMagnitude = 0;
+  aKeys.forEach(token => {
+    const value = a[token] * weight(token);
+    aMagnitude += value * value;
+    if (b[token]) dotProduct += value * b[token] * weight(token);
+  });
+  bKeys.forEach(token => {
+    const value = b[token] * weight(token);
+    bMagnitude += value * value;
+  });
+  return dotProduct / Math.sqrt(aMagnitude * bMagnitude);
 }
 
 function buildClusterDocumentFrequency(articles) {
@@ -497,24 +519,21 @@ function toClusterData(articles) {
   const docFreq = buildClusterDocumentFrequency(sorted);
 
   sorted.forEach(article => {
-    const tokens = clusterTokens(article);
+    const tokens = weightedClusterTokens(article);
     let bestCluster = null;
     let bestScore = 0;
 
     clusters.forEach(cluster => {
-      const score = tokenSimilarity(tokens, cluster.tokens);
+      const score = tokenSimilarity(tokens, cluster.tokens, docFreq, sorted.length);
       if (score > bestScore) {
         bestScore = score;
         bestCluster = cluster;
       }
     });
 
-    if (bestCluster && bestScore >= 0.18) {
+    if (bestCluster && bestScore >= 0.12) {
       bestCluster.articles.push(article);
-      bestCluster.tokens = clusterTokens({
-        title: bestCluster.articles.map(a => a.title).join(" "),
-        description: bestCluster.articles.map(a => a.description || "").join(" "),
-      });
+      bestCluster.tokens = bestCluster.articles.flatMap(weightedClusterTokens);
     } else {
       clusters.push({ articles: [article], tokens });
     }
