@@ -25,57 +25,45 @@ async def compare_articles(req: CompareRequest):
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     if len(req.articles) < 2:
-        raise HTTPException(status_code=400, detail="Two articles required.")
+        raise HTTPException(status_code=400, detail="At least two articles required.")
 
-    a1 = req.articles[0]
-    a2 = req.articles[1]
+    if len(req.articles) > 3:
+        raise HTTPException(status_code=400, detail="Compare up to three articles.")
+
+    articles = req.articles[:3]
+    article_blocks = "\n\n".join(
+        f"""Article {index}:
+Title: {article.title}
+Source: {article.src}
+Summary: {article.summary}"""
+        for index, article in enumerate(articles, start=1)
+    )
+
+    expected_json = {
+        f"article{index}": {
+            "title": "...",
+            "source": "...",
+            "core_argument": "...",
+            "key_points": ["...", "...", "..."],
+        }
+        for index in range(1, len(articles) + 1)
+    }
+    expected_json["key_differences"] = [
+        {
+            "label": label,
+            **{f"article{index}": "..." for index in range(1, len(articles) + 1)},
+        }
+        for label in ("Framing", "Tone", "Emphasis")
+    ]
 
     prompt = f"""
-Compare these two news articles.
+Compare these {len(articles)} news articles.
 
-Article 1:
-Title: {a1.title}
-Source: {a1.src}
-Summary: {a1.summary}
-
-Article 2:
-Title: {a2.title}
-Source: {a2.src}
-Summary: {a2.summary}
+{article_blocks}
 
 Return ONLY valid JSON with this exact structure:
 
-{{
-  "article1": {{
-    "title": "...",
-    "source": "...",
-    "core_argument": "...",
-    "key_points": ["...", "...", "..."]
-  }},
-  "article2": {{
-    "title": "...",
-    "source": "...",
-    "core_argument": "...",
-    "key_points": ["...", "...", "..."]
-  }},
-  "key_differences": [
-    {{
-      "label": "Framing",
-      "article1": "...",
-      "article2": "..."
-    }},
-    {{
-      "label": "Tone",
-      "article1": "...",
-      "article2": "..."
-    }},
-    {{
-      "label": "Emphasis",
-      "article1": "...",
-      "article2": "..."
-    }}
-  ]
-}}
+{json.dumps(expected_json, indent=2)}
 """
 
     try:

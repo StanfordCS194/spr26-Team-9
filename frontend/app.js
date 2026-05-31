@@ -1,7 +1,11 @@
 // ---------- Supabase ----------
 const SUPABASE_URL  = "https://nlcnbcpnljdizedritaj.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5sY25iY3BubGpkaXplZHJpdGFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0NTkyMDcsImV4cCI6MjA5NDAzNTIwN30.AU1xSkrfd3efDrsvCHAQXD_jsmWGu62eL9kVIuBxLak";
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
+  auth: {
+    storage: window.sessionStorage,
+  },
+});
 let currentUser = null;
 let bookmarkedTitles = new Set();
 let bookmarkIdMap    = {};
@@ -46,6 +50,68 @@ async function loadUserBookmarks() {
 const TOP_N_PER_DATE = 5;
 
 // Higher number = more credible. Sources not listed default to tier 1.
+// Source lean ratings based on AllSides / Ad Fontes Media.
+// Keys cover both cleaned domain names (after cleanSourceName) and formatted API names.
+const SOURCE_LEAN = {
+  // Left
+  "cnn": "Left", "CNN": "Left",
+  "msnbc": "Left", "MSNBC": "Left",
+  "huffpost": "Left", "HuffPost": "Left", "huffingtonpost": "Left",
+  "motherjones": "Left", "Mother Jones": "Left",
+  "vox": "Left", "Vox": "Left",
+  "slate": "Left", "Slate": "Left",
+  "thenation": "Left", "The Nation": "Left",
+  "rawstory": "Left", "Raw Story": "Left",
+  "crooksandliars": "Left", "Crooksandliars": "Left",
+  "truthout": "Left", "Truthout": "Left",
+  "juancole": "Left", "Juancole": "Left",
+  "aljazeera": "Left", "Al Jazeera": "Left",
+  "nytimes": "Left", "New York Times": "Left",
+  "washingtonpost": "Left", "Washington Post": "Left",
+  "theguardian": "Left", "Guardian": "Left",
+  "nbcnews": "Left", "NBC News": "Left",
+  "cbsnews": "Left", "CBS News": "Left",
+  "abcnews": "Left", "ABC News": "Left", "abc": "Left",
+  "npr": "Left", "NPR": "Left",
+  "pbs": "Left", "PBS": "Left",
+  "theatlantic": "Left", "The Atlantic": "Left", "atlantic": "Left",
+  "politico": "Left", "Politico": "Left",
+  "time": "Left", "Time": "Left",
+  "thedailybeast": "Left", "Daily Beast": "Left",
+  "salon": "Left", "Salon": "Left",
+  "msn": "Left", "MSN": "Left",
+  "consequence": "Left", "Consequence": "Left",
+  "globalresearch": "Left", "Globalresearch": "Left",
+  // Center
+  "apnews": "Center", "AP News": "Center", "Associated Press": "Center",
+  "reuters": "Center", "Reuters": "Center",
+  "bbc": "Center", "BBC": "Center", "BBC News": "Center",
+  "usatoday": "Center", "USA Today": "Center",
+  "thehill": "Center", "The Hill": "Center",
+  "bloomberg": "Center", "Bloomberg": "Center",
+  "axios": "Center", "Axios": "Center",
+  "theconversation": "Center", "The Conversation": "Center",
+  "mediaite": "Center", "Mediaite": "Center",
+  "perthnow": "Center",
+  "independent": "Center", "Independent": "Center",
+  "standard": "Center",
+  // Right
+  "foxnews": "Right", "Fox News": "Right",
+  "nypost": "Right", "New York Post": "Right",
+  "wsj": "Right", "Wall Street Journal": "Right",
+  "breitbart": "Right", "Breitbart": "Right",
+  "dailywire": "Right", "Daily Wire": "Right",
+  "newsmax": "Right", "Newsmax": "Right",
+  "washingtonexaminer": "Right", "Washington Examiner": "Right",
+  "washingtontimes": "Right", "Washington Times": "Right",
+  "epochtimes": "Right", "Epoch Times": "Right",
+  "thefederalist": "Right", "The Federalist": "Right",
+  "dailymail": "Right", "Daily Mail": "Right",
+  "dailycaller": "Right", "Daily Caller": "Right",
+  "oann": "Right", "OAN": "Right",
+  "nypost": "Right", "New York Post": "Right",
+};
+
 const SOURCE_CREDIBILITY = {
   "New York Times": 3,
   "theguardian":    3,
@@ -93,6 +159,8 @@ let channelData  = {};
 let clusterData  = [];
 let selectedCompareTitles = [];
 let selectedCompareArticles = [];
+const MIN_COMPARE_ARTICLES = 2;
+const MAX_COMPARE_ARTICLES = 3;
 let currentQuery = null;
 
 // ---------- Landing page ----------
@@ -193,6 +261,7 @@ landingBtn.addEventListener("click", triggerSearch);
 landingInput.addEventListener("keydown", (e) => { if (e.key === "Enter") triggerSearch(); });
 
 document.getElementById("new-search-btn").addEventListener("click", () => {
+  sessionStorage.removeItem("lastSearch");
   landingEl.classList.remove("hidden");
   landingStatus.hidden = true;
   landingBtn.disabled = false;
@@ -210,7 +279,8 @@ async function runSearchQuery(query) {
   if (!res.ok) throw new Error((await res.json()).error || "Search failed");
   const { results } = await res.json();
   currentQuery = query;
-  await loadAndRender(query, results);
+  try { sessionStorage.setItem("lastSearch", JSON.stringify({ query, results })); } catch (_) {}
+  await Promise.all([loadAndRender(query, results), loadBias()]);
   setStoryHeadline(query);
 }
 
@@ -694,8 +764,8 @@ function makeArticleCard(a) {
       
       } else {
       
-        if (selectedCompareTitles.length >= 2) {
-          alert("You can only select 2 articles.");
+        if (selectedCompareTitles.length >= MAX_COMPARE_ARTICLES) {
+          alert(`You can only select up to ${MAX_COMPARE_ARTICLES} articles.`);
           return;
         }
       
@@ -709,18 +779,7 @@ function makeArticleCard(a) {
         card.style.backgroundColor = "rgba(37, 99, 235, 0.12)";
       }
   
-      // BUTTON TEXT LOGIC
-      if (selectedCompareTitles.length === 0) {
-        runCompareBtn.textContent = "Select 2 articles";
-      }
-  
-      if (selectedCompareTitles.length === 1) {
-        runCompareBtn.textContent = "Select 1 more article";
-      }
-  
-      if (selectedCompareTitles.length >= 2) {
-        runCompareBtn.textContent = "Compare Selected Articles";
-      }
+      updateCompareControls();
   
       return;
     }
@@ -768,6 +827,36 @@ function hideTooltip() { tooltipEl.hidden = true; }
 
 const modal = document.getElementById("compare-modal");
 
+function updateCompareControls() {
+  if (!runCompareBtn) return;
+
+  const isCompareMode = document.body.classList.contains("compare-mode");
+  const selectedCount = selectedCompareTitles.length;
+
+  if (selectedCompareTitles.length === 0) {
+    runCompareBtn.textContent = `Select ${MIN_COMPARE_ARTICLES}-${MAX_COMPARE_ARTICLES} articles`;
+  }
+
+  if (selectedCompareTitles.length === 1) {
+    runCompareBtn.textContent = "Select 1-2 more articles";
+  }
+
+  if (selectedCompareTitles.length >= MIN_COMPARE_ARTICLES) {
+    runCompareBtn.textContent = "Compare Selected Articles";
+  }
+
+  if (cancelCompareBtn) {
+    cancelCompareBtn.hidden = !isCompareMode;
+  }
+
+  if (compareSelectedCountEl) {
+    compareSelectedCountEl.hidden = !isCompareMode;
+    compareSelectedCountEl.textContent = `${selectedCount} selected`;
+  }
+
+  runCompareBtn.disabled = isCompareMode && selectedCount < MIN_COMPARE_ARTICLES;
+}
+
 function resetArticleComparison() {
   selectedCompareTitles = [];
   selectedCompareArticles = [];
@@ -780,6 +869,9 @@ function resetArticleComparison() {
   });
 
   runCompareBtn.textContent = "Article Comparison";
+  runCompareBtn.disabled = false;
+  if (cancelCompareBtn) cancelCompareBtn.hidden = true;
+  if (compareSelectedCountEl) compareSelectedCountEl.hidden = true;
   document.body.classList.remove("compare-mode");
 }
 
@@ -1087,7 +1179,19 @@ function renderLLM() {
 
 // Show comparison results after selecting articles
 const runCompareBtn = document.getElementById("compare-btn");
+const cancelCompareBtn = document.getElementById("compare-cancel-btn");
+const compareSelectedCountEl = document.getElementById("compare-selected-count");
 const comparisonResults = document.getElementById("comparison-results");
+
+if (cancelCompareBtn) {
+  cancelCompareBtn.addEventListener("click", resetArticleComparison);
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && document.body.classList.contains("compare-mode")) {
+    resetArticleComparison();
+  }
+});
 
 if (runCompareBtn && comparisonResults) {
   runCompareBtn.addEventListener("click", () => {
@@ -1097,12 +1201,13 @@ if (runCompareBtn && comparisonResults) {
     if (!document.body.classList.contains("compare-mode")) {
       document.body.classList.add("compare-mode");
       selectedCompareTitles = [];
-      runCompareBtn.textContent = "Select 2 articles";
+      selectedCompareArticles = [];
+      updateCompareControls();
       return;
     }
 
-    if (selectedCompareTitles.length < 2) {
-      alert("Select 2 articles to compare.");
+    if (selectedCompareTitles.length < MIN_COMPARE_ARTICLES) {
+      alert(`Select at least ${MIN_COMPARE_ARTICLES} articles to compare.`);
       return;
     }
     const selectedLinksEl = document.getElementById("selected-article-links");
@@ -1165,47 +1270,45 @@ if (modalCloseBtn && comparisonResults) {
 }
 
 function renderComparison(comparison) {
+  const articleKeys = ["article1", "article2", "article3"].filter(key => comparison[key]);
+
+  const articleCards = articleKeys
+    .map(key => `
+      <div class="article-card">
+        <h5>${comparison[key].title}</h5>
+        <p><strong>Source:</strong> ${comparison[key].source}</p>
+        <p><strong>Core Argument:</strong> ${comparison[key].core_argument}</p>
+
+        <ul>
+          ${(comparison[key].key_points || [])
+            .map(point => `<li>${point}</li>`)
+            .join("")}
+        </ul>
+      </div>
+    `)
+    .join("");
+
+  const differenceRows = (comparison.key_differences || [])
+    .map(diff => `
+      <p>
+        <strong>${diff.label}</strong><br/>
+        ${articleKeys
+          .map((key, index) => `Article ${index + 1} → ${diff[key] || ""}`)
+          .join("<br/>")}
+      </p>
+    `)
+    .join("");
+
   comparisonResults.innerHTML = `
     <h4>Article Comparison</h4>
 
     <div class="compare-articles">
-      <div class="article-card">
-        <h5>${comparison.article1.title}</h5>
-        <p><strong>Source:</strong> ${comparison.article1.source}</p>
-        <p><strong>Core Argument:</strong> ${comparison.article1.core_argument}</p>
-
-        <ul>
-          ${comparison.article1.key_points
-            .map(point => `<li>${point}</li>`)
-            .join("")}
-        </ul>
-      </div>
-
-      <div class="article-card">
-        <h5>${comparison.article2.title}</h5>
-        <p><strong>Source:</strong> ${comparison.article2.source}</p>
-        <p><strong>Core Argument:</strong> ${comparison.article2.core_argument}</p>
-
-        <ul>
-          ${comparison.article2.key_points
-            .map(point => `<li>${point}</li>`)
-            .join("")}
-        </ul>
-      </div>
+      ${articleCards}
     </div>
 
     <div class="differences">
       <h4>Key Differences</h4>
-
-      ${comparison.key_differences
-        .map(diff => `
-          <p>
-            <strong>${diff.label}</strong><br/>
-            Article 1 → ${diff.article1}<br/>
-            Article 2 → ${diff.article2}
-          </p>
-        `)
-        .join("")}
+      ${differenceRows}
     </div>
   `;
 }
@@ -1317,8 +1420,83 @@ async function renderAccountView() {
 
   const [{ data: bookmarks }, { data: history }] = await Promise.all([
     sb.from("bookmarks").select("*").order("bookmarked_at", { ascending: false }),
-    sb.from("article_views").select("*").order("viewed_at", { ascending: false }).limit(5),
+    sb.from("article_views").select("*").order("viewed_at", { ascending: false }).limit(50),
   ]);
+
+  // --- Reading profile ---
+  function articleLean(url, src) {
+    return biasMap[url]?.bias_label || SOURCE_LEAN[src] || SOURCE_LEAN[cleanSourceName(src)] || null;
+  }
+
+  // Top sources: all-time history
+  const sourceCounts = {};
+  for (const h of (history || [])) {
+    const src = h.article_src || "Unknown";
+    sourceCounts[src] = (sourceCounts[src] || 0) + 1;
+  }
+  const topSources = Object.entries(sourceCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  const maxCount = topSources[0]?.[1] || 1;
+
+  // Blind spot: per-topic (only views matching current search articles)
+  const allCurrentArticles = Object.entries(channelData).flatMap(([src, arts]) => arts.map(a => ({ ...a, src })));
+  const currentArticleUrls = new Set(allCurrentArticles.map(a => a.url));
+  const viewedUrls = new Set((history || []).map(h => h.article_url));
+  const topicViews = (history || []).filter(h => currentArticleUrls.has(h.article_url));
+
+  const leanCounts = { Left: 0, Center: 0, Right: 0 };
+  for (const h of topicViews) {
+    const lean = articleLean(h.article_url, h.article_src);
+    if (lean && leanCounts[lean] !== undefined) leanCounts[lean]++;
+  }
+  const totalLean = leanCounts.Left + leanCounts.Center + leanCounts.Right;
+  const dominantLean = topicViews.length >= 3
+    ? Object.entries(leanCounts).sort((a, b) => b[1] - a[1])[0][0] : null;
+  const blindSpotLean = dominantLean === "Left" ? "Right" : dominantLean === "Right" ? "Left" : null;
+
+  const blindSpotArticles = [];
+  if (blindSpotLean) {
+    for (const a of allCurrentArticles) {
+      if (articleLean(a.url, a.src) === blindSpotLean && !viewedUrls.has(a.url)) {
+        blindSpotArticles.push(a);
+        if (blindSpotArticles.length >= 2) break;
+      }
+    }
+  }
+
+  const profileHTML = topSources.length > 0 ? `
+    <div class="reading-profile-card">
+      <h3 class="bookmarks-heading">Your Reading Profile</h3>
+      <div class="profile-grid">
+        <div class="profile-block">
+          <div class="profile-block-label">Top Sources</div>
+          ${topSources.map(([src, count]) => `
+            <div class="source-bar-row">
+              <span class="source-bar-name"><span class="dot" style="background:${sourceColor(src)}"></span>${src}</span>
+              <div class="source-bar-track">
+                <div class="source-bar-fill" style="width:${(count / maxCount * 100).toFixed(0)}%;background:${sourceColor(src)}"></div>
+              </div>
+              <span class="source-bar-count">${count}</span>
+            </div>`).join("")}
+        </div>
+        <div class="profile-block">
+          <div class="profile-block-label">Your Blind Spot</div>
+          ${!currentQuery ? `<div class="bookmarks-empty" style="padding:16px 0">Search for a topic first to see your blind spot.</div>`
+          : topicViews.length < 3 ? `<div class="bookmarks-empty" style="padding:16px 0">Read at least 3 articles on "${currentQuery}" to see your blind spot (${topicViews.length}/3 so far).</div>`
+          : !blindSpotLean ? `<div class="bookmarks-empty" style="padding:16px 0">Your reading on this topic looks balanced.</div>`
+          : `
+            <div class="blindspot-desc">Based on ${totalLean} articles you've clicked on <strong>"${currentQuery}"</strong>, you've read more <strong>${dominantLean}-leaning</strong> sources. These <strong>${blindSpotLean}-leaning</strong> articles haven't been on your radar:</div>
+            ${blindSpotArticles.length ? `
+              <div class="blindspot-list">
+                ${blindSpotArticles.map(a => `
+                  <a href="${a.url}" target="_blank" rel="noopener" class="blindspot-article">
+                    <span class="blindspot-src"><span class="dot" style="background:${sourceColor(a.src)}"></span>${a.src}</span>
+                    <span class="blindspot-title">${a.title}</span>
+                  </a>`).join("")}
+              </div>` : `<div class="bookmarks-empty" style="padding:16px 0">No unread ${blindSpotLean}-leaning articles found for this topic.</div>`}
+          `}
+        </div>
+      </div>
+    </div>` : "";
 
   const cards = (bookmarks || []).map(b => `
     <div class="bookmark-card">
@@ -1334,7 +1512,7 @@ async function renderAccountView() {
       <button class="bookmark-remove" data-id="${b.id}">Remove</button>
     </div>`).join("");
 
-  const historyCards = (history || []).map(h => `
+  const historyCards = (history || []).slice(0, 5).map(h => `
     <div class="bookmark-card">
       <div class="bookmark-meta">
         <span class="dot" style="background:${sourceColor(h.article_src)}"></span>
@@ -1354,7 +1532,8 @@ async function renderAccountView() {
       </div>
       <button class="signout-btn" id="signout-btn">Sign Out</button>
     </div>
-    <h3 class="bookmarks-heading">Recently Viewed</h3>
+    ${profileHTML}
+    <h3 class="bookmarks-heading" style="margin-top:28px">Recently Viewed</h3>
     ${history?.length
       ? `<div class="bookmarks-list">${historyCards}</div>`
       : `<div class="bookmarks-empty">No history yet — click any article to open it.</div>`}
@@ -1501,6 +1680,19 @@ async function init() {
   document.getElementById("gate-signup-btn").addEventListener("click", () => handleGateAuth("signup"));
 
   renderLLM();
+
+  const savedSearch = sessionStorage.getItem("lastSearch");
+  if (savedSearch) {
+    try {
+      const { query, results } = JSON.parse(savedSearch);
+      currentQuery = query;
+      landingEl.classList.add("hidden");
+      await loadAndRender(query, results);
+      setStoryHeadline(query);
+    } catch (_) {
+      sessionStorage.removeItem("lastSearch");
+    }
+  }
 }
 
 init();
