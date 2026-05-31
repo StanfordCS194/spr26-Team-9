@@ -1373,18 +1373,52 @@ body {
 
 /* ── CHANNEL ANALYSIS BOX ─────────────────────────────── */
 .channel-analysis-box {
-  margin: 14px 0 22px;
-  padding: 18px 22px;
-  background: var(--slate-50);
-  border-left: 3px solid var(--accent);
-  border-radius: 8px;
-  font-size: 13px;
-  line-height: 1.75;
+  margin: 16px 0 24px;
+  padding: 18px 22px 20px;
+  background: var(--white);
+  border: 1px solid var(--slate-200);
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
   color: var(--navy-900);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.channel-analysis-box.loading {
+  border-left-color: var(--slate-400);
+  box-shadow: none;
+}
+
+.channel-analysis-eyebrow {
+  margin-bottom: 5px;
+  color: var(--accent-dark);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.channel-analysis-heading {
+  margin: 0;
+  color: var(--navy-900);
+  font-size: 16px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.channel-analysis-body {
+  max-width: 920px;
+  margin: 10px 0 0;
+  color: var(--slate-600);
+  font-size: 14px;
+  line-height: 1.75;
   white-space: pre-wrap;
 }
 
-.channel-analysis-box strong { font-weight: 700; }
+.channel-analysis-box.loading .channel-analysis-body {
+  color: var(--slate-400);
+  font-style: italic;
+}
 
 /* ── RESPONSIVE ───────────────────────────────────────── */
 @media (max-width: 1100px) {
