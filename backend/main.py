@@ -91,9 +91,20 @@ app.include_router(users_router)
 app.include_router(compare_router)
 app.include_router(bias_router)
 
+@app.on_event("startup")
+async def prewarm_cache():
+    t = threading.Thread(target=_prewarm_worker, daemon=True)
+    t.start()
+
+
 @app.get("/api/ready")
 def api_ready():
     return {"ready": True}
+
+
+@app.get("/api/suggestions")
+def api_suggestions():
+    return {"suggestions": SUGGESTED_QUERIES}
 
 
 @app.get("/data/{filename:path}")
@@ -130,21 +141,15 @@ def api_search(q: str = Query(..., min_length=1), limit: int = Query(10, ge=1, l
     if not query:
         raise HTTPException(status_code=400, detail="No query provided")
 
-    if os.path.isdir(DATA_DIR):
-        for fname in os.listdir(DATA_DIR):
-            if fname.endswith("_articles.json"):
-                os.remove(os.path.join(DATA_DIR, fname))
+    key = query.lower()
+    if key in _SUGGESTED_LOWER:
+        cached = _search_cache.get(key)
+        if cached and (time.time() - cached["cached_at"]) < CACHE_TTL:
+            return {"query": query, "results": cached["results"]}
 
     try:
-        proc = subprocess.run(
-            [PYTHON, os.path.join(HERE, "..", "webscraper", "refresh.py"), "--query", query],
-            check=True,
-            timeout=180,
-            capture_output=True,
-            text=True,
-        )
-        print(proc.stdout)
-        print(proc.stderr)
+        with _scraper_lock:
+            results = _run_scraper_and_cache(query)
     except subprocess.CalledProcessError as e:
         print(e.stdout)
         print(e.stderr)
@@ -152,7 +157,6 @@ def api_search(q: str = Query(..., min_length=1), limit: int = Query(10, ge=1, l
     except subprocess.TimeoutExpired as e:
         raise HTTPException(status_code=504, detail="Scraping timed out") from e
 
-    results = filter_articles(query)
     return {"query": query, "results": results}
 
 
