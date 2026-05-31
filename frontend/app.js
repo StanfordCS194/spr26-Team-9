@@ -1226,7 +1226,7 @@ async function renderAccountView() {
           : topicViews.length < 3 ? `<div class="bookmarks-empty" style="padding:16px 0">Read at least 3 articles on "${currentQuery}" to see your blind spot (${topicViews.length}/3 so far).</div>`
           : !blindSpotLean ? `<div class="bookmarks-empty" style="padding:16px 0">Your reading on this topic looks balanced.</div>`
           : `
-            <div class="blindspot-desc">Based on ${totalLean} articles you've read on <strong>"${currentQuery}"</strong>, you lean <strong>${dominantLean}</strong>. These ${blindSpotLean}-leaning articles haven't been on your radar:</div>
+            <div class="blindspot-desc">Based on ${totalLean} articles you've clicked on <strong>"${currentQuery}"</strong>, you've read more <strong>${dominantLean}-leaning</strong> sources. These <strong>${blindSpotLean}-leaning</strong> articles haven't been on your radar:</div>
             ${blindSpotArticles.length ? `
               <div class="blindspot-list">
                 ${blindSpotArticles.map(a => `
