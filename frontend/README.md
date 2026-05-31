@@ -20,8 +20,8 @@ For UI. Display timeline
 **Timeline**  
 Default view. Articles are grouped by date in chronological columns. Up to 5 articles are shown per day, ranked by source credibility and cross-outlet coverage. Hovering shows a summary tooltip, and clicking a source name highlights only that source across the timeline.
 
-**Channels**  
-Grid of news source cards. Clicking a source shows all of its articles grouped by date.
+**Channels**
+Grid of news source cards. Clicking a source requests an AI-generated overview of its loaded articles and shows the articles grouped by date.
 
 **LLM**  
 Collapsible cards showing AI-generated summaries, such as ChatGPT and Gemini, with political leaning. Currently hardcoded.

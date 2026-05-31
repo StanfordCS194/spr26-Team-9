@@ -108,6 +108,23 @@ Record a user action. Fire-and-forget — the frontend does not need to await or
 `search` payload: `{ "query": "..." }`.  
 Returns `204 No Content`.
 
+### `POST /api/channel-summary`
+
+Generate a short AI overview of one source's loaded articles. Requires `OPENAI_API_KEY`.
+
+```json
+{
+  "source": "New York Times",
+  "articles": [
+    {
+      "title": "...",
+      "summary": "...",
+      "date": "2026-05-30"
+    }
+  ]
+}
+```
+
 ---
 
 ## Environment variables
@@ -117,6 +134,7 @@ Returns `204 No Content`.
 | ----------- | ------------------------ | ------------------------- |
 | `REDIS_URL` | `redis://localhost:6379` | Redis connection string   |
 | `DATA_PATH` | `data/articles.json`     | Path to article JSON file |
+| `OPENAI_API_KEY` | — | OpenAI API key used for article comparisons and channel summaries |
 
 
 Add both to `.env` (see `.env.example`). For Vercel, provision Upstash Redis from the Marketplace and set `REDIS_URL` in project settings.
