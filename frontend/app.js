@@ -274,10 +274,39 @@ function setStoryHeadline(query) {
   document.querySelectorAll(".story-headline-dynamic").forEach(el => el.textContent = text);
 }
 
+async function parseApiResponse(res, fallbackMessage) {
+  const contentType = res.headers.get("content-type") || "";
+  let data;
+
+  try {
+    data = contentType.includes("application/json")
+      ? await res.json()
+      : await res.text();
+  } catch (_) {
+    throw new Error(fallbackMessage);
+  }
+
+  if (!res.ok) {
+    const detail = typeof data === "object" && data
+      ? data.detail || data.error
+      : "";
+    throw new Error(detail || fallbackMessage);
+  }
+
+  if (typeof data !== "object" || data === null) {
+    throw new Error(fallbackMessage);
+  }
+
+  return data;
+}
+
 async function runSearchQuery(query) {
   const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&limit=10`);
-  if (!res.ok) throw new Error((await res.json()).error || "Search failed");
-  const { results } = await res.json();
+  const { results } = await parseApiResponse(
+    res,
+    "Search is temporarily unavailable. Please try again."
+  );
+  if (!Array.isArray(results)) throw new Error("Search returned an invalid response. Please try again.");
   currentQuery = query;
   try { sessionStorage.setItem("lastSearch", JSON.stringify({ query, results })); } catch (_) {}
   await Promise.all([loadAndRender(query, results), loadBias()]);
@@ -313,8 +342,7 @@ async function triggerSearch() {
 async function loadArticles(query) {
   const url = query ? `/api/search?q=${encodeURIComponent(query)}` : "/api/articles";
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
+  const data = await parseApiResponse(res, "Could not load articles. Please try again.");
   if (Array.isArray(data)) return { articles: data, updatedAt: null };
   // /api/search returns {query, results}; /api/articles returns {articles, updatedAt}
   if (data.results) return { articles: data.results, updatedAt: null };

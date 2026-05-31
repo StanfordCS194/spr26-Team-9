@@ -95,9 +95,15 @@ def api_search(q: str = Query(..., min_length=1), limit: int = Query(10, ge=1, l
     except subprocess.CalledProcessError as e:
         print(e.stdout)
         print(e.stderr)
-        raise HTTPException(status_code=500, detail=e.stderr or str(e)) from e
+        raise HTTPException(
+            status_code=502,
+            detail="Some news sources could not be reached. Please try the search again.",
+        ) from e
     except subprocess.TimeoutExpired as e:
-        raise HTTPException(status_code=504, detail="Scraping timed out") from e
+        raise HTTPException(
+            status_code=504,
+            detail="The news search took too long. Please try again.",
+        ) from e
 
     results = filter_articles(query)
     return {"query": query, "results": results}
