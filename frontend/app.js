@@ -200,6 +200,26 @@ function startReadyPolling() {
 }
 startReadyPolling();
 
+async function loadSuggestions() {
+  try {
+    const res = await fetch("/api/suggestions");
+    const { suggestions } = await res.json();
+    const wrap = document.getElementById("landing-suggestions");
+    const chips = document.getElementById("suggestions-chips");
+    chips.innerHTML = suggestions
+      .map(q => `<button class="suggestion-chip" data-query="${q}">${q}</button>`)
+      .join("");
+    chips.addEventListener("click", e => {
+      const chip = e.target.closest(".suggestion-chip");
+      if (!chip || landingBtn.disabled) return;
+      landingInput.value = chip.dataset.query;
+      triggerSearch();
+    });
+    wrap.hidden = false;
+  } catch (_) {}
+}
+loadSuggestions();
+
 function showLandingStatus(msg, isError = false) {
   landingStatus.textContent = msg;
   landingStatus.hidden = false;
