@@ -46,6 +46,68 @@ async function loadUserBookmarks() {
 const TOP_N_PER_DATE = 5;
 
 // Higher number = more credible. Sources not listed default to tier 1.
+// Source lean ratings based on AllSides / Ad Fontes Media.
+// Keys cover both cleaned domain names (after cleanSourceName) and formatted API names.
+const SOURCE_LEAN = {
+  // Left
+  "cnn": "Left", "CNN": "Left",
+  "msnbc": "Left", "MSNBC": "Left",
+  "huffpost": "Left", "HuffPost": "Left", "huffingtonpost": "Left",
+  "motherjones": "Left", "Mother Jones": "Left",
+  "vox": "Left", "Vox": "Left",
+  "slate": "Left", "Slate": "Left",
+  "thenation": "Left", "The Nation": "Left",
+  "rawstory": "Left", "Raw Story": "Left",
+  "crooksandliars": "Left", "Crooksandliars": "Left",
+  "truthout": "Left", "Truthout": "Left",
+  "juancole": "Left", "Juancole": "Left",
+  "aljazeera": "Left", "Al Jazeera": "Left",
+  "nytimes": "Left", "New York Times": "Left",
+  "washingtonpost": "Left", "Washington Post": "Left",
+  "theguardian": "Left", "Guardian": "Left",
+  "nbcnews": "Left", "NBC News": "Left",
+  "cbsnews": "Left", "CBS News": "Left",
+  "abcnews": "Left", "ABC News": "Left", "abc": "Left",
+  "npr": "Left", "NPR": "Left",
+  "pbs": "Left", "PBS": "Left",
+  "theatlantic": "Left", "The Atlantic": "Left", "atlantic": "Left",
+  "politico": "Left", "Politico": "Left",
+  "time": "Left", "Time": "Left",
+  "thedailybeast": "Left", "Daily Beast": "Left",
+  "salon": "Left", "Salon": "Left",
+  "msn": "Left", "MSN": "Left",
+  "consequence": "Left", "Consequence": "Left",
+  "globalresearch": "Left", "Globalresearch": "Left",
+  // Center
+  "apnews": "Center", "AP News": "Center", "Associated Press": "Center",
+  "reuters": "Center", "Reuters": "Center",
+  "bbc": "Center", "BBC": "Center", "BBC News": "Center",
+  "usatoday": "Center", "USA Today": "Center",
+  "thehill": "Center", "The Hill": "Center",
+  "bloomberg": "Center", "Bloomberg": "Center",
+  "axios": "Center", "Axios": "Center",
+  "theconversation": "Center", "The Conversation": "Center",
+  "mediaite": "Center", "Mediaite": "Center",
+  "perthnow": "Center",
+  "independent": "Center", "Independent": "Center",
+  "standard": "Center",
+  // Right
+  "foxnews": "Right", "Fox News": "Right",
+  "nypost": "Right", "New York Post": "Right",
+  "wsj": "Right", "Wall Street Journal": "Right",
+  "breitbart": "Right", "Breitbart": "Right",
+  "dailywire": "Right", "Daily Wire": "Right",
+  "newsmax": "Right", "Newsmax": "Right",
+  "washingtonexaminer": "Right", "Washington Examiner": "Right",
+  "washingtontimes": "Right", "Washington Times": "Right",
+  "epochtimes": "Right", "Epoch Times": "Right",
+  "thefederalist": "Right", "The Federalist": "Right",
+  "dailymail": "Right", "Daily Mail": "Right",
+  "dailycaller": "Right", "Daily Caller": "Right",
+  "oann": "Right", "OAN": "Right",
+  "nypost": "Right", "New York Post": "Right",
+};
+
 const SOURCE_CREDIBILITY = {
   "New York Times": 3,
   "theguardian":    3,
@@ -211,7 +273,7 @@ async function runSearchQuery(query) {
   const { results } = await res.json();
   currentQuery = query;
   try { sessionStorage.setItem("lastSearch", JSON.stringify({ query, results })); } catch (_) {}
-  await loadAndRender(query, results);
+  await Promise.all([loadAndRender(query, results), loadBias()]);
   setStoryHeadline(query);
 }
 
@@ -1104,21 +1166,8 @@ async function renderAccountView() {
   ]);
 
   // --- Reading profile ---
-  // Build source-level lean from biasMap (normalized source names as fallback)
-  const srcLeanTally = {};
-  for (const b of Object.values(biasMap)) {
-    if (!b.source || !b.bias_label) continue;
-    const s = cleanSourceName(b.source);
-    if (!srcLeanTally[s]) srcLeanTally[s] = { Left: 0, Center: 0, Right: 0 };
-    if (srcLeanTally[s][b.bias_label] !== undefined) srcLeanTally[s][b.bias_label]++;
-  }
-  const srcLeanMap = {};
-  for (const [s, counts] of Object.entries(srcLeanTally)) {
-    srcLeanMap[s] = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
-  }
-
   function articleLean(url, src) {
-    return biasMap[url]?.bias_label || srcLeanMap[src] || null;
+    return biasMap[url]?.bias_label || SOURCE_LEAN[src] || SOURCE_LEAN[cleanSourceName(src)] || null;
   }
 
   // Top sources: all-time history
@@ -1142,7 +1191,7 @@ async function renderAccountView() {
     if (lean && leanCounts[lean] !== undefined) leanCounts[lean]++;
   }
   const totalLean = leanCounts.Left + leanCounts.Center + leanCounts.Right;
-  const dominantLean = totalLean >= 3
+  const dominantLean = topicViews.length >= 3
     ? Object.entries(leanCounts).sort((a, b) => b[1] - a[1])[0][0] : null;
   const blindSpotLean = dominantLean === "Left" ? "Right" : dominantLean === "Right" ? "Left" : null;
 
@@ -1174,7 +1223,7 @@ async function renderAccountView() {
         <div class="profile-block">
           <div class="profile-block-label">Your Blind Spot</div>
           ${!currentQuery ? `<div class="bookmarks-empty" style="padding:16px 0">Search for a topic first to see your blind spot.</div>`
-          : totalLean < 3 ? `<div class="bookmarks-empty" style="padding:16px 0">Read at least 3 articles on "${currentQuery}" to see your blind spot (${totalLean}/3 so far).</div>`
+          : topicViews.length < 3 ? `<div class="bookmarks-empty" style="padding:16px 0">Read at least 3 articles on "${currentQuery}" to see your blind spot (${topicViews.length}/3 so far).</div>`
           : !blindSpotLean ? `<div class="bookmarks-empty" style="padding:16px 0">Your reading on this topic looks balanced.</div>`
           : `
             <div class="blindspot-desc">Based on ${totalLean} articles you've read on <strong>"${currentQuery}"</strong>, you lean <strong>${dominantLean}</strong>. These ${blindSpotLean}-leaning articles haven't been on your radar:</div>
