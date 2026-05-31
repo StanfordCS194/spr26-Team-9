@@ -205,16 +205,20 @@ async function loadSuggestions() {
     const res = await fetch("/api/suggestions");
     const { suggestions } = await res.json();
     const wrap = document.getElementById("landing-suggestions");
+    const divider = document.getElementById("search-suggestions-divider");
     const chips = document.getElementById("suggestions-chips");
-    chips.innerHTML = suggestions
-      .map(q => `<button class="suggestion-chip" data-query="${q}">${q}</button>`)
-      .join("");
+    chips.innerHTML = suggestions.map(q => `
+      <button class="suggestion-row" data-query="${q}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        ${q}
+      </button>`).join("");
     chips.addEventListener("click", e => {
-      const chip = e.target.closest(".suggestion-chip");
-      if (!chip || landingBtn.disabled) return;
-      landingInput.value = chip.dataset.query;
+      const row = e.target.closest(".suggestion-row");
+      if (!row || landingBtn.disabled) return;
+      landingInput.value = row.dataset.query;
       triggerSearch();
     });
+    divider.hidden = false;
     wrap.hidden = false;
   } catch (_) {}
 }

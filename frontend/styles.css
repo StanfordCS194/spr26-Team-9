@@ -68,29 +68,39 @@
   max-width: 400px;
 }
 
-.landing-search {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.search-container {
   width: 100%;
-  padding: 14px 18px;
   background: rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 16px;
   backdrop-filter: blur(12px);
   margin-bottom: 14px;
+  overflow: hidden;
   transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
 }
 
-.landing-search:focus-within {
+.search-container:focus-within {
   border-color: rgba(99, 102, 241, 0.6);
   background: rgba(255, 255, 255, 0.1);
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
 }
 
+.landing-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+}
+
 .landing-search svg {
   color: rgba(255, 255, 255, 0.4);
   flex-shrink: 0;
+}
+
+.search-suggestions-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
+  margin: 0 18px;
 }
 
 #landing-input {
@@ -141,40 +151,33 @@
 }
 
 .landing-suggestions {
+  padding: 6px 0;
+}
+
+.suggestion-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 16px;
-}
-
-.suggestions-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.35);
-  white-space: nowrap;
-}
-
-.suggestion-chip {
-  padding: 6px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 12px;
-  font-family: inherit;
+  gap: 12px;
+  padding: 10px 18px;
   cursor: pointer;
-  backdrop-filter: blur(8px);
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.75);
+  transition: background 0.12s, color 0.12s;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
 }
 
-.suggestion-chip:hover {
-  background: rgba(99, 102, 241, 0.2);
-  border-color: rgba(99, 102, 241, 0.5);
+.suggestion-row:hover {
+  background: rgba(255, 255, 255, 0.07);
   color: #fff;
+}
+
+.suggestion-row svg {
+  color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
 }
 
 .landing-status {
