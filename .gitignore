@@ -5,8 +5,6 @@ CLAUDE.md
 
 .env
 webscraper/api_keys.py
-
-*/__pycache__/
 */__pycache__
 
 data/
