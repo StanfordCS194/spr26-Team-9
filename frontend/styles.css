@@ -895,12 +895,18 @@ body {
   letter-spacing: 0.04em;
 }
 
-/* COMPARE button — fixed bottom-right */
-.compare-btn {
+.compare-actions {
   position: fixed;
   right: 28px;
   bottom: 28px;
   z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* COMPARE button — fixed bottom-right */
+.compare-btn {
   padding: 12px 26px;
   border: none;
   background: var(--navy-950);
@@ -920,6 +926,51 @@ body {
   transform: translateY(-2px);
   box-shadow: var(--shadow-xl);
 }
+
+.compare-btn:disabled {
+  background: var(--slate-200);
+  color: var(--slate-600);
+  cursor: not-allowed;
+  box-shadow: var(--shadow-md);
+  opacity: 1;
+  transform: none;
+}
+
+.compare-cancel-btn {
+  padding: 12px 20px;
+  border: 1px solid var(--slate-200);
+  background: var(--white);
+  color: var(--navy-950);
+  border-radius: 999px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+.compare-cancel-btn:hover {
+  background: var(--slate-100);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.compare-cancel-btn[hidden] { display: none; }
+
+.compare-selected-count {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--slate-100);
+  color: var(--slate-600);
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+}
+
+.compare-selected-count[hidden] { display: none; }
 
 /* ── CHANNELS ─────────────────────────────────────────── */
 .channels-state { display: none; }
@@ -1177,13 +1228,12 @@ body {
 }
 
 .compare-articles {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 14px;
   margin-top: 12px;
   margin-bottom: 18px;
 }
-
-.compare-articles .article-card { flex: 1; }
 
 .analysis-status { font-style: italic; color: var(--slate-400); font-size: 13px; }
 
