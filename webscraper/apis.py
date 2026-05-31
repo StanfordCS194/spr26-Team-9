@@ -61,6 +61,7 @@ class CurrentAPIAdapter:
             "date": iso_date,
             "author": a.get("author", ""),
             "source": urlparse(a.get("url", "")).netloc.removeprefix("www."),
+            "api": "currents",
         }
 
 
@@ -104,6 +105,7 @@ class NYTAdapter:
             "date":        d.get("pub_date", ""),
             "author":      d.get("byline", {}).get("original", ""),
             "source":      "New York Times",
+            "api":         "nyt",
         }
 
 
@@ -135,6 +137,7 @@ class NewsAPIAdapter:
             "date": a.get("publishedAt", ""),
             "author": a.get("author", ""),
             "source": a.get("source", {}).get("name", "NewsAPI"),
+            "api": "newsapi",
         }
 
 
