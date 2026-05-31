@@ -1142,7 +1142,7 @@ async function renderAccountView() {
     if (lean && leanCounts[lean] !== undefined) leanCounts[lean]++;
   }
   const totalLean = leanCounts.Left + leanCounts.Center + leanCounts.Right;
-  const dominantLean = totalLean > 0
+  const dominantLean = totalLean >= 3
     ? Object.entries(leanCounts).sort((a, b) => b[1] - a[1])[0][0] : null;
   const blindSpotLean = dominantLean === "Left" ? "Right" : dominantLean === "Right" ? "Left" : null;
 
@@ -1174,10 +1174,10 @@ async function renderAccountView() {
         <div class="profile-block">
           <div class="profile-block-label">Your Blind Spot</div>
           ${!currentQuery ? `<div class="bookmarks-empty" style="padding:16px 0">Search for a topic first to see your blind spot.</div>`
-          : totalLean === 0 ? `<div class="bookmarks-empty" style="padding:16px 0">Click some articles on "${currentQuery}" to see which side you're reading.</div>`
+          : totalLean < 3 ? `<div class="bookmarks-empty" style="padding:16px 0">Read at least 3 articles on "${currentQuery}" to see your blind spot (${totalLean}/3 so far).</div>`
           : !blindSpotLean ? `<div class="bookmarks-empty" style="padding:16px 0">Your reading on this topic looks balanced.</div>`
           : `
-            <div class="blindspot-desc">On <strong>"${currentQuery}"</strong> you've mostly read <strong>${dominantLean}-leaning</strong> sources. These ${blindSpotLean}-leaning articles haven't been on your radar:</div>
+            <div class="blindspot-desc">Based on ${totalLean} articles you've read on <strong>"${currentQuery}"</strong>, you lean <strong>${dominantLean}</strong>. These ${blindSpotLean}-leaning articles haven't been on your radar:</div>
             ${blindSpotArticles.length ? `
               <div class="blindspot-list">
                 ${blindSpotArticles.map(a => `
