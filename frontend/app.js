@@ -1104,28 +1104,52 @@ async function renderAccountView() {
   ]);
 
   // --- Reading profile ---
-  const viewedUrls = new Set((history || []).map(h => h.article_url));
-  const leanCounts = { Left: 0, Center: 0, Right: 0 };
+  // Build source-level lean from biasMap (normalized source names as fallback)
+  const srcLeanTally = {};
+  for (const b of Object.values(biasMap)) {
+    if (!b.source || !b.bias_label) continue;
+    const s = cleanSourceName(b.source);
+    if (!srcLeanTally[s]) srcLeanTally[s] = { Left: 0, Center: 0, Right: 0 };
+    if (srcLeanTally[s][b.bias_label] !== undefined) srcLeanTally[s][b.bias_label]++;
+  }
+  const srcLeanMap = {};
+  for (const [s, counts] of Object.entries(srcLeanTally)) {
+    srcLeanMap[s] = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+  }
+
+  function articleLean(url, src) {
+    return biasMap[url]?.bias_label || srcLeanMap[src] || null;
+  }
+
+  // Top sources: all-time history
   const sourceCounts = {};
   for (const h of (history || [])) {
     const src = h.article_src || "Unknown";
     sourceCounts[src] = (sourceCounts[src] || 0) + 1;
-    const bias = biasMap[h.article_url];
-    if (bias?.bias_label && leanCounts[bias.bias_label] !== undefined) leanCounts[bias.bias_label]++;
   }
   const topSources = Object.entries(sourceCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
   const maxCount = topSources[0]?.[1] || 1;
+
+  // Blind spot: per-topic (only views matching current search articles)
+  const allCurrentArticles = Object.entries(channelData).flatMap(([src, arts]) => arts.map(a => ({ ...a, src })));
+  const currentArticleUrls = new Set(allCurrentArticles.map(a => a.url));
+  const viewedUrls = new Set((history || []).map(h => h.article_url));
+  const topicViews = (history || []).filter(h => currentArticleUrls.has(h.article_url));
+
+  const leanCounts = { Left: 0, Center: 0, Right: 0 };
+  for (const h of topicViews) {
+    const lean = articleLean(h.article_url, h.article_src);
+    if (lean && leanCounts[lean] !== undefined) leanCounts[lean]++;
+  }
   const totalLean = leanCounts.Left + leanCounts.Center + leanCounts.Right;
   const dominantLean = totalLean > 0
     ? Object.entries(leanCounts).sort((a, b) => b[1] - a[1])[0][0] : null;
   const blindSpotLean = dominantLean === "Left" ? "Right" : dominantLean === "Right" ? "Left" : null;
 
-  const allCurrentArticles = Object.entries(channelData).flatMap(([src, arts]) => arts.map(a => ({ ...a, src })));
   const blindSpotArticles = [];
   if (blindSpotLean) {
     for (const a of allCurrentArticles) {
-      const bias = biasMap[a.url];
-      if (bias?.bias_label === blindSpotLean && !viewedUrls.has(a.url)) {
+      if (articleLean(a.url, a.src) === blindSpotLean && !viewedUrls.has(a.url)) {
         blindSpotArticles.push(a);
         if (blindSpotArticles.length >= 2) break;
       }
@@ -1147,19 +1171,23 @@ async function renderAccountView() {
               <span class="source-bar-count">${count}</span>
             </div>`).join("")}
         </div>
-        ${blindSpotLean ? `
         <div class="profile-block">
           <div class="profile-block-label">Your Blind Spot</div>
-          <div class="blindspot-desc">You mostly read <strong>${dominantLean}-leaning</strong> sources. These ${blindSpotLean}-leaning articles haven't been on your radar:</div>
-          ${blindSpotArticles.length ? `
-            <div class="blindspot-list">
-              ${blindSpotArticles.map(a => `
-                <a href="${a.url}" target="_blank" rel="noopener" class="blindspot-article">
-                  <span class="blindspot-src"><span class="dot" style="background:${sourceColor(a.src)}"></span>${a.src}</span>
-                  <span class="blindspot-title">${a.title}</span>
-                </a>`).join("")}
-            </div>` : `<div class="bookmarks-empty" style="padding:16px 0">Search for articles to see suggestions here.</div>`}
-        </div>` : ""}
+          ${!currentQuery ? `<div class="bookmarks-empty" style="padding:16px 0">Search for a topic first to see your blind spot.</div>`
+          : totalLean === 0 ? `<div class="bookmarks-empty" style="padding:16px 0">Click some articles on "${currentQuery}" to see which side you're reading.</div>`
+          : !blindSpotLean ? `<div class="bookmarks-empty" style="padding:16px 0">Your reading on this topic looks balanced.</div>`
+          : `
+            <div class="blindspot-desc">On <strong>"${currentQuery}"</strong> you've mostly read <strong>${dominantLean}-leaning</strong> sources. These ${blindSpotLean}-leaning articles haven't been on your radar:</div>
+            ${blindSpotArticles.length ? `
+              <div class="blindspot-list">
+                ${blindSpotArticles.map(a => `
+                  <a href="${a.url}" target="_blank" rel="noopener" class="blindspot-article">
+                    <span class="blindspot-src"><span class="dot" style="background:${sourceColor(a.src)}"></span>${a.src}</span>
+                    <span class="blindspot-title">${a.title}</span>
+                  </a>`).join("")}
+              </div>` : `<div class="bookmarks-empty" style="padding:16px 0">No unread ${blindSpotLean}-leaning articles found for this topic.</div>`}
+          `}
+        </div>
       </div>
     </div>` : "";
 
