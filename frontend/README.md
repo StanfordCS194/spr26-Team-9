@@ -1,58 +1,62 @@
 ## `frontend/`
 
-For UI. Display timeline
+Vanilla JS single-page application for the user-facing web app. Served as static files by the FastAPI backend.
 
 ---
 
 ### Files
 
-| File | Description |
-|---|---|
-| `index.html` | App shell — defines the three views: Timeline, Channels, LLM, and the compare modal |
-| `app.js` | All application logic — data loading, transformation, rendering, and interaction |
-| `styles.css` | Styling using CSS variables; responsive breakpoint at 1100px |
-| `frontend_data.json` | Static sample data, not used at runtime. The app loads from `../data/articles.json` |
+| File          | Description                                                                                          |
+|---------------|------------------------------------------------------------------------------------------------------|
+| `index.html`  | App shell — defines the views: Timeline, Channels, Story Clusters, LLM Analysis, and Account        |
+| `app.js`      | All application logic — data loading, transformation, rendering, and interaction                     |
+| `styles.css`  | Styling using CSS variables; responsive breakpoint at 1100px                                         |
 
 ---
 
 ### Views
 
 **Timeline**  
-Default view. Articles are grouped by date in chronological columns. Up to 5 articles are shown per day, ranked by source credibility and cross-outlet coverage. Hovering shows a summary tooltip, and clicking a source name highlights only that source across the timeline.
+Default view. Articles are grouped by date in chronological columns. Up to 5 articles are shown per day, ranked by source credibility and cross-outlet coverage. Hovering shows a summary tooltip, clicking a source name highlights only that source across the timeline. A pinned **AI Sources** row above the columns shows a card per LLM (ChatGPT, Gemini, Claude) — clicking any card navigates to the LLM Analysis view.
 
-**Channels**
+**Channels**  
 Grid of news source cards. Clicking a source requests an AI-generated overview of its loaded articles and shows the articles grouped by date.
 
-**LLM**  
-Collapsible cards showing AI-generated summaries, such as ChatGPT and Gemini, with political leaning. Currently hardcoded.
+**Story Clusters**  
+Articles grouped by semantic similarity using HDBSCAN clustering.
+
+**LLM Analysis**  
+One collapsible card per LLM (ChatGPT, Gemini, Claude). Each card shows a meta-analysis summary, a numbered list of bias findings, a cited sources list, and a **Full Response** sub-toggle that renders the LLM's raw web-grounded response as formatted markdown. Data is fetched dynamically from `GET /api/llm-summary` on search and cached for 24 hours.
+
+**Account**  
+User profile, session KPIs, search history, and a blind-spot panel showing articles from the political leaning the user has read least.
 
 ---
 
 ### Filters: Timeline View
 
-| Filter | Description |
-|---|---|
-| Source checkboxes | Show or hide individual outlets; includes All/None toggles |
-| Date range | Restrict the timeline to a start and end date |
-| Political leaning slider | UI only — not yet wired up |
+| Filter                   | Description                                                              |
+|--------------------------|--------------------------------------------------------------------------|
+| Source checkboxes        | Show or hide individual outlets; includes All/None toggles               |
+| Date range               | Restrict the timeline to a start and end date                            |
+| Political leaning slider | Filter articles by left/right lean and intensity                         |
 
 ---
 
 ### Data Flow
 
 ```text
-data/articles.json
-        ↓
-init() in app.js
-        ↓
-toTimelineData()  →  renderTimeline()
-toChannelData()   →  buildChannelCards()
-'''
-`app.js` fetches article data from `../data/articles.json` when the page loads. If `articles.json` is missing or stale, run:
-
-```bash
-python webscraper/refresh.py
+/api/search?q=...          /api/llm-summary?q=...
+      ↓                              ↓
+loadAndRender()              loadLLMData()  (parallel, no await)
+      ↓                              ↓
+toTimelineData()            llmSummaryData
+toChannelData()                      ↓
+      ↓                    renderLLM() / renderAISources()
+renderTimeline()
 ```
+
+On search, both the article search and LLM pipeline are fired in parallel. Article results render immediately; LLM cards show a loading state until the pipeline completes (~15s).
 
 ---
 
@@ -60,46 +64,27 @@ python webscraper/refresh.py
 
 Articles are ranked using the following source credibility tiers:
 
-| Tier | Sources |
-|---|---|
-| Tier 3, highest | NYT, Reuters, AP, BBC, NPR, PBS, The Guardian, Washington Post |
-| Tier 2 | The Atlantic, Politico, Axios, The Hill, CNN, ABC, NBC, CBS |
-| Tier 1, default | Everything else |
+| Tier              | Sources                                                                          |
+|-------------------|----------------------------------------------------------------------------------|
+| Tier 3, highest   | NYT, Reuters, AP, BBC, NPR, PBS, The Guardian, Washington Post                   |
+| Tier 2            | The Atlantic, Politico, Axios, The Hill, CNN, ABC, NBC, CBS                      |
+| Tier 1, default   | Everything else                                                                  |
 
 ---
-## Article Comparison (Demo)
 
-A temporary demo feature allows users to compare two or three articles.
+### Article Comparison
 
-- Click "COMPARE" in the timeline view
-- Select 2-3 articles from the timeline
-- Click "Compare Articles" in the pop-up modal
-- View side-by-side summaries including sources, core arguments, and key points.
+Click **Article Comparison** in the timeline view, select 2–3 articles, then click **Compare Articles** to view an AI-generated side-by-side analysis (sources, core arguments, key points). Results are generated by `POST /api/compare`.
 
-The comparison results are generated by the backend LLM endpoint.
-
-___
+---
 
 ### Running
 
-Before running the frontend, make sure the article data has been generated:
+The frontend is served by the FastAPI backend — no separate server needed:
 
 ```bash
-python webscraper/refresh.py
+# from repo root
+uv run uvicorn backend.main:app --port 8000 --reload
 ```
 
-Then start a local server from the repo root:
-
-```bash
-python -m http.server 8080
-```
-
-Open the frontend in your browser:
-
-```text
-http://localhost:8080/frontend/
-```
-
-
-
-
+Then open `http://localhost:8000`.

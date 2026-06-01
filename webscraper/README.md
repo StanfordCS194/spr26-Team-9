@@ -81,10 +81,14 @@ python scrape.py
 Orchestrates a full refresh across all APIs and merges results into a single file.
 
 **CLI options:**
---api : Which API to fetch from: newsapi, nyt, current, or all (default: all)
+
+| Option    | Default          | Description                                          |
+|-----------|------------------|------------------------------------------------------|
+| `--query` | `"Trump Pope Leo"` | Keyword search string passed to all APIs           |
+| `--api`   | `all`            | Which API to fetch from: `newsapi`, `nyt`, `current`, or `all` |
 
 **What it does:**
-1. Calls scrape.py as a subprocess for each API (newsapi, nyt, current) with --overwrite, passing the shared QUERY, START, and a dynamically computed END (current UTC time)
+1. Calls scrape.py as a subprocess for each API (newsapi, nyt, current) with --overwrite, passing the `--query` argument, START, and a dynamically computed END (current UTC time)
 2. If a scrape fails (e.g. rate limit), it logs the error and continues with the remaining APIs
 3. Merges all data/*_articles.json files, deduplicates by URL, sorts by date descending, and writes the combined result to data/articles.json
    

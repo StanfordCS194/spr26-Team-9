@@ -1,32 +1,38 @@
 ## `backend/`
 
-FastAPI backend serving article search, user profiles, and KPI telemetry. Runs on Python 3.12+ via Poetry.
+FastAPI backend serving article search, user profiles, KPI telemetry, and LLM analysis. Runs on Python 3.12+ via uv.
 
 ---
 
 ## Files
 
-
-| File              | Description                                                                                                                                               |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `main.py`         | FastAPI app entry point. Registers routers, CORS middleware, and pre-warms the BM25 index on startup via the lifespan hook.                               |
-| `search.py`       | BM25 article search. Loads `data/articles.json` on startup and re-indexes whenever the file changes (mtime check per request). Exposes `GET /api/search`. |
-| `users.py`        | User profiles and event telemetry. Reads/writes Redis. Exposes `POST /api/users`, `GET /api/users/{id}`, `POST /api/events`.                              |
-| `redis_client.py` | Async Redis singleton. Reads `REDIS_URL` from the environment; defaults to `redis://localhost:6379`.                                                      |
-
+| File                  | Description                                                                                                                                               |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `main.py`             | FastAPI app entry point. Registers routers, CORS middleware, and pre-warms the search cache on startup.                                                   |
+| `search.py`           | BM25 article search. Loads `data/articles.json` on startup and re-indexes whenever the file changes (mtime check per request). Exposes `GET /api/search`. |
+| `users.py`            | User profiles and event telemetry. Reads/writes Supabase. Exposes `POST /api/users`, `GET /api/users/{id}`, `POST /api/events`.                          |
+| `supabase_client.py`  | Supabase singleton. Reads `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` from the environment.                                                                 |
+| `llm_summary.py`      | LLM analysis pipeline. Queries ChatGPT, Gemini, and Claude in parallel (each with web search grounding), then runs a meta-analysis step with the same model. Results are cached to `data/llm_summaries/` with a 24-hour TTL. Exposes `GET /api/llm-summary`. |
+| `compare.py`          | Article comparison. Accepts 2–3 articles and returns an AI-generated side-by-side analysis. Exposes `POST /api/compare`.                                 |
+| `channel_summary.py`  | Source coverage summary. Accepts a list of articles from one outlet and returns an AI-generated overview. Exposes `POST /api/channel-summary`.           |
+| `bias.py`             | Serves precomputed per-article bias scores from `data/`. Exposes `GET /api/bias`.                                                                        |
 
 ---
 
 ## Running locally
 
-**Prerequisites:** Redis running locally (`brew install redis && brew services start redis`).
-
 ```bash
-# from backend dir
-DATA_PATH=data/articles.json poetry run uvicorn main:app --port 8001 --reload
+# from repo root
+uv run uvicorn backend.main:app --port 8000 --reload
 ```
 
-Interactive API docs: `http://localhost:8001/docs`
+Or from the `backend/` directory:
+
+```bash
+uv run uvicorn main:app --port 8000 --reload
+```
+
+Interactive API docs: `http://localhost:8000/docs`
 
 ---
 
@@ -34,7 +40,7 @@ Interactive API docs: `http://localhost:8001/docs`
 
 ### `GET /api/search`
 
-BM25 keyword search over local articles. Results include a `score` field normalized to [0, 1]; articles scoring below 0.1 are omitted.
+BM25 keyword search over local articles. Triggers the webscraper for the given query if results are not cached. Results include a `score` field normalized to [0, 1].
 
 ```
 GET /api/search?q=trump+pope&limit=5
@@ -52,6 +58,32 @@ GET /api/search?q=trump+pope&limit=5
       "author": "...",
       "source": "cnn.com",
       "score": 0.97
+    }
+  ]
+}
+```
+
+### `GET /api/llm-summary`
+
+Queries ChatGPT (`gpt-5.4-mini`), Gemini (`gemini-3.5-flash`), and Claude (`claude-haiku-4-5`) about the given topic in parallel. Each LLM uses web search grounding for step 1 and its own model for the meta-analysis in step 2. Results are cached to `data/llm_summaries/` for 24 hours.
+
+```
+GET /api/llm-summary?q=trump+pope
+```
+
+```json
+{
+  "query": "trump pope",
+  "generated_at": "2026-05-31T12:00:00Z",
+  "llms": [
+    {
+      "name": "ChatGPT",
+      "model": "gpt-5.4-mini",
+      "color": "#10a37f",
+      "raw_response": "...",
+      "summary": "...",
+      "biases": [{ "title": "Framing Bias", "body": "..." }],
+      "sources": [{ "label": "cnn.com — Title", "url": "https://..." }]
     }
   ]
 }
@@ -108,6 +140,10 @@ Record a user action. Fire-and-forget — the frontend does not need to await or
 `search` payload: `{ "query": "..." }`.  
 Returns `204 No Content`.
 
+### `POST /api/compare`
+
+Compare 2–3 articles and return an AI-generated side-by-side analysis. Requires `OPENAI_API_KEY`.
+
 ### `POST /api/channel-summary`
 
 Generate a short AI overview of one source's loaded articles. Requires `OPENAI_API_KEY`.
@@ -116,11 +152,7 @@ Generate a short AI overview of one source's loaded articles. Requires `OPENAI_A
 {
   "source": "New York Times",
   "articles": [
-    {
-      "title": "...",
-      "summary": "...",
-      "date": "2026-05-30"
-    }
+    { "title": "...", "summary": "...", "date": "2026-05-30" }
   ]
 }
 ```
@@ -129,12 +161,12 @@ Generate a short AI overview of one source's loaded articles. Requires `OPENAI_A
 
 ## Environment variables
 
+| Variable              | Description                                                  |
+| --------------------- | ------------------------------------------------------------ |
+| `SUPABASE_URL`        | Supabase project URL                                         |
+| `SUPABASE_SERVICE_KEY`| Supabase service role key (server-side only)                 |
+| `OPENAI_API_KEY`      | Used for search grounding, article comparison, and channel summaries |
+| `ANTHROPIC_API_KEY`   | Used for Claude LLM analysis                                 |
+| `GOOGLE_API_KEY`      | Used for Gemini LLM analysis                                 |
 
-| Variable    | Default                  | Description               |
-| ----------- | ------------------------ | ------------------------- |
-| `REDIS_URL` | `redis://localhost:6379` | Redis connection string   |
-| `DATA_PATH` | `data/articles.json`     | Path to article JSON file |
-| `OPENAI_API_KEY` | — | OpenAI API key used for article comparisons and channel summaries |
-
-
-Add both to `.env` (see `.env.example`). For Vercel, provision Upstash Redis from the Marketplace and set `REDIS_URL` in project settings.
+See `.env.example` at the repo root.

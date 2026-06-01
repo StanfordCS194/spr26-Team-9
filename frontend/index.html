@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@15/marked.min.js"></script>
 </head>
 <body>
 
@@ -146,6 +147,7 @@
           <!-- Timeline content -->
           <div class="timeline-content">
             <h2 class="story-headline" id="timeline-headline"></h2>
+            <div id="timeline-ai-sources" class="timeline-ai-sources"></div>
             <div class="timeline-columns" id="timeline-columns">
               <!-- Columns injected by JS -->
             </div>
@@ -190,7 +192,7 @@
       <!-- LLM VIEW -->
       <section id="view-llm" class="view">
         <h2 class="sub-headline">Analysis on LLM's report on:</h2>
-        <h3 class="story-headline">"Dispute Between Pope Leo &amp; Trump"</h3>
+        <h3 class="story-headline" id="llm-headline"></h3>
         <div class="llm-cards" id="llm-cards">
           <!-- Cards injected by JS -->
         </div>
