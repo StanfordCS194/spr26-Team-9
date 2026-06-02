@@ -125,6 +125,21 @@ Generate a short AI overview of one source's loaded articles. Requires `OPENAI_A
 }
 ```
 
+### `POST /api/semantic-clusters`
+
+Group loaded articles by semantic similarity using OpenAI embeddings. Requires `OPENAI_API_KEY`.
+
+```json
+{
+  "articles": [
+    {
+      "title": "...",
+      "description": "..."
+    }
+  ]
+}
+```
+
 ---
 
 ## Environment variables
@@ -134,7 +149,7 @@ Generate a short AI overview of one source's loaded articles. Requires `OPENAI_A
 | ----------- | ------------------------ | ------------------------- |
 | `REDIS_URL` | `redis://localhost:6379` | Redis connection string   |
 | `DATA_PATH` | `data/articles.json`     | Path to article JSON file |
-| `OPENAI_API_KEY` | — | OpenAI API key used for article comparisons and channel summaries |
+| `OPENAI_API_KEY` | — | OpenAI API key used for article comparisons, channel summaries, and semantic clustering |
 
 
 Add both to `.env` (see `.env.example`). For Vercel, provision Upstash Redis from the Marketplace and set `REDIS_URL` in project settings.

@@ -1090,6 +1090,14 @@ body {
   max-width: 980px;
 }
 
+.cluster-status {
+  min-height: 18px;
+  margin: -4px 0 10px;
+  color: var(--slate-400);
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .story-cluster {
   background: var(--white);
   border: 1px solid var(--slate-200);

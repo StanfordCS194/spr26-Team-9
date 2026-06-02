@@ -607,6 +607,63 @@ function toClusterData(articles) {
   return storyClusters;
 }
 
+function toSemanticClusterData(articles, clusters) {
+  const docFreq = buildClusterDocumentFrequency(articles);
+  const grouped = clusters.map((indexes, index) => {
+    const clusterArticles = indexes.map(articleIndex => articles[articleIndex]).filter(Boolean);
+    return {
+      id: index + 1,
+      label: labelCluster(clusterArticles, docFreq, articles.length),
+      articles: clusterArticles,
+      sourceCount: new Set(clusterArticles.map(article => article.source)).size,
+    };
+  }).filter(cluster => cluster.articles.length)
+    .sort((a, b) => b.articles.length - a.articles.length || b.sourceCount - a.sourceCount);
+
+  const storyClusters = grouped.filter(cluster => cluster.articles.length > 1);
+  const singletons = grouped.filter(cluster => cluster.articles.length === 1);
+  if (singletons.length) {
+    storyClusters.push({
+      id: "other",
+      label: "Other Coverage",
+      articles: singletons.flatMap(cluster => cluster.articles),
+      sourceCount: new Set(singletons.flatMap(cluster => cluster.articles.map(article => article.source))).size,
+    });
+  }
+  return storyClusters;
+}
+
+async function loadSemanticClusters(articles) {
+  const status = document.getElementById("cluster-status");
+  if (!articles.length) {
+    status.textContent = "";
+    return;
+  }
+
+  status.textContent = "Improving groups with semantic analysis...";
+  try {
+    const response = await fetch("/api/semantic-clusters", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        articles: articles.map(article => ({
+          title: article.title,
+          description: article.description || "",
+        })),
+      }),
+    });
+    if (!response.ok) throw new Error("Semantic clustering is unavailable.");
+    const data = await response.json();
+    if (!Array.isArray(data.clusters)) throw new Error("Semantic clustering returned an invalid response.");
+    clusterData = toSemanticClusterData(articles, data.clusters);
+    status.textContent = "Grouped by semantic similarity";
+    if (currentView === "clusters") renderStoryClusters();
+  } catch (error) {
+    console.error("Could not load semantic clusters:", error);
+    status.textContent = "Showing keyword-based groups";
+  }
+}
+
 // ---------- Dynamic UI builders ----------
 
 function buildSourceFilters(sources) {
@@ -1768,6 +1825,7 @@ async function loadAndRender(query, prefetchedArticles) {
 
     renderTimeline();
     if (currentView === "clusters") renderStoryClusters();
+    loadSemanticClusters(normalized);
   } catch (err) {
     console.error("Could not load articles:", err);
     timelineColumnsEl.innerHTML =

@@ -17,6 +17,7 @@ from users import router as users_router
 from compare import router as compare_router
 from bias import router as bias_router
 from channel_summary import router as channel_summary_router
+from semantic_clusters import router as semantic_clusters_router
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(HERE, "..", "data")
@@ -37,6 +38,7 @@ app.include_router(users_router)
 app.include_router(compare_router)
 app.include_router(bias_router)
 app.include_router(channel_summary_router)
+app.include_router(semantic_clusters_router)
 
 @app.get("/api/ready")
 def api_ready():
