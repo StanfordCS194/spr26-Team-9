@@ -12,11 +12,11 @@ Backend for the user-facing web application.
 ### `webscraper/`
 Automated data ingestion pipeline. Fetches news articles from NewsAPI, NYT, and Currents API, normalizes them into a common format, and saves results to `data/`.
 
+### `experiments/`
+Experiments with story clustering using NLP and LLMs. Also includes data visualizations. These are purely exploratory experiments to guide development; code is not used in final app. 
+
 ### `data_analysis_nlp/`
-NLP analysis scripts for source bias clustering, sentiment analysis, and text statistics.
+NLP analysis scripts for NLP-powered computation of bias labels.
 
-### `data_analysis_llms/`
-LLM-based article analysis pipeline using NVIDIA Nemotron. Produces structured per-article analysis (claims, framing, stakeholders) cached in `data/llm_analysis.json`.
-
-### `visualizations/`
-Visualizations from experiments 
+### `data_public/` 
+Lightweight bias data and cached webscraped files to be referenced in web app. 
