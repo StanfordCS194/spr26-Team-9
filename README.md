@@ -1,3 +1,23 @@
+## Quickstart
+
+**Prerequisites:** Python 3.12–3.14 and [uv](https://docs.astral.sh/uv/getting-started/installation/).
+
+1. Install dependencies from the project root:
+   ```
+   uv sync
+   ```
+
+2. Create a `.env` file in the project root with any required API keys (see `.env.example` if present).
+
+3. Start the backend (also serves the frontend):
+   ```
+   uv run --directory backend uvicorn main:app --port 8000 --reload
+   ```
+
+4. Open **http://127.0.0.1:8000** in your browser.
+
+---
+
 ## Link to the Wiki Homepage
 [home](https://github.com/StanfordCS194/spr26-Team-9/wiki) 
 
