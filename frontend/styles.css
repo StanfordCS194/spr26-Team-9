@@ -693,6 +693,35 @@ body {
 
 .source-toggle-btn:hover { background: var(--slate-100); }
 
+.source-list-collapse {
+  margin-top: 6px;
+}
+
+.source-list-summary {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--slate-400);
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 0;
+}
+
+.source-list-summary::-webkit-details-marker { display: none; }
+
+.source-list-summary::before {
+  content: "▶";
+  font-size: 9px;
+  transition: transform 0.15s;
+}
+
+.source-list-collapse[open] .source-list-summary::before {
+  transform: rotate(90deg);
+}
+
 .check {
   display: flex;
   align-items: center;

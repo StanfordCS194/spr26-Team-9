@@ -436,8 +436,7 @@ function toTimelineData(articles) {
             // coverageBonus is equal for all articles on the same day,
             // so this effectively sorts by credibility tier, then by time
             return scoreDiff || new Date(a.isoTime) - new Date(b.isoTime);
-          })
-          .slice(0, TOP_N_PER_DATE),
+          }),
       };
     });
 }
@@ -656,12 +655,20 @@ function buildSourceFilters(sources) {
   toggleRow.appendChild(noneBtn);
   container.appendChild(toggleRow);
 
+  const details = document.createElement("details");
+  details.className = "source-list-collapse";
+  const summary = document.createElement("summary");
+  summary.className = "source-list-summary";
+  summary.textContent = `${sources.length} sources`;
+  details.appendChild(summary);
+
   sources.forEach((src) => {
     const label = document.createElement("label");
     label.className = "check";
     label.innerHTML = `<input type="checkbox" data-src="${src}" checked /> <span class="dot" style="background:${sourceColor(src)}"></span> ${src}`;
-    container.appendChild(label);
+    details.appendChild(label);
   });
+  container.appendChild(details);
 }
 
 function buildChannelCards(sources) {
@@ -785,7 +792,7 @@ function getFilteredTimelineData() {
           }
         }
         return true;
-      }),
+      }).slice(0, TOP_N_PER_DATE),
     }))
     .filter((group) => group.articles.length > 0);
 }
@@ -1779,7 +1786,7 @@ async function loadAndRender(query, prefetchedArticles) {
     clusterData = toClusterData(normalized);
     channelSummaryCache.clear();
 
-    const sources = Object.keys(channelData).sort();
+    const sources = [...new Set(timelineData.flatMap(group => group.articles.map(a => a.src)))].sort();
     assignSourceColors(sources);
     buildSourceFilters(sources);
     buildChannelCards(sources);
