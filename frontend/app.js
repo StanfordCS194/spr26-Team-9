@@ -757,14 +757,14 @@ function renderBiasBar(filtered) {
   const nPct = 100 - rPct - dPct;
   barEl.innerHTML = `
     <div class="bias-bar-track">
-      <div class="bias-segment bias-segment--rep" style="flex:${rPct}"></div>
-      <div class="bias-segment bias-segment--neu" style="flex:${nPct}"></div>
       <div class="bias-segment bias-segment--dem" style="flex:${dPct}"></div>
+      <div class="bias-segment bias-segment--neu" style="flex:${nPct}"></div>
+      <div class="bias-segment bias-segment--rep" style="flex:${rPct}"></div>
     </div>
     <div class="bias-bar-labels">
-      <div class="bias-label" style="flex:${rPct}"><span class="bias-tick"></span>Republican · ${rPct}%</div>
+      <div class="bias-label" style="flex:${dPct}"><span class="bias-tick"></span>Left · ${dPct}%</div>
       <div class="bias-label" style="flex:${nPct}"><span class="bias-tick"></span>Neutral · ${nPct}%</div>
-      <div class="bias-label" style="flex:${dPct}"><span class="bias-tick"></span>Democrat · ${dPct}%</div>
+      <div class="bias-label" style="flex:${rPct}"><span class="bias-tick"></span>Right · ${rPct}%</div>
     </div>
   `;
 }

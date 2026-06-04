@@ -765,9 +765,9 @@ body {
   min-width: 0;
 }
 
-.bias-segment--rep { background: #4a90d9; }
+.bias-segment--dem { background: #4a90d9; }
 .bias-segment--neu { background: #8a8f99; }
-.bias-segment--dem { background: #e05555; }
+.bias-segment--rep { background: #e05555; }
 
 .bias-bar-labels {
   display: flex;
