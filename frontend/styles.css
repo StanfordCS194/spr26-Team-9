@@ -660,16 +660,29 @@ body {
   color: var(--slate-400);
 }
 
-.slider-row {
+.bias-ticks {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 6px;
+}
+
+.bias-tick {
+  flex: 1;
+  padding: 5px 0;
+  border: 1px solid var(--slate-200);
+  border-radius: 6px;
+  background: transparent;
   font-size: 11px;
   font-weight: 600;
   color: var(--slate-400);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
-.slider-row input { flex: 1; accent-color: var(--accent); }
+.bias-tick:hover { background: var(--slate-100); }
+
+.bias-tick--left.active  { background: #4a90d9; color: #fff; border-color: #4a90d9; }
+.bias-tick--center.active { background: #8a8f99; color: #fff; border-color: #8a8f99; }
+.bias-tick--right.active { background: #e05555; color: #fff; border-color: #e05555; }
 
 .source-toggle-row {
   display: flex;
