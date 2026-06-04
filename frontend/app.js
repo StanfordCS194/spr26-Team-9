@@ -696,6 +696,9 @@ const timelineColumnsEl = document.getElementById("timeline-columns");
 const startDateFilterEl = document.getElementById("start-date-filter");
 const endDateFilterEl   = document.getElementById("end-date-filter");
 const applyFiltersBtn   = document.getElementById("apply-filters-btn");
+const leanSliderEl = document.getElementById("lean-slider");
+
+leanSliderEl.addEventListener("input", () => renderTimeline());
 
 let currentView = "timeline";
 
@@ -743,10 +746,44 @@ function setView(name) {
 
 // ---------- Timeline rendering ----------
 
+function renderBiasBar(filtered) {
+  const barEl = document.getElementById("timeline-bias-bar");
+  if (!barEl) return;
+  const articles = filtered.flatMap((col) => col.articles);
+  if (!articles.length) { barEl.innerHTML = ""; return; }
+  let rep = 0, dem = 0, neu = 0;
+  articles.forEach((a) => {
+    const label = biasMap[a.url]?.bias_label
+      || SOURCE_LEAN[a.src]
+      || SOURCE_LEAN[cleanSourceName(a.src)]
+      || "Center";
+    if (label === "Right")       rep++;
+    else if (label === "Left")   dem++;
+    else                         neu++;
+  });
+  const total = rep + dem + neu;
+  const rPct = Math.round(rep / total * 100);
+  const dPct = Math.round(dem / total * 100);
+  const nPct = 100 - rPct - dPct;
+  barEl.innerHTML = `
+    <div class="bias-bar-track">
+      <div class="bias-segment bias-segment--dem" style="flex:${dPct}"></div>
+      <div class="bias-segment bias-segment--neu" style="flex:${nPct}"></div>
+      <div class="bias-segment bias-segment--rep" style="flex:${rPct}"></div>
+    </div>
+    <div class="bias-bar-labels">
+      ${dPct > 0 ? `<div class="bias-label" style="flex:${dPct}"><span class="bias-tick"></span>Left · ${dPct}%</div>` : ""}
+      ${nPct > 0 ? `<div class="bias-label" style="flex:${nPct}"><span class="bias-tick"></span>Neutral · ${nPct}%</div>` : ""}
+      ${rPct > 0 ? `<div class="bias-label" style="flex:${rPct}"><span class="bias-tick"></span>Right · ${rPct}%</div>` : ""}
+    </div>
+  `;
+}
+
 function renderTimeline() {
   clearTimelineSourceSelection();
   renderAISources();
   const filtered = getFilteredTimelineData();
+  renderBiasBar(filtered);
   timelineColumnsEl.innerHTML = "";
   if (!filtered.length) {
     timelineColumnsEl.innerHTML = '<div class="timeline-empty-state">No coverage matches the selected filters.</div>';
@@ -767,10 +804,8 @@ function getFilteredTimelineData() {
   );
   const startDate = startDateFilterEl.value;
   const endDate   = endDateFilterEl.value;
-  const leanValue = parseInt(document.getElementById("lean-slider").value, 10);
-  // |leanValue| 1-2 = mild side, 3-5 = strong side, 0 = all
-  const leanDir    = leanValue < 0 ? "Left" : leanValue > 0 ? "Right" : null;
-  const leanStrong = Math.abs(leanValue) >= 3; // past halfway (2.5) on a -5..5 scale
+  const leanValue = parseInt(leanSliderEl.value, 10);
+  const leanDir   = leanValue === 0 ? null : leanValue === 1 ? "Left" : leanValue === 2 ? "Center" : "Right";
 
   return timelineData
     .filter((group) => {
@@ -784,12 +819,11 @@ function getFilteredTimelineData() {
         if (!selectedSources.has(a.src)) return false;
         if (leanDir) {
           const bias = biasMap[a.url];
-          if (bias) {
-            if (bias.bias_label !== leanDir) return false;
-            const magnitude = Math.abs(bias.bias_signed);
-            if (leanStrong  && magnitude < 0.5) return false; // want strong, article is mild
-            if (!leanStrong && magnitude >= 0.5) return false; // want mild, article is strong
-          }
+          const label = bias?.bias_label
+            || SOURCE_LEAN[a.src]
+            || SOURCE_LEAN[cleanSourceName(a.src)]
+            || "Center";
+          if (label !== leanDir) return false;
         }
         return true;
       }).slice(0, TOP_N_PER_DATE),

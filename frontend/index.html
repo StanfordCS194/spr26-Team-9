@@ -121,9 +121,16 @@
               <div class="filter-group">
                 <label>Political Leaning</label>
                 <div class="slider-row">
-                  <span>L</span>
-                  <input type="range" min="-5" max="5" value="0" id="lean-slider" />
-                  <span>R</span>
+                  <input type="range" min="0" max="3" step="1" value="0" id="lean-slider" list="lean-ticks" />
+                  <datalist id="lean-ticks">
+                    <option value="0"></option>
+                    <option value="1"></option>
+                    <option value="2"></option>
+                    <option value="3"></option>
+                  </datalist>
+                </div>
+                <div class="lean-tick-labels">
+                  <span>All</span><span>L</span><span>C</span><span>R</span>
                 </div>
               </div>
 
@@ -147,6 +154,7 @@
           <!-- Timeline content -->
           <div class="timeline-content">
             <h2 class="story-headline" id="timeline-headline"></h2>
+            <div id="timeline-bias-bar" class="timeline-bias-bar"></div>
             <div id="timeline-ai-sources" class="timeline-ai-sources"></div>
             <div class="timeline-columns" id="timeline-columns">
               <!-- Columns injected by JS -->
