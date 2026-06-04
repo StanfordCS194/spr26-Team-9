@@ -689,6 +689,9 @@ const timelineColumnsEl = document.getElementById("timeline-columns");
 const startDateFilterEl = document.getElementById("start-date-filter");
 const endDateFilterEl   = document.getElementById("end-date-filter");
 const applyFiltersBtn   = document.getElementById("apply-filters-btn");
+const leanSliderEl = document.getElementById("lean-slider");
+
+leanSliderEl.addEventListener("input", () => renderTimeline());
 
 let currentView = "timeline";
 
@@ -762,9 +765,9 @@ function renderBiasBar(filtered) {
       <div class="bias-segment bias-segment--rep" style="flex:${rPct}"></div>
     </div>
     <div class="bias-bar-labels">
-      <div class="bias-label" style="flex:${dPct}"><span class="bias-tick"></span>Left · ${dPct}%</div>
-      <div class="bias-label" style="flex:${nPct}"><span class="bias-tick"></span>Neutral · ${nPct}%</div>
-      <div class="bias-label" style="flex:${rPct}"><span class="bias-tick"></span>Right · ${rPct}%</div>
+      ${dPct > 0 ? `<div class="bias-label" style="flex:${dPct}"><span class="bias-tick"></span>Left · ${dPct}%</div>` : ""}
+      ${nPct > 0 ? `<div class="bias-label" style="flex:${nPct}"><span class="bias-tick"></span>Neutral · ${nPct}%</div>` : ""}
+      ${rPct > 0 ? `<div class="bias-label" style="flex:${rPct}"><span class="bias-tick"></span>Right · ${rPct}%</div>` : ""}
     </div>
   `;
 }
@@ -794,8 +797,8 @@ function getFilteredTimelineData() {
   );
   const startDate = startDateFilterEl.value;
   const endDate   = endDateFilterEl.value;
-  const activeTick = document.querySelector(".bias-tick.active");
-  const leanDir    = activeTick ? activeTick.dataset.bias : null;
+  const leanValue = parseInt(leanSliderEl.value, 10);
+  const leanDir   = leanValue === 0 ? null : leanValue === 1 ? "Left" : leanValue === 2 ? "Center" : "Right";
 
   return timelineData
     .filter((group) => {
@@ -1130,15 +1133,6 @@ function showChannelDetail(src) {
 
 document.getElementById("channels-back").addEventListener("click", showChannelsGrid);
 applyFiltersBtn.addEventListener("click", renderTimeline);
-
-document.querySelectorAll(".bias-tick").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const wasActive = btn.classList.contains("active");
-    document.querySelectorAll(".bias-tick").forEach((b) => b.classList.remove("active"));
-    if (!wasActive) btn.classList.add("active");
-    renderTimeline();
-  });
-});
 
 document.getElementById("view-timeline").addEventListener("click", (e) => {
   if (!selectedTimelineSource) return;

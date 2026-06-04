@@ -120,10 +120,17 @@
             <div class="filters-body">
               <div class="filter-group">
                 <label>Political Leaning</label>
-                <div class="bias-ticks">
-                  <button class="bias-tick bias-tick--left" data-bias="Left" title="Left-leaning sources">Left</button>
-                  <button class="bias-tick bias-tick--center" data-bias="Center" title="Center / neutral sources">Center</button>
-                  <button class="bias-tick bias-tick--right" data-bias="Right" title="Right-leaning sources">Right</button>
+                <div class="slider-row">
+                  <input type="range" min="0" max="3" step="1" value="0" id="lean-slider" list="lean-ticks" />
+                  <datalist id="lean-ticks">
+                    <option value="0"></option>
+                    <option value="1"></option>
+                    <option value="2"></option>
+                    <option value="3"></option>
+                  </datalist>
+                </div>
+                <div class="lean-tick-labels">
+                  <span>All</span><span>L</span><span>C</span><span>R</span>
                 </div>
               </div>
 
