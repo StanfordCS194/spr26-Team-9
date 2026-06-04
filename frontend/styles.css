@@ -777,36 +777,52 @@ body {
 
 /* ── BIAS BAR ─────────────────────────────────────────── */
 .timeline-bias-bar {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.bias-bar-track {
   display: flex;
   width: 100%;
-  height: 56px;
+  height: 40px;
   border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #fff;
 }
 
 .bias-segment {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   transition: flex 0.3s ease;
   min-width: 0;
-  overflow: hidden;
-}
-
-.bias-segment small {
-  font-weight: 400;
-  font-size: 12px;
-  opacity: 0.9;
 }
 
 .bias-segment--rep { background: #4a90d9; }
 .bias-segment--neu { background: #8a8f99; }
 .bias-segment--dem { background: #e05555; }
+
+.bias-bar-labels {
+  display: flex;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.bias-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 13px;
+  color: var(--slate-600, #475569);
+  transition: flex 0.3s ease;
+  min-width: 0;
+  overflow: visible;
+  white-space: nowrap;
+}
+
+.bias-tick {
+  display: block;
+  width: 1px;
+  height: 6px;
+  background: var(--slate-400, #94a3b8);
+  margin-bottom: 3px;
+}
 
 /* ── TIMELINE CONTENT ─────────────────────────────────── */
 .timeline-content {
