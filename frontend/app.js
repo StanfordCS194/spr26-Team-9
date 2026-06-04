@@ -736,10 +736,37 @@ function setView(name) {
 
 // ---------- Timeline rendering ----------
 
+function renderBiasBar(filtered) {
+  const barEl = document.getElementById("timeline-bias-bar");
+  if (!barEl) return;
+  const articles = filtered.flatMap((col) => col.articles);
+  if (!articles.length) { barEl.innerHTML = ""; return; }
+  let rep = 0, dem = 0, neu = 0;
+  articles.forEach((a) => {
+    const label = biasMap[a.url]?.bias_label
+      || SOURCE_LEAN[a.src]
+      || SOURCE_LEAN[cleanSourceName(a.src)]
+      || "Center";
+    if (label === "Right")       rep++;
+    else if (label === "Left")   dem++;
+    else                         neu++;
+  });
+  const total = rep + dem + neu;
+  const rPct = Math.round(rep / total * 100);
+  const dPct = Math.round(dem / total * 100);
+  const nPct = 100 - rPct - dPct;
+  barEl.innerHTML = `
+    <div class="bias-segment bias-segment--rep" style="flex:${rPct}">Republican<br><small>${rPct}%</small></div>
+    <div class="bias-segment bias-segment--neu" style="flex:${nPct}">Neutral<br><small>${nPct}%</small></div>
+    <div class="bias-segment bias-segment--dem" style="flex:${dPct}">Democrat<br><small>${dPct}%</small></div>
+  `;
+}
+
 function renderTimeline() {
   clearTimelineSourceSelection();
   renderAISources();
   const filtered = getFilteredTimelineData();
+  renderBiasBar(filtered);
   timelineColumnsEl.innerHTML = "";
   if (!filtered.length) {
     timelineColumnsEl.innerHTML = '<div class="timeline-empty-state">No coverage matches the selected filters.</div>';
