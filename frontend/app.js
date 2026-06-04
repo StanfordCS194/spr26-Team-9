@@ -801,10 +801,8 @@ function getFilteredTimelineData() {
   );
   const startDate = startDateFilterEl.value;
   const endDate   = endDateFilterEl.value;
-  const leanValue = parseInt(document.getElementById("lean-slider").value, 10);
-  // |leanValue| 1-2 = mild side, 3-5 = strong side, 0 = all
-  const leanDir    = leanValue < 0 ? "Left" : leanValue > 0 ? "Right" : null;
-  const leanStrong = Math.abs(leanValue) >= 3; // past halfway (2.5) on a -5..5 scale
+  const activeTick = document.querySelector(".bias-tick.active");
+  const leanDir    = activeTick ? activeTick.dataset.bias : null;
 
   return timelineData
     .filter((group) => {
@@ -818,12 +816,11 @@ function getFilteredTimelineData() {
         if (!selectedSources.has(a.src)) return false;
         if (leanDir) {
           const bias = biasMap[a.url];
-          if (bias) {
-            if (bias.bias_label !== leanDir) return false;
-            const magnitude = Math.abs(bias.bias_signed);
-            if (leanStrong  && magnitude < 0.5) return false; // want strong, article is mild
-            if (!leanStrong && magnitude >= 0.5) return false; // want mild, article is strong
-          }
+          const label = bias?.bias_label
+            || SOURCE_LEAN[a.src]
+            || SOURCE_LEAN[cleanSourceName(a.src)]
+            || "Center";
+          if (label !== leanDir) return false;
         }
         return true;
       }).slice(0, TOP_N_PER_DATE),
@@ -1140,6 +1137,15 @@ function showChannelDetail(src) {
 
 document.getElementById("channels-back").addEventListener("click", showChannelsGrid);
 applyFiltersBtn.addEventListener("click", renderTimeline);
+
+document.querySelectorAll(".bias-tick").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const wasActive = btn.classList.contains("active");
+    document.querySelectorAll(".bias-tick").forEach((b) => b.classList.remove("active"));
+    if (!wasActive) btn.classList.add("active");
+    renderTimeline();
+  });
+});
 
 document.getElementById("view-timeline").addEventListener("click", (e) => {
   if (!selectedTimelineSource) return;
