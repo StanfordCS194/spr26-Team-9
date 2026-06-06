@@ -617,6 +617,21 @@ function toClusterData(articles) {
     }))
     .sort((a, b) => b.articles.length - a.articles.length || b.sourceCount - a.sourceCount);
 
+  // Disambiguate clusters that ended up with the same label
+  const labelCounts = {};
+  grouped.forEach(c => { labelCounts[c.label] = (labelCounts[c.label] || 0) + 1; });
+  grouped.forEach(cluster => {
+    if (labelCounts[cluster.label] <= 1) return;
+    const clusterTokenSet = new Set(cluster.articles.flatMap(a => clusterTokens(a, CLUSTER_LABEL_STOP_WORDS)));
+    const otherTokens = new Set(
+      grouped
+        .filter(c => c !== cluster && c.label === cluster.label)
+        .flatMap(c => c.articles.flatMap(a => clusterTokens(a, CLUSTER_LABEL_STOP_WORDS)))
+    );
+    const distinctTerm = [...clusterTokenSet].find(t => !otherTokens.has(t));
+    if (distinctTerm) cluster.label = `${cluster.label} (${formatClusterTerm(distinctTerm)})`;
+  });
+
   const storyClusters = grouped.filter(cluster => cluster.articles.length > 1);
   const singletons = grouped.filter(cluster => cluster.articles.length === 1);
   if (singletons.length) {
