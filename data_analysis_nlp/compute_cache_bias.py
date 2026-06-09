@@ -50,8 +50,30 @@ def main() -> None:
     print(f"Found {len(articles)} unique articles across search cache files.")
 
     existing = load_existing_bias()
+
+    # Include any existing bias entry that is missing the current (full-distribution)
+    # scores as a stub article so it gets re-scored. These are orphans left over
+    # from earlier, larger search caches; without this they keep their stale,
+    # old-method scores and the file ends up mixing two scoring methods.
+    cache_urls = {a.get("url", "") for a in articles}
+    orphan_stubs = [
+        {"url": url, "source": rec.get("source", "unknown")}
+        for url, rec in existing.items()
+        if url not in cache_urls and "prob_right" not in rec
+    ]
+    if orphan_stubs:
+        print(f"Found {len(orphan_stubs)} orphan entries needing re-scoring (not in current cache).")
+        articles = articles + orphan_stubs
+
     new_count = sum(1 for a in articles if a.get("url", "") not in existing)
-    print(f"Existing bias labels: {len(existing)}  |  Articles needing scoring: {new_count}")
+    legacy_count = sum(
+        1 for a in articles
+        if a.get("url", "") in existing and "prob_right" not in existing[a["url"]]
+    )
+    print(
+        f"Existing bias labels: {len(existing)}  |  "
+        f"New: {new_count}  |  Legacy to upgrade: {legacy_count}"
+    )
 
     from webscraper.text_utils import scrape_all
     text_cache = scrape_all(articles, cache_path=SCRAPED_TEXT_PATH)
