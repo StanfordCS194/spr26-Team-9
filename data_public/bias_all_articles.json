@@ -1,1040 +1,1559 @@
 {
   "https://www.today.com/video/trump-heads-to-china-sean-duffy-under-fire-for-reality-show-263092293905": {
     "source": "today.com",
-    "bias_label": "Left",
-    "bias_score": 0.567,
-    "bias_signed": -0.567
+    "bias_label": "Center",
+    "bias_score": 0.4988,
+    "bias_signed": -0.482,
+    "prob_left": 0.4988,
+    "prob_center": 0.4845,
+    "prob_right": 0.0168
   },
   "https://www.aljazeera.com/video/upfront/2026/5/11/is-the-vatican-standing-up-to-trump": {
     "source": "aljazeera.com",
     "bias_label": "Left",
     "bias_score": 0.7713,
-    "bias_signed": -0.7713
+    "bias_signed": -0.642,
+    "prob_left": 0.7713,
+    "prob_center": 0.0995,
+    "prob_right": 0.1292
   },
   "https://flipboard.com/article/https%3A%2F%2Fflipboard.com%2Fvideo%2Fstringershub%2F460c78d19d": {
     "source": "flipboard.com",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.457,
-    "bias_signed": -0.457
+    "bias_signed": -0.1951,
+    "prob_left": 0.457,
+    "prob_center": 0.2811,
+    "prob_right": 0.2619
   },
   "https://abcnews.com/video/132829433/": {
     "source": "abcnews.com",
     "bias_label": "Left",
-    "bias_score": 0.9434,
-    "bias_signed": -0.9434
+    "bias_score": 0.7221,
+    "bias_signed": -0.7113,
+    "prob_left": 0.7221,
+    "prob_center": 0.2672,
+    "prob_right": 0.0108
   },
   "https://www.independent.co.uk/bulletin/news/trump-pope-robert-jeffress-b2973858.html": {
     "source": "independent.co.uk",
     "bias_label": "Center",
     "bias_score": 0.677,
-    "bias_signed": 0.0
+    "bias_signed": 0.1963,
+    "prob_left": 0.0633,
+    "prob_center": 0.677,
+    "prob_right": 0.2596
   },
   "https://crooksandliars.com/2026/05/maga-pastor-claims-trump-has-better": {
     "source": "Crooksandliars.com",
     "bias_label": "Right",
     "bias_score": 0.6655,
-    "bias_signed": 0.6655
+    "bias_signed": 0.4349,
+    "prob_left": 0.2305,
+    "prob_center": 0.104,
+    "prob_right": 0.6655
   },
   "https://www.independent.co.uk/news/world/americas/us-politics/trump-robert-jeffress-bible-pope-b2973812.html": {
     "source": "independent.co.uk",
     "bias_label": "Center",
-    "bias_score": 0.9168,
-    "bias_signed": 0.0
+    "bias_score": 0.5032,
+    "bias_signed": 0.1586,
+    "prob_left": 0.1691,
+    "prob_center": 0.5032,
+    "prob_right": 0.3277
   },
   "https://www.huffpost.com/entry/baptist-pastor-robert-jeffress-trump-pope-better-understanding-bible_n_6a006d50e4b0cb033e521809": {
     "source": "huffpost.com",
     "bias_label": "Right",
-    "bias_score": 0.6637,
-    "bias_signed": 0.6637
+    "bias_score": 0.7011,
+    "bias_signed": 0.4769,
+    "prob_left": 0.2242,
+    "prob_center": 0.0747,
+    "prob_right": 0.7011
   },
   "https://www.mediaite.com/media/baptist-pastor-argues-trump-has-better-understanding-of-the-bible-than-pope-leo/": {
     "source": "Mediaite",
     "bias_label": "Right",
-    "bias_score": 0.7005,
-    "bias_signed": 0.7005
+    "bias_score": 0.6566,
+    "bias_signed": 0.4582,
+    "prob_left": 0.1984,
+    "prob_center": 0.145,
+    "prob_right": 0.6566
   },
   "https://www.motherjones.com/politics/2026/04/trump-maga-evangelical-crackup-pope-christian/": {
     "source": "motherjones.com",
     "bias_label": "Left",
-    "bias_score": 0.6007,
-    "bias_signed": -0.6007
+    "bias_score": 0.5402,
+    "bias_signed": -0.2284,
+    "prob_left": 0.5402,
+    "prob_center": 0.1479,
+    "prob_right": 0.3118
   },
   "https://theconversation.com/in-his-first-year-as-pope-leo-has-emphasised-peace-unity-and-social-responsibility-and-shown-he-wont-be-stared-down-281015": {
     "source": "theconversation.com",
     "bias_label": "Left",
-    "bias_score": 0.9901,
-    "bias_signed": -0.9901
+    "bias_score": 0.7551,
+    "bias_signed": -0.6992,
+    "prob_left": 0.7551,
+    "prob_center": 0.1891,
+    "prob_right": 0.0558
   },
   "https://www.wwno.org/politics/2026-04-28/louisiana-catholics-balance-faith-and-politics-amid-trump-pope-dispute": {
     "source": "wwno.org",
     "bias_label": "Right",
-    "bias_score": 0.4829,
-    "bias_signed": 0.4829
+    "bias_score": 0.5279,
+    "bias_signed": 0.1917,
+    "prob_left": 0.3362,
+    "prob_center": 0.1359,
+    "prob_right": 0.5279
   },
   "https://www.independent.ie/world-news/europe/pope-leo-meets-and-prays-with-new-head-of-church-of-england/a1619537615.html": {
     "source": "Independent.ie",
     "bias_label": "Right",
     "bias_score": 0.7177,
-    "bias_signed": 0.7177
+    "bias_signed": 0.5331,
+    "prob_left": 0.1846,
+    "prob_center": 0.0976,
+    "prob_right": 0.7177
   },
   "https://japantoday.com/category/world/pope-and-first-female-archbishop-of-canterbury-meet-and-pray-together2": {
     "source": "Japan Today",
     "bias_label": "Right",
-    "bias_score": 0.7547,
-    "bias_signed": 0.7547
+    "bias_score": 0.7879,
+    "bias_signed": 0.7163,
+    "prob_left": 0.0716,
+    "prob_center": 0.1405,
+    "prob_right": 0.7879
   },
   "https://www.independent.co.uk/bulletin/news/trump-archbishop-of-canterbury-pope-leo-trump-vatican-b2966011.html": {
     "source": "independent.co.uk",
     "bias_label": "Right",
     "bias_score": 0.5295,
-    "bias_signed": 0.5295
+    "bias_signed": 0.3381,
+    "prob_left": 0.1915,
+    "prob_center": 0.279,
+    "prob_right": 0.5295
   },
   "https://www.independent.co.uk/news/uk/home-news/pope-leo-archbishop-of-canterbury-trump-b2965889.html": {
     "source": "independent.co.uk",
     "bias_label": "Right",
-    "bias_score": 0.7782,
-    "bias_signed": 0.7782
+    "bias_score": 0.7613,
+    "bias_signed": 0.6074,
+    "prob_left": 0.1539,
+    "prob_center": 0.0848,
+    "prob_right": 0.7613
   },
   "https://www.standard.co.uk/news/uk/sarah-mullally-donald-trump-archbishop-of-canterbury-catholic-church-church-of-england-b1280186.html": {
     "source": "standard.co.uk",
     "bias_label": "Right",
-    "bias_score": 0.854,
-    "bias_signed": 0.854
+    "bias_score": 0.815,
+    "bias_signed": 0.7085,
+    "prob_left": 0.1065,
+    "prob_center": 0.0785,
+    "prob_right": 0.815
   },
   "https://www.independent.co.uk/news/uk/home-news/sarah-mullally-donald-trump-archbishop-of-canterbury-catholic-church-church-of-england-b2965867.html": {
     "source": "independent.co.uk",
     "bias_label": "Center",
-    "bias_score": 0.958,
-    "bias_signed": 0.0
+    "bias_score": 0.4457,
+    "bias_signed": 0.3017,
+    "prob_left": 0.144,
+    "prob_center": 0.4103,
+    "prob_right": 0.4457
   },
   "https://en.protothema.gr/2026/04/27/bloomberg-merz-says-iran-is-humiliating-the-us-and-questions-trumps-strategy/": {
     "source": "Protothema.gr",
-    "bias_label": "Right",
-    "bias_score": 0.5757,
-    "bias_signed": 0.5757
+    "bias_label": "Center",
+    "bias_score": 0.4017,
+    "bias_signed": 0.1117,
+    "prob_left": 0.2901,
+    "prob_center": 0.3082,
+    "prob_right": 0.4017
   },
   "https://cebudailynews.inquirer.net/721592/iran-offers-to-reopen-strait-of-hormuz-if": {
     "source": "cebudailynews.inquirer.net",
-    "bias_label": "Right",
-    "bias_score": 0.3904,
-    "bias_signed": 0.3904
+    "bias_label": "Center",
+    "bias_score": 0.3948,
+    "bias_signed": 0.1607,
+    "prob_left": 0.2223,
+    "prob_center": 0.3948,
+    "prob_right": 0.383
   },
   "https://www.pbs.org/newshour/world/pope-leo-xiv-prays-with-archbishop-of-canterbury-sarah-mullally-in-historic-encounter": {
     "source": "PBS",
-    "bias_label": "Left",
-    "bias_score": 0.518,
-    "bias_signed": -0.518
+    "bias_label": "Center",
+    "bias_score": 0.4604,
+    "bias_signed": 0.1792,
+    "prob_left": 0.2812,
+    "prob_center": 0.2584,
+    "prob_right": 0.4604
   },
   "https://nypost.com/2026/04/27/world-news/pope-and-first-female-archbishop-of-canterbury-meet-and-pray-together/": {
     "source": "New York Post",
     "bias_label": "Right",
-    "bias_score": 0.8325,
-    "bias_signed": 0.8325
+    "bias_score": 0.7045,
+    "bias_signed": 0.5278,
+    "prob_left": 0.1767,
+    "prob_center": 0.1188,
+    "prob_right": 0.7045
   },
   "https://www.theatlantic.com/ideas/2026/04/pope-leo-trump-iran/686964/": {
     "source": "The Atlantic",
     "bias_label": "Left",
-    "bias_score": 0.44,
-    "bias_signed": -0.44
+    "bias_score": 0.6005,
+    "bias_signed": -0.372,
+    "prob_left": 0.6005,
+    "prob_center": 0.1711,
+    "prob_right": 0.2284
   },
   "https://www.foxnews.com/politics/trump-border-czar-tom-homan-wants-pope-leo-xiv-ride-along-ice-agents-dont-understand": {
     "source": "foxnews.com",
     "bias_label": "Right",
-    "bias_score": 0.7622,
-    "bias_signed": 0.7622
+    "bias_score": 0.7949,
+    "bias_signed": 0.7165,
+    "prob_left": 0.0785,
+    "prob_center": 0.1266,
+    "prob_right": 0.7949
   },
   "https://www.foxnews.com/opinion/trump-pushes-shaky-deal-iran-hormuz-shut-again-opponents-give-him-no-credit-progress": {
     "source": "Fox News",
-    "bias_label": "Right",
-    "bias_score": 0.7697,
-    "bias_signed": 0.7697
+    "bias_label": "Center",
+    "bias_score": 0.4921,
+    "bias_signed": 0.0841,
+    "prob_left": 0.408,
+    "prob_center": 0.0999,
+    "prob_right": 0.4921
   },
   "https://www.foxnews.com/politics/vance-says-hes-grateful-pope-leos-statement-wanting-public-debate-trump": {
     "source": "foxnews.com",
     "bias_label": "Right",
-    "bias_score": 0.9343,
-    "bias_signed": 0.9343
+    "bias_score": 0.8736,
+    "bias_signed": 0.7869,
+    "prob_left": 0.0867,
+    "prob_center": 0.0396,
+    "prob_right": 0.8736
   },
   "https://www.foxnews.com/world/pope-leo-says-remarks-world-ravaged-handful-tyrants-aimed-trump-report": {
     "source": "foxnews.com",
     "bias_label": "Right",
-    "bias_score": 0.9212,
-    "bias_signed": 0.9212
+    "bias_score": 0.8539,
+    "bias_signed": 0.7862,
+    "prob_left": 0.0677,
+    "prob_center": 0.0785,
+    "prob_right": 0.8539
   },
   "https://www.foxnews.com/politics/pope-leo-slams-manipulate-religion-military-political-gain-trump-responds": {
     "source": "foxnews.com",
     "bias_label": "Right",
-    "bias_score": 0.9083,
-    "bias_signed": 0.9083
+    "bias_score": 0.8807,
+    "bias_signed": 0.8124,
+    "prob_left": 0.0683,
+    "prob_center": 0.051,
+    "prob_right": 0.8807
   },
   "https://www.today.com/video/trump-suggests-he-ll-lean-on-china-to-force-iran-to-reopen-strait-263152197537": {
     "source": "today.com",
-    "bias_label": "Center",
-    "bias_score": 0.5372,
-    "bias_signed": 0.0
+    "bias_label": "Left",
+    "bias_score": 0.6131,
+    "bias_signed": -0.5931,
+    "prob_left": 0.6131,
+    "prob_center": 0.3669,
+    "prob_right": 0.02
   },
   "https://www.buzzfeed.com/benblanchet/trump-pope-leo-pastor-jeffress-better-understanding-bible": {
     "source": "buzzfeed.com",
     "bias_label": "Right",
-    "bias_score": 0.6943,
-    "bias_signed": 0.6943
+    "bias_score": 0.7221,
+    "bias_signed": 0.4948,
+    "prob_left": 0.2273,
+    "prob_center": 0.0507,
+    "prob_right": 0.7221
   },
   "https://truthout.org/articles/far-right-pastor-says-trump-has-a-better-understanding-of-bible-than-pope-leo/": {
     "source": "Truthout",
     "bias_label": "Right",
-    "bias_score": 0.7663,
-    "bias_signed": 0.7663
+    "bias_score": 0.6492,
+    "bias_signed": 0.3713,
+    "prob_left": 0.278,
+    "prob_center": 0.0728,
+    "prob_right": 0.6492
   },
   "https://www.globalresearch.ca/pope-leo-xiv-revolt-conscience-violence/5925915": {
     "source": "Globalresearch.ca",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4635,
-    "bias_signed": -0.4635
+    "bias_signed": -0.1727,
+    "prob_left": 0.4635,
+    "prob_center": 0.2458,
+    "prob_right": 0.2908
   },
   "https://www.peoplefor.org/rightwingwatch/christian-nationalist-wishlist": {
     "source": "Peoplefor.org",
     "bias_label": "Left",
     "bias_score": 0.5551,
-    "bias_signed": -0.5551
+    "bias_signed": -0.2377,
+    "prob_left": 0.5551,
+    "prob_center": 0.1276,
+    "prob_right": 0.3174
   },
   "https://www.huffpost.com/entry/maggie-haberman-vance-rubio-2028-trump_n_6a017ed7e4b065a1677edaec": {
     "source": "huffpost.com",
     "bias_label": "Right",
     "bias_score": 0.6824,
-    "bias_signed": 0.6824
+    "bias_signed": 0.4175,
+    "prob_left": 0.265,
+    "prob_center": 0.0526,
+    "prob_right": 0.6824
   },
   "https://www.juancole.com/2026/05/americas-christian-autocracy.html": {
     "source": "Juancole.com",
-    "bias_label": "Left",
-    "bias_score": 0.5665,
-    "bias_signed": -0.5665
+    "bias_label": "Center",
+    "bias_score": 0.3628,
+    "bias_signed": 0.0851,
+    "prob_left": 0.2761,
+    "prob_center": 0.3628,
+    "prob_right": 0.3612
   },
   "https://www.rawstory.com/trumps-christianity/": {
     "source": "Raw Story",
     "bias_label": "Right",
     "bias_score": 0.6507,
-    "bias_signed": 0.6507
+    "bias_signed": 0.4307,
+    "prob_left": 0.22,
+    "prob_center": 0.1293,
+    "prob_right": 0.6507
   },
   "https://www.nytimes.com/2026/04/14/opinion/pope-president-war-immigration.html": {
     "source": "New York Times",
     "bias_label": "Right",
-    "bias_score": 0.8849,
-    "bias_signed": 0.8849
+    "bias_score": 0.6215,
+    "bias_signed": 0.3135,
+    "prob_left": 0.308,
+    "prob_center": 0.0704,
+    "prob_right": 0.6215
   },
   "https://www.nytimes.com/2026/04/14/us/politics/trump-attacks-pope-midterms.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.5241,
-    "bias_signed": 0.5241
+    "bias_signed": 0.2781,
+    "prob_left": 0.246,
+    "prob_center": 0.23,
+    "prob_right": 0.5241
   },
   "https://www.nytimes.com/2026/04/14/podcasts/the-headlines/congress-resignations-pope-trump.html": {
     "source": "New York Times",
-    "bias_label": "Right",
+    "bias_label": "Center",
     "bias_score": 0.4083,
-    "bias_signed": 0.4083
+    "bias_signed": 0.0356,
+    "prob_left": 0.3727,
+    "prob_center": 0.219,
+    "prob_right": 0.4083
   },
   "https://www.nytimes.com/2026/04/14/arts/television/late-night-trump-pope.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.6921,
-    "bias_signed": 0.6921
+    "bias_signed": 0.4871,
+    "prob_left": 0.2049,
+    "prob_center": 0.103,
+    "prob_right": 0.6921
   },
   "https://www.nytimes.com/2026/04/14/world/africa/pope-leo-algeria-africa-visit.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.6982,
-    "bias_signed": 0.6982
+    "bias_signed": 0.5463,
+    "prob_left": 0.1519,
+    "prob_center": 0.1499,
+    "prob_right": 0.6982
   },
   "https://www.nytimes.com/2026/04/13/us/politics/jd-vance-pope-leo-trump.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.8008,
-    "bias_signed": 0.8008
+    "bias_signed": 0.6842,
+    "prob_left": 0.1166,
+    "prob_center": 0.0826,
+    "prob_right": 0.8008
   },
   "https://www.nytimes.com/2026/04/13/briefing/the-us-blockades-irans-ports.html": {
     "source": "New York Times",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4495,
-    "bias_signed": -0.4495
+    "bias_signed": -0.0579,
+    "prob_left": 0.4495,
+    "prob_center": 0.1589,
+    "prob_right": 0.3916
   },
   "https://www.nytimes.com/2026/04/13/world/venezuela-oil-us-blockade-hormuz-pope-leo.html": {
     "source": "New York Times",
-    "bias_label": "Right",
+    "bias_label": "Center",
     "bias_score": 0.485,
-    "bias_signed": 0.485
+    "bias_signed": 0.1651,
+    "prob_left": 0.3199,
+    "prob_center": 0.195,
+    "prob_right": 0.485
   },
   "https://www.nytimes.com/2026/04/13/us/politics/trump-jesus-picture-pope-leo.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.5501,
-    "bias_signed": 0.5501
+    "bias_signed": 0.202,
+    "prob_left": 0.3481,
+    "prob_center": 0.1019,
+    "prob_right": 0.5501
   },
   "https://www.nytimes.com/2026/04/13/us/politics/trump-mental-fitness-25th-amendment.html": {
     "source": "New York Times",
     "bias_label": "Center",
     "bias_score": 0.4862,
-    "bias_signed": 0.0
+    "bias_signed": 0.0168,
+    "prob_left": 0.2485,
+    "prob_center": 0.4862,
+    "prob_right": 0.2653
   },
   "https://www.nytimes.com/2026/04/13/us/trump-pope-leo.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.5613,
-    "bias_signed": 0.5613
+    "bias_signed": 0.2713,
+    "prob_left": 0.29,
+    "prob_center": 0.1486,
+    "prob_right": 0.5613
   },
   "https://www.nytimes.com/2026/04/13/world/europe/pope-leo-trump-dispute.html": {
     "source": "New York Times",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4123,
-    "bias_signed": -0.4123
+    "bias_signed": -0.0446,
+    "prob_left": 0.4123,
+    "prob_center": 0.2201,
+    "prob_right": 0.3677
   },
   "https://www.nytimes.com/2026/04/13/us/politics/trump-jesus-pope-leo-truth-social-post.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.6064,
-    "bias_signed": 0.6064
+    "bias_signed": 0.3092,
+    "prob_left": 0.2972,
+    "prob_center": 0.0965,
+    "prob_right": 0.6064
   },
   "https://www.nytimes.com/2026/04/13/business/dealbook/trump-iran-hormuz-blockade.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.5121,
-    "bias_signed": 0.5121
+    "bias_signed": 0.2611,
+    "prob_left": 0.2509,
+    "prob_center": 0.237,
+    "prob_right": 0.5121
   },
   "https://www.nytimes.com/2026/04/13/us/politics/pope-leo-trump-response.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.7721,
-    "bias_signed": 0.7721
+    "bias_signed": 0.6353,
+    "prob_left": 0.1368,
+    "prob_center": 0.0911,
+    "prob_right": 0.7721
   },
   "https://www.nytimes.com/2026/04/13/world/europe/pope-leo-africa-future.html": {
     "source": "New York Times",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4212,
-    "bias_signed": -0.4212
+    "bias_signed": -0.1906,
+    "prob_left": 0.4212,
+    "prob_center": 0.3481,
+    "prob_right": 0.2306
   },
   "https://www.nytimes.com/2026/04/12/us/politics/trump-attacks-pope-leo.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.7101,
-    "bias_signed": 0.7101
+    "bias_signed": 0.5219,
+    "prob_left": 0.1882,
+    "prob_center": 0.1017,
+    "prob_right": 0.7101
   },
   "https://cryptobriefing.com/polymarket-us-ai-safety-bill-2027/": {
     "source": "Crypto Briefing",
     "bias_label": "Center",
     "bias_score": 0.6959,
-    "bias_signed": 0.0
+    "bias_signed": -0.1607,
+    "prob_left": 0.2324,
+    "prob_center": 0.6959,
+    "prob_right": 0.0717
   },
   "https://yro.slashdot.org/story/26/05/28/186254/trump-loses-more-control-over-ai-regulation-as-illinois-passes-landmark-law": {
     "source": "yro.slashdot.org",
     "bias_label": "Right",
     "bias_score": 0.5391,
-    "bias_signed": 0.5391
+    "bias_signed": 0.2059,
+    "prob_left": 0.3333,
+    "prob_center": 0.1276,
+    "prob_right": 0.5391
   },
   "https://sanjosespotlight.com/silicon-valley-lawmaker-favors-ai-tech-partnerships-over-regulations/": {
     "source": "sanjosespotlight.com",
     "bias_label": "Left",
-    "bias_score": 0.9951,
-    "bias_signed": -0.9951
+    "bias_score": 0.7169,
+    "bias_signed": -0.4868,
+    "prob_left": 0.7169,
+    "prob_center": 0.0531,
+    "prob_right": 0.2301
   },
   "https://www.paloaltoonline.com/technology/2026/05/27/as-silicon-valley-faces-ai-disruption-liccardo-favors-tech-partnerships-over-regulations/": {
     "source": "paloaltoonline.com",
     "bias_label": "Left",
-    "bias_score": 0.9947,
-    "bias_signed": -0.9947
+    "bias_score": 0.6865,
+    "bias_signed": -0.4255,
+    "prob_left": 0.6865,
+    "prob_center": 0.0525,
+    "prob_right": 0.261
   },
   "https://www.commondreams.org/news/ai-tax-unemployment": {
     "source": "commondreams.org",
-    "bias_label": "Left",
-    "bias_score": 0.8835,
-    "bias_signed": -0.8835
+    "bias_label": "Center",
+    "bias_score": 0.4658,
+    "bias_signed": 0.0674,
+    "prob_left": 0.3984,
+    "prob_center": 0.1358,
+    "prob_right": 0.4658
   },
   "https://www.nytimes.com/2026/05/01/us/politics/alex-bores-chris-larsen-open-ai-jack-schlossberg.html": {
     "source": "New York Times",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4198,
-    "bias_signed": -0.4198
+    "bias_signed": -0.087,
+    "prob_left": 0.4198,
+    "prob_center": 0.2474,
+    "prob_right": 0.3328
   },
   "https://www.nbcnews.com/now/video/bessent-teases-250-bill-with-trump-s-image-if-congress-approves-264108613836": {
     "source": "nbcnews.com",
     "bias_label": "Left",
-    "bias_score": 0.5195,
-    "bias_signed": -0.5195
+    "bias_score": 0.6071,
+    "bias_signed": -0.5849,
+    "prob_left": 0.6071,
+    "prob_center": 0.3707,
+    "prob_right": 0.0222
   },
   "https://www.nbcnews.com/video/trump-admin-prepares-to-put-his-face-on-250-bill-even-as-law-prohibits-it-264207941535": {
     "source": "nbcnews.com",
-    "bias_label": "Center",
-    "bias_score": 0.4924,
-    "bias_signed": 0.0
+    "bias_label": "Left",
+    "bias_score": 0.6225,
+    "bias_signed": -0.605,
+    "prob_left": 0.6225,
+    "prob_center": 0.3601,
+    "prob_right": 0.0175
   },
   "https://www.bernama.com/en/news.php/?id=2563236": {
     "source": "bernama.com",
     "bias_label": "Right",
-    "bias_score": 0.7894,
-    "bias_signed": 0.7894
+    "bias_score": 0.607,
+    "bias_signed": 0.3529,
+    "prob_left": 0.2541,
+    "prob_center": 0.1389,
+    "prob_right": 0.607
   },
   "https://www.aljazeera.com/news/2026/5/30/egypt-warns-israel-that-dangerous-gaza-escalations-threaten-ceasefire": {
     "source": "aljazeera.com",
     "bias_label": "Center",
-    "bias_score": 0.7125,
-    "bias_signed": 0.0
+    "bias_score": 0.4433,
+    "bias_signed": 0.2711,
+    "prob_left": 0.1428,
+    "prob_center": 0.4433,
+    "prob_right": 0.4139
   },
   "https://www.chicagotribune.com/2026/05/30/israeli-soldiers-accounts-from-gaza/": {
     "source": "chicagotribune.com",
-    "bias_label": "Left",
-    "bias_score": 0.7373,
-    "bias_signed": -0.7373
+    "bias_label": "Center",
+    "bias_score": 0.4304,
+    "bias_signed": -0.1003,
+    "prob_left": 0.4304,
+    "prob_center": 0.2395,
+    "prob_right": 0.3301
   },
   "https://www.independent.co.uk/news/world/middle-east/israel-ceasefire-gaza-yellow-line-b2986524.html": {
     "source": "independent.co.uk",
-    "bias_label": "Left",
-    "bias_score": 0.5869,
-    "bias_signed": -0.5869
+    "bias_label": "Center",
+    "bias_score": 0.4683,
+    "bias_signed": -0.0506,
+    "prob_left": 0.2911,
+    "prob_center": 0.4683,
+    "prob_right": 0.2406
   },
   "https://www.sfgate.com/news/world/article/israeli-soldiers-share-rare-accounts-from-gaza-22283629.php": {
     "source": "sfgate.com",
     "bias_label": "Left",
-    "bias_score": 0.8676,
-    "bias_signed": -0.8676
+    "bias_score": 0.832,
+    "bias_signed": -0.7596,
+    "prob_left": 0.832,
+    "prob_center": 0.0956,
+    "prob_right": 0.0724
   },
   "https://www.sott.net/article/506620-Netanyahu-orders-expansion-of-Gaza-occupation": {
     "source": "sott.net",
     "bias_label": "Right",
     "bias_score": 0.749,
-    "bias_signed": 0.749
+    "bias_signed": 0.5845,
+    "prob_left": 0.1645,
+    "prob_center": 0.0865,
+    "prob_right": 0.749
   },
   "https://www.sott.net/article/506603-Netanyahu-orders-IDF-to-occupy-70-percent-of-Gaza-far-beyond-terms-of-ceasefire-deal": {
     "source": "sott.net",
     "bias_label": "Right",
-    "bias_score": 0.6406,
-    "bias_signed": 0.6406
+    "bias_score": 0.7217,
+    "bias_signed": 0.5761,
+    "prob_left": 0.1456,
+    "prob_center": 0.1326,
+    "prob_right": 0.7217
   },
   "https://globalnation.inquirer.net/325340/to-call-it-a-ceasefire-is-a-joke-say-israeli-soldiers-in-gaza": {
     "source": "globalnation.inquirer.net",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4093,
-    "bias_signed": -0.4093
+    "bias_signed": -0.1142,
+    "prob_left": 0.4093,
+    "prob_center": 0.2955,
+    "prob_right": 0.2952
   },
   "https://www.independent.ie/world-news/benjamin-netanyahus-growing-expansion-of-gaza-control-a-dangerous-escalation/a/154000392.html": {
     "source": "independent.ie",
     "bias_label": "Right",
     "bias_score": 0.6714,
-    "bias_signed": 0.6714
+    "bias_signed": 0.4338,
+    "prob_left": 0.2376,
+    "prob_center": 0.091,
+    "prob_right": 0.6714
   },
   "https://www.independent.co.uk/bulletin/news/trump-pope-leo-iran-war-b2986583.html": {
     "source": "independent.co.uk",
     "bias_label": "Right",
     "bias_score": 0.6689,
-    "bias_signed": 0.6689
+    "bias_signed": 0.4942,
+    "prob_left": 0.1747,
+    "prob_center": 0.1564,
+    "prob_right": 0.6689
   },
   "https://ktla.com/news/nationworld/trump-calls-out-pope-leo-for-meeting-with-useless-chicago-mayor/": {
     "source": "ktla.com",
     "bias_label": "Right",
     "bias_score": 0.6266,
-    "bias_signed": 0.6266
+    "bias_signed": 0.3771,
+    "prob_left": 0.2495,
+    "prob_center": 0.1239,
+    "prob_right": 0.6266
   },
   "https://www.ktsm.com/news/trump-calls-out-pope-leo-for-meeting-with-useless-chicago-mayor/": {
     "source": "ktsm.com",
     "bias_label": "Right",
     "bias_score": 0.6266,
-    "bias_signed": 0.6266
+    "bias_signed": 0.3771,
+    "prob_left": 0.2495,
+    "prob_center": 0.1239,
+    "prob_right": 0.6266
   },
   "https://fox40.com/news/national-and-world-news/trump-calls-out-pope-leo-for-meeting-with-useless-chicago-mayor/": {
     "source": "fox40.com",
     "bias_label": "Right",
     "bias_score": 0.6266,
-    "bias_signed": 0.6266
+    "bias_signed": 0.3771,
+    "prob_left": 0.2495,
+    "prob_center": 0.1239,
+    "prob_right": 0.6266
   },
   "https://www.keloland.com/news/national-world-news/trump-calls-out-pope-leo-for-meeting-with-useless-chicago-mayor/": {
     "source": "keloland.com",
     "bias_label": "Right",
     "bias_score": 0.6266,
-    "bias_signed": 0.6266
+    "bias_signed": 0.3771,
+    "prob_left": 0.2495,
+    "prob_center": 0.1239,
+    "prob_right": 0.6266
   },
   "https://www.cbs42.com/news/trump-calls-out-pope-leo-for-meeting-with-useless-chicago-mayor/": {
     "source": "cbs42.com",
     "bias_label": "Right",
     "bias_score": 0.6266,
-    "bias_signed": 0.6266
+    "bias_signed": 0.3771,
+    "prob_left": 0.2495,
+    "prob_center": 0.1239,
+    "prob_right": 0.6266
   },
   "https://www.benzinga.com/news/politics/26/05/52893602/the-mayor-of-chicago-is-useless-trump-attacks-pope-leo-and-brandon-johnson-as-iran-dispute-escalates": {
     "source": "benzinga.com",
     "bias_label": "Right",
-    "bias_score": 0.8952,
-    "bias_signed": 0.8952
+    "bias_score": 0.8764,
+    "bias_signed": 0.7995,
+    "prob_left": 0.0769,
+    "prob_center": 0.0467,
+    "prob_right": 0.8764
   },
   "https://thehill.com/homenews/administration/5902784-trump-slams-pope-johnson/": {
     "source": "thehill.com",
     "bias_label": "Right",
     "bias_score": 0.8714,
-    "bias_signed": 0.8714
+    "bias_signed": 0.8099,
+    "prob_left": 0.0615,
+    "prob_center": 0.067,
+    "prob_right": 0.8714
   },
   "https://www.snopes.com//fact-check/trump-pope-leo-cage-fight/": {
-    "source": "Snopes.com",
+    "source": "snopes.com",
     "bias_label": "Right",
-    "bias_score": 0.5912,
-    "bias_signed": 0.5912
+    "bias_score": 0.5004,
+    "bias_signed": 0.229,
+    "prob_left": 0.2714,
+    "prob_center": 0.2282,
+    "prob_right": 0.5004
   },
   "https://www.nytimes.com/2026/05/07/us/politics/rubio-pope-meeting.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.66,
-    "bias_signed": 0.66
+    "bias_signed": 0.438,
+    "prob_left": 0.222,
+    "prob_center": 0.1179,
+    "prob_right": 0.66
   },
   "https://news.meaww.com/trump-calls-out-pope-leo-xiv-for-meeting-with-useless-chicago-mayor-brandon-johnson": {
     "source": "news.meaww.com",
     "bias_label": "Right",
-    "bias_score": 0.7997,
-    "bias_signed": 0.7997
+    "bias_score": 0.7616,
+    "bias_signed": 0.5967,
+    "prob_left": 0.1648,
+    "prob_center": 0.0736,
+    "prob_right": 0.7616
   },
   "https://www.nytimes.com/2026/05/04/world/europe/rubio-rome-trump-pope-italy.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.5537,
-    "bias_signed": 0.5537
+    "bias_signed": 0.2945,
+    "prob_left": 0.2592,
+    "prob_center": 0.1871,
+    "prob_right": 0.5537
   },
   "https://www.nytimes.com/2026/05/08/us/politics/rubio-meloni-italy-us-trump-pope.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.7804,
-    "bias_signed": 0.7804
+    "bias_signed": 0.649,
+    "prob_left": 0.1314,
+    "prob_center": 0.0882,
+    "prob_right": 0.7804
   },
   "https://www.nytimes.com/2026/05/08/arts/television/late-night-rubio-pope.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.6651,
-    "bias_signed": 0.6651
+    "bias_signed": 0.4259,
+    "prob_left": 0.2392,
+    "prob_center": 0.0958,
+    "prob_right": 0.6651
   },
   "https://www.thewrap.com/culture-lifestyle/culture/pope-leo-ai-dangers-tweets/": {
     "source": "TheWrap",
     "bias_label": "Right",
-    "bias_score": 0.904,
-    "bias_signed": 0.904
+    "bias_score": 0.6377,
+    "bias_signed": 0.3797,
+    "prob_left": 0.258,
+    "prob_center": 0.1043,
+    "prob_right": 0.6377
   },
   "https://www.nytimes.com/2026/05/06/world/europe/leo-first-american-pope.html": {
     "source": "New York Times",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.3972,
-    "bias_signed": -0.3972
+    "bias_signed": -0.1219,
+    "prob_left": 0.3972,
+    "prob_center": 0.3274,
+    "prob_right": 0.2754
   },
   "https://www.nytimes.com/2026/05/07/world/americas/trump-brazil-lula-meeting.html": {
     "source": "New York Times",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4664,
-    "bias_signed": -0.4664
+    "bias_signed": -0.1998,
+    "prob_left": 0.4664,
+    "prob_center": 0.2669,
+    "prob_right": 0.2666
   },
   "https://www.nytimes.com/2026/05/09/opinion/iran-war-global-economy-risk-green-energy-shift.html": {
     "source": "New York Times",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4656,
-    "bias_signed": -0.4656
+    "bias_signed": -0.1461,
+    "prob_left": 0.4656,
+    "prob_center": 0.2148,
+    "prob_right": 0.3195
   },
   "https://www.independent.co.uk/news/world/middle-east/iran-us-war-live-trump-peace-deal-strait-of-hormuz-b2986621.html": {
     "source": "independent.co.uk",
-    "bias_label": "Right",
-    "bias_score": 0.8447,
-    "bias_signed": 0.8447
+    "bias_label": "Center",
+    "bias_score": 0.4547,
+    "bias_signed": 0.3006,
+    "prob_left": 0.1224,
+    "prob_center": 0.4547,
+    "prob_right": 0.423
   },
   "https://www.nytimes.com/2026/05/10/us/politics/vance-rubio-trump-succession.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.5176,
-    "bias_signed": 0.5176
+    "bias_signed": 0.3383,
+    "prob_left": 0.1793,
+    "prob_center": 0.303,
+    "prob_right": 0.5176
   },
   "https://www.nytimes.com/2026/05/01/us/politics/trump-tariffs-eu-cars.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.7235,
-    "bias_signed": 0.7235
+    "bias_signed": 0.5843,
+    "prob_left": 0.1392,
+    "prob_center": 0.1374,
+    "prob_right": 0.7235
   },
   "https://www.nytimes.com/2026/05/01/business/iran-war-interest-rates-central-banks.html": {
     "source": "New York Times",
     "bias_label": "Center",
     "bias_score": 0.6857,
-    "bias_signed": 0.0
+    "bias_signed": 0.1151,
+    "prob_left": 0.0996,
+    "prob_center": 0.6857,
+    "prob_right": 0.2147
   },
   "https://www.edie.net/report-global-clean-energy-trade-rose-to-479bn-in-2025/": {
     "source": "edie.net",
     "bias_label": "Left",
-    "bias_score": 0.9888,
-    "bias_signed": -0.9888
+    "bias_score": 0.8369,
+    "bias_signed": -0.7587,
+    "prob_left": 0.8369,
+    "prob_center": 0.085,
+    "prob_right": 0.0781
   },
   "https://www.bbc.com/news/articles/c2l22ypl909o": {
     "source": "bbc.com",
-    "bias_label": "Left",
-    "bias_score": 0.492,
-    "bias_signed": -0.492
+    "bias_label": "Center",
+    "bias_score": 0.3483,
+    "bias_signed": 0.0092,
+    "prob_left": 0.3213,
+    "prob_center": 0.3483,
+    "prob_right": 0.3304
   },
   "https://www.politico.com/news/2026/05/30/trump-china-businesses-tariff-opening-00943303": {
     "source": "politico.com",
     "bias_label": "Right",
     "bias_score": 0.5897,
-    "bias_signed": 0.5897
+    "bias_signed": 0.4027,
+    "prob_left": 0.187,
+    "prob_center": 0.2232,
+    "prob_right": 0.5897
   },
   "https://www.independent.co.uk/voices/trump-oman-iran-strait-of-hormuz-israel-lebanon-b2985668.html": {
     "source": "independent.co.uk",
     "bias_label": "Center",
-    "bias_score": 0.9385,
-    "bias_signed": 0.0
+    "bias_score": 0.5896,
+    "bias_signed": -0.2895,
+    "prob_left": 0.35,
+    "prob_center": 0.5896,
+    "prob_right": 0.0604
   },
   "https://www.reddit.com/r/foreignpolicy/comments/1trs5wu/what_a_disaster_that_was_the_end_of_the_american/": {
     "source": "reddit.com",
-    "bias_label": "Left",
-    "bias_score": 0.4083,
-    "bias_signed": -0.4083
+    "bias_label": "Center",
+    "bias_score": 0.4084,
+    "bias_signed": -0.1787,
+    "prob_left": 0.4084,
+    "prob_center": 0.362,
+    "prob_right": 0.2297
   },
   "https://www.nytimes.com/2026/05/02/us/politics/trump-garden-of-heroes-national-statues-list.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.6375,
-    "bias_signed": 0.6375
+    "bias_signed": 0.4264,
+    "prob_left": 0.2111,
+    "prob_center": 0.1514,
+    "prob_right": 0.6375
   },
   "https://www.breitbart.com/economy/2026/05/29/bessent-lays-out-sweeping-intellectual-case-for-trumps-economic-doctrine/": {
     "source": "breitbart.com",
     "bias_label": "Right",
-    "bias_score": 0.9055,
-    "bias_signed": 0.9055
+    "bias_score": 0.7111,
+    "bias_signed": 0.4834,
+    "prob_left": 0.2276,
+    "prob_center": 0.0613,
+    "prob_right": 0.7111
   },
   "https://www.nytimes.com/2026/05/01/opinion/donald-trump-animal-spirits.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.51,
-    "bias_signed": 0.51
+    "bias_signed": 0.1925,
+    "prob_left": 0.3175,
+    "prob_center": 0.1725,
+    "prob_right": 0.51
   },
   "https://hotair.com/tree-hugging-sister/2026/05/29/the-carney-val-continues-i-spy-with-my-little-eye-a-syrupian-recession-n3815410": {
     "source": "hotair.com",
     "bias_label": "Right",
-    "bias_score": 0.4605,
-    "bias_signed": 0.4605
+    "bias_score": 0.5145,
+    "bias_signed": 0.1427,
+    "prob_left": 0.3718,
+    "prob_center": 0.1137,
+    "prob_right": 0.5145
   },
   "https://www.nytimes.com/2026/05/03/opinion/iran-us-empire.html": {
     "source": "New York Times",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4061,
-    "bias_signed": -0.4061
+    "bias_signed": -0.02,
+    "prob_left": 0.4061,
+    "prob_center": 0.2078,
+    "prob_right": 0.3861
   },
   "https://www.nytimes.com/2026/05/01/business/dealbook/openai-anthropic-compute.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.6582,
-    "bias_signed": 0.6582
+    "bias_signed": 0.4315,
+    "prob_left": 0.2267,
+    "prob_center": 0.115,
+    "prob_right": 0.6582
   },
   "https://www.nytimes.com/2026/05/01/business/central-banks-gold-storage.html": {
     "source": "New York Times",
     "bias_label": "Left",
     "bias_score": 0.5826,
-    "bias_signed": -0.5826
+    "bias_signed": -0.4237,
+    "prob_left": 0.5826,
+    "prob_center": 0.2585,
+    "prob_right": 0.1589
   },
   "https://www.nytimes.com/2026/05/02/opinion/trump-thomas-jefferson-founding-fathers.html": {
     "source": "New York Times",
-    "bias_label": "Right",
+    "bias_label": "Center",
     "bias_score": 0.4989,
-    "bias_signed": 0.4989
+    "bias_signed": 0.122,
+    "prob_left": 0.3769,
+    "prob_center": 0.1242,
+    "prob_right": 0.4989
   },
   "https://www.ndtv.com/world-news/india-commits-to-buying-500-billion-worth-of-us-goods-experts-weigh-in-11562538": {
     "source": "ndtv.com",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4913,
-    "bias_signed": -0.4913
+    "bias_signed": -0.2641,
+    "prob_left": 0.4913,
+    "prob_center": 0.2814,
+    "prob_right": 0.2272
   },
   "https://www.nytimes.com/2026/05/01/briefing/trump-iran-proposal-spirit-airlines.html": {
     "source": "New York Times",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4121,
-    "bias_signed": -0.4121
+    "bias_signed": -0.0309,
+    "prob_left": 0.4121,
+    "prob_center": 0.2067,
+    "prob_right": 0.3812
   },
   "https://www.nytimes.com/2026/05/01/business/spirit-airlines-shutting-down.html": {
     "source": "New York Times",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4506,
-    "bias_signed": -0.4506
+    "bias_signed": -0.1189,
+    "prob_left": 0.4506,
+    "prob_center": 0.2176,
+    "prob_right": 0.3318
   },
   "https://www.nytimes.com/2026/05/03/opinion/china-us-trump-summit.html": {
     "source": "New York Times",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4897,
-    "bias_signed": -0.4897
+    "bias_signed": -0.2287,
+    "prob_left": 0.4897,
+    "prob_center": 0.2493,
+    "prob_right": 0.261
   },
   "https://www.reddit.com/r/geopolitics/comments/1tr1g97/netanyahu_orders_israeli_army_to_seize_70_of_gaza/": {
     "source": "reddit.com",
     "bias_label": "Right",
     "bias_score": 0.5138,
-    "bias_signed": 0.5138
+    "bias_signed": 0.3329,
+    "prob_left": 0.1809,
+    "prob_center": 0.3054,
+    "prob_right": 0.5138
   },
   "https://www.rt.com/news/640748-israel-netanyahu-gaza-occupation/": {
     "source": "rt.com",
     "bias_label": "Right",
     "bias_score": 0.5888,
-    "bias_signed": 0.5888
+    "bias_signed": 0.4632,
+    "prob_left": 0.1256,
+    "prob_center": 0.2856,
+    "prob_right": 0.5888
   },
   "https://www.rte.ie/news/middle-east/2026/0529/1575978-israel-gaza-reaction/": {
     "source": "rte.ie",
     "bias_label": "Right",
-    "bias_score": 0.8975,
-    "bias_signed": 0.8975
+    "bias_score": 0.6962,
+    "bias_signed": 0.5305,
+    "prob_left": 0.1657,
+    "prob_center": 0.1381,
+    "prob_right": 0.6962
   },
   "https://www.independent.co.uk/news/world/middle-east/israel-netanyahu-idf-gaza-strip-ceasefire-b2985731.html": {
     "source": "independent.co.uk",
-    "bias_label": "Right",
-    "bias_score": 0.5293,
-    "bias_signed": 0.5293
+    "bias_label": "Center",
+    "bias_score": 0.4707,
+    "bias_signed": 0.248,
+    "prob_left": 0.2227,
+    "prob_center": 0.3066,
+    "prob_right": 0.4707
   },
   "https://www.yahoo.com/news/world/articles/israeli-soldiers-share-rare-accounts-050935606.html": {
     "source": "Yahoo Entertainment",
-    "bias_label": "Left",
-    "bias_score": 0.5419,
-    "bias_signed": -0.5419
+    "bias_label": "Center",
+    "bias_score": 0.4181,
+    "bias_signed": -0.0515,
+    "prob_left": 0.3167,
+    "prob_center": 0.4181,
+    "prob_right": 0.2652
   },
   "https://www.rte.ie/news/world/2026/0528/1575764-gaza-israel/": {
     "source": "rte.ie",
     "bias_label": "Right",
-    "bias_score": 0.8211,
-    "bias_signed": 0.8211
+    "bias_score": 0.7447,
+    "bias_signed": 0.6372,
+    "prob_left": 0.1075,
+    "prob_center": 0.1478,
+    "prob_right": 0.7447
   },
   "https://www.npr.org/2026/05/29/nx-s1-5837612/despite-continued-fighting-u-s-says-deal-to-end-iran-war-is-progressing": {
     "source": "npr.org",
-    "bias_label": "Right",
-    "bias_score": 0.3853,
-    "bias_signed": 0.3853
+    "bias_label": "Center",
+    "bias_score": 0.3962,
+    "bias_signed": -0.0871,
+    "prob_left": 0.3962,
+    "prob_center": 0.2947,
+    "prob_right": 0.3091
   },
   "https://www.theguardian.com/world/2026/may/28/netanyahu-orders-israeli-army-seize-70-gaza-strip-violating-ceasefire-deal": {
     "source": "theguardian.com",
-    "bias_label": "Left",
-    "bias_score": 0.3673,
-    "bias_signed": -0.3673
+    "bias_label": "Center",
+    "bias_score": 0.4735,
+    "bias_signed": 0.1942,
+    "prob_left": 0.2793,
+    "prob_center": 0.2472,
+    "prob_right": 0.4735
   },
   "https://www.bbc.com/news/articles/ceqpelq5reqo": {
     "source": "bbc.com",
-    "bias_label": "Right",
-    "bias_score": 0.4465,
-    "bias_signed": 0.4465
+    "bias_label": "Center",
+    "bias_score": 0.6479,
+    "bias_signed": 0.1435,
+    "prob_left": 0.1043,
+    "prob_center": 0.6479,
+    "prob_right": 0.2478
   },
   "https://japantoday.com/category/world/israeli-push-to-take-more-of-gaza-raises-alarm-as-hamas-warns-against-escalation": {
     "source": "japantoday.com",
     "bias_label": "Right",
-    "bias_score": 0.7112,
-    "bias_signed": 0.7112
+    "bias_score": 0.75,
+    "bias_signed": 0.6431,
+    "prob_left": 0.107,
+    "prob_center": 0.143,
+    "prob_right": 0.75
   },
   "https://www.antiwar.com/blog/2026/05/29/john-mearsheimer-will-russia-strike-targets-in-europe/": {
     "source": "Antiwar.com",
     "bias_label": "Left",
     "bias_score": 0.9743,
-    "bias_signed": -0.9743
+    "bias_signed": -0.9622,
+    "prob_left": 0.9743,
+    "prob_center": 0.0136,
+    "prob_right": 0.0121
   },
   "https://www.npr.org/2026/05/29/nx-s1-5838589/israel-ramps-up-attacks-amid-iran-talks-e-jean-carroll-investigation-cbs-overhaul": {
     "source": "npr.org",
     "bias_label": "Left",
     "bias_score": 0.9632,
-    "bias_signed": -0.9632
+    "bias_signed": -0.9551,
+    "prob_left": 0.9632,
+    "prob_center": 0.0287,
+    "prob_right": 0.0081
   },
   "https://truthout.org/articles/netanyahu-says-israeli-military-to-take-over-70-percent-of-gaza/": {
     "source": "Truthout",
     "bias_label": "Right",
-    "bias_score": 0.9352,
-    "bias_signed": 0.9352
+    "bias_score": 0.6489,
+    "bias_signed": 0.4315,
+    "prob_left": 0.2174,
+    "prob_center": 0.1338,
+    "prob_right": 0.6489
   },
   "https://www.investing.com/news/world-news/hamas-calls-netanyahus-plan-to-expand-control-in-gaza-a-dangerous-escalation-4716967": {
     "source": "investing.com",
     "bias_label": "Right",
     "bias_score": 0.5035,
-    "bias_signed": 0.5035
+    "bias_signed": 0.117,
+    "prob_left": 0.3865,
+    "prob_center": 0.1101,
+    "prob_right": 0.5035
   },
   "https://wkzo.com/2026/05/29/hamas-calls-netanyahus-plan-to-expand-control-in-gaza-a-dangerous-escalation/": {
     "source": "wkzo.com",
-    "bias_label": "Right",
-    "bias_score": 0.9018,
-    "bias_signed": 0.9018
+    "bias_label": "Center",
+    "bias_score": 0.451,
+    "bias_signed": 0.1334,
+    "prob_left": 0.3176,
+    "prob_center": 0.2315,
+    "prob_right": 0.451
   },
   "https://www.ndtv.com/world-news/israel-palestine-war-netanyahu-orders-israel-army-to-take-control-of-70-of-gaza-strip-11560950": {
     "source": "ndtv.com",
     "bias_label": "Center",
     "bias_score": 0.4088,
-    "bias_signed": 0.0
+    "bias_signed": -0.1379,
+    "prob_left": 0.3645,
+    "prob_center": 0.4088,
+    "prob_right": 0.2267
   },
   "https://www.middleeastmonitor.com/20260529-hamas-warns-of-collapse-of-gaza-agreement-after-israel-kills-20-palestinians-in-48-hours/": {
     "source": "middleeastmonitor.com",
     "bias_label": "Right",
     "bias_score": 0.8378,
-    "bias_signed": 0.8378
+    "bias_signed": 0.7588,
+    "prob_left": 0.079,
+    "prob_center": 0.0832,
+    "prob_right": 0.8378
   },
   "https://www.irishtimes.com/world/middle-east/2026/05/29/israeli-forces-push-further-north-into-lebanon-as-us-hosts-peace-talks-in-washington/": {
     "source": "The Irish Times",
     "bias_label": "Right",
-    "bias_score": 0.7987,
-    "bias_signed": 0.7987
+    "bias_score": 0.5676,
+    "bias_signed": 0.2612,
+    "prob_left": 0.3063,
+    "prob_center": 0.1261,
+    "prob_right": 0.5676
   },
   "https://www.nytimes.com/2026/05/30/world/middleeast/eid-al-adha-iran-gaza-lebanon.html": {
     "source": "New York Times",
-    "bias_label": "Right",
+    "bias_label": "Center",
     "bias_score": 0.4054,
-    "bias_signed": 0.4054
+    "bias_signed": 0.0225,
+    "prob_left": 0.3829,
+    "prob_center": 0.2117,
+    "prob_right": 0.4054
   },
   "https://www.jpost.com/middle-east/article-897703": {
     "source": "jpost.com",
-    "bias_label": "Left",
-    "bias_score": 0.7228,
-    "bias_signed": -0.7228
+    "bias_label": "Center",
+    "bias_score": 0.4965,
+    "bias_signed": -0.0877,
+    "prob_left": 0.4965,
+    "prob_center": 0.0946,
+    "prob_right": 0.4089
   },
   "https://www.newsnationnow.com/us-news/trump-pope-leo-chicago-mayor/": {
     "source": "newsnationnow.com",
-    "bias_label": "Right",
+    "bias_label": "Center",
     "bias_score": 0.4594,
-    "bias_signed": 0.4594
+    "bias_signed": 0.1056,
+    "prob_left": 0.3538,
+    "prob_center": 0.1868,
+    "prob_right": 0.4594
   },
   "https://www.newsbusters.org/blogs/nb/daniel-mccarthy/2026/05/29/pope-leo-needs-trump-tame-ai": {
     "source": "newsbusters.org",
-    "bias_label": "Right",
-    "bias_score": 0.3899,
-    "bias_signed": 0.3899
+    "bias_label": "Center",
+    "bias_score": 0.3775,
+    "bias_signed": 0.0541,
+    "prob_left": 0.3234,
+    "prob_center": 0.2991,
+    "prob_right": 0.3775
   },
   "https://news.meaww.com/fact-check-did-trump-say-i-am-ready-to-fight-pope-leo-in-a-truth-social-post": {
     "source": "news.meaww.com",
-    "bias_label": "Left",
-    "bias_score": 0.4848,
-    "bias_signed": -0.4848
+    "bias_label": "Center",
+    "bias_score": 0.4481,
+    "bias_signed": -0.0898,
+    "prob_left": 0.4481,
+    "prob_center": 0.1937,
+    "prob_right": 0.3582
   },
   "https://www.ewtnnews.com/world/us/trump-leo-iran-disarmament": {
     "source": "ewtnnews.com",
     "bias_label": "Right",
     "bias_score": 0.8859,
-    "bias_signed": 0.8859
+    "bias_signed": 0.8425,
+    "prob_left": 0.0434,
+    "prob_center": 0.0707,
+    "prob_right": 0.8859
   },
   "https://www.theguardian.com/us-news/2026/may/29/chicago-mayor-pope-leo": {
     "source": "theguardian.com",
-    "bias_label": "Right",
-    "bias_score": 0.6685,
-    "bias_signed": 0.6685
+    "bias_label": "Center",
+    "bias_score": 0.4979,
+    "bias_signed": -0.0931,
+    "prob_left": 0.4979,
+    "prob_center": 0.0973,
+    "prob_right": 0.4048
   },
   "https://www.rawstory.com/trump-pope-2676976895/": {
     "source": "rawstory.com",
     "bias_label": "Right",
     "bias_score": 0.8349,
-    "bias_signed": 0.8349
+    "bias_signed": 0.711,
+    "prob_left": 0.1239,
+    "prob_center": 0.0412,
+    "prob_right": 0.8349
   },
   "https://www.thedailybeast.com/chicago-mayor-brandon-johnson-shades-trump-with-gift-to-pope-leo/": {
     "source": "thedailybeast.com",
     "bias_label": "Right",
-    "bias_score": 0.7022,
-    "bias_signed": 0.7022
+    "bias_score": 0.653,
+    "bias_signed": 0.4457,
+    "prob_left": 0.2073,
+    "prob_center": 0.1397,
+    "prob_right": 0.653
   },
   "https://www.washingtonpost.com/podcasts/make-it-make-sense/is-america-a-christian-nation-a-conversation-with-bishop-barron/": {
     "source": "washingtonpost.com",
     "bias_label": "Center",
     "bias_score": 0.3745,
-    "bias_signed": 0.0
+    "bias_signed": -0.0367,
+    "prob_left": 0.3311,
+    "prob_center": 0.3745,
+    "prob_right": 0.2944
   },
   "https://www.indy100.com/politics/pope-leo-xiv-artificial-intelligence": {
     "source": "indy100.com",
     "bias_label": "Left",
     "bias_score": 0.9721,
-    "bias_signed": -0.9721
+    "bias_signed": -0.9594,
+    "prob_left": 0.9721,
+    "prob_center": 0.0152,
+    "prob_right": 0.0127
   },
   "https://nypost.com/2026/05/30/opinion/trump-the-knicks-fan-and-more-letters/": {
     "source": "nypost.com",
     "bias_label": "Right",
-    "bias_score": 0.651,
-    "bias_signed": 0.651
+    "bias_score": 0.5633,
+    "bias_signed": 0.2369,
+    "prob_left": 0.3265,
+    "prob_center": 0.1102,
+    "prob_right": 0.5633
   },
   "https://www.nytimes.com/2026/05/30/us/politics/is-jd-vance-the-2028-front-runner-trump-has-questions.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.53,
-    "bias_signed": 0.53
+    "bias_signed": 0.2455,
+    "prob_left": 0.2844,
+    "prob_center": 0.1856,
+    "prob_right": 0.53
   },
   "https://www.nytimes.com/2026/05/25/technology/pope-ai-silicon-valley.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.5664,
-    "bias_signed": 0.5664
+    "bias_signed": 0.3426,
+    "prob_left": 0.2237,
+    "prob_center": 0.2099,
+    "prob_right": 0.5664
   },
   "https://www.latimes.com/business/story/2026-05-27/u-s-world-cup-hotel-bookings-are-disappointing-trump-is-major-reason": {
     "source": "latimes.com",
-    "bias_label": "Left",
-    "bias_score": 0.6092,
-    "bias_signed": -0.6092
+    "bias_label": "Center",
+    "bias_score": 0.4688,
+    "bias_signed": -0.1151,
+    "prob_left": 0.4688,
+    "prob_center": 0.1775,
+    "prob_right": 0.3537
   },
   "https://www.timesunion.com/news/politics/article/trump-is-getting-the-republican-party-that-he-22278255.php": {
     "source": "timesunion.com",
     "bias_label": "Left",
-    "bias_score": 0.8215,
-    "bias_signed": -0.8215
+    "bias_score": 0.7659,
+    "bias_signed": -0.5543,
+    "prob_left": 0.7659,
+    "prob_center": 0.0225,
+    "prob_right": 0.2116
   },
   "https://www.nytimes.com/2026/05/29/opinion/ezra-klein-podcast-liam-donovan.html": {
     "source": "New York Times",
-    "bias_label": "Right",
+    "bias_label": "Center",
     "bias_score": 0.4984,
-    "bias_signed": 0.4984
+    "bias_signed": 0.2043,
+    "prob_left": 0.2941,
+    "prob_center": 0.2076,
+    "prob_right": 0.4984
   },
   "https://www.emirates247.com/world/trump-tightens-grip-on-republican-party-ahead-of-midterms/2038": {
     "source": "emirates247.com",
     "bias_label": "Left",
-    "bias_score": 0.8146,
-    "bias_signed": -0.8146
+    "bias_score": 0.5363,
+    "bias_signed": -0.2461,
+    "prob_left": 0.5363,
+    "prob_center": 0.1734,
+    "prob_right": 0.2903
   },
   "https://www.clickorlando.com/news/politics/2026/05/30/trump-plans-to-appeal-order-allowing-all-importers-that-paid-struck-down-tariffs-to-seek-refunds/": {
     "source": "WKMG News 6 & ClickOrlando",
     "bias_label": "Right",
-    "bias_score": 0.7159,
-    "bias_signed": 0.7159
+    "bias_score": 0.6029,
+    "bias_signed": 0.3889,
+    "prob_left": 0.2141,
+    "prob_center": 0.183,
+    "prob_right": 0.6029
   },
   "https://www.nakedcapitalism.com/2026/05/links-5-30-2026.html": {
     "source": "Nakedcapitalism.com",
-    "bias_label": "Left",
-    "bias_score": 0.5052,
-    "bias_signed": -0.5052
+    "bias_label": "Center",
+    "bias_score": 0.3894,
+    "bias_signed": 0.0457,
+    "prob_left": 0.3437,
+    "prob_center": 0.2669,
+    "prob_right": 0.3894
   },
   "https://www.nytimes.com/2026/05/27/opinion/pope-leo-ai-encyclical.html": {
     "source": "New York Times",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4363,
-    "bias_signed": -0.4363
+    "bias_signed": -0.0438,
+    "prob_left": 0.4363,
+    "prob_center": 0.1711,
+    "prob_right": 0.3925
   },
   "https://www.nytimes.com/2026/05/26/world/iceland-europe-iran-us-strikes.html": {
     "source": "New York Times",
-    "bias_label": "Right",
+    "bias_label": "Center",
     "bias_score": 0.3967,
-    "bias_signed": 0.3967
+    "bias_signed": 0.0534,
+    "prob_left": 0.3434,
+    "prob_center": 0.2599,
+    "prob_right": 0.3967
   },
   "https://www.nytimes.com/2026/05/29/podcasts/share-eat-the-rich-tell-with-tim-miller-and-stephanie-ruhle.html": {
     "source": "New York Times",
-    "bias_label": "Right",
+    "bias_label": "Center",
     "bias_score": 0.4809,
-    "bias_signed": 0.4809
+    "bias_signed": 0.11,
+    "prob_left": 0.3708,
+    "prob_center": 0.1483,
+    "prob_right": 0.4809
   },
   "https://www.nytimes.com/2026/05/26/podcasts/the-headlines/white-house-green-card-pope-ai.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.5079,
-    "bias_signed": 0.5079
+    "bias_signed": 0.2334,
+    "prob_left": 0.2745,
+    "prob_center": 0.2176,
+    "prob_right": 0.5079
   },
   "https://www.independent.co.uk/news/world/americas/us-politics/pope-leo-chicago-mayor-ice-raids-vatican-meeting-b2986213.html": {
     "source": "independent.co.uk",
     "bias_label": "Right",
-    "bias_score": 0.9095,
-    "bias_signed": 0.9095
+    "bias_score": 0.871,
+    "bias_signed": 0.7815,
+    "prob_left": 0.0895,
+    "prob_center": 0.0394,
+    "prob_right": 0.871
   },
   "https://www.nytimes.com/2026/05/26/business/dealbook/vatican-ai-silicon-valley.html": {
     "source": "New York Times",
-    "bias_label": "Right",
+    "bias_label": "Center",
     "bias_score": 0.4286,
-    "bias_signed": 0.4286
+    "bias_signed": 0.0566,
+    "prob_left": 0.372,
+    "prob_center": 0.1994,
+    "prob_right": 0.4286
   },
   "https://www.timesunion.com/news/world/article/carney-calls-for-new-partnership-with-us-as-trump-22280826.php": {
     "source": "timesunion.com",
     "bias_label": "Left",
-    "bias_score": 0.9543,
-    "bias_signed": -0.9543
+    "bias_score": 0.9501,
+    "bias_signed": -0.9135,
+    "prob_left": 0.9501,
+    "prob_center": 0.0133,
+    "prob_right": 0.0366
   },
   "https://www.thestar.com.my/aseanplus/aseanplus-news/2026/05/31/us-farmers-seek-firmer-soybean-guarantees-despite-xi-trump-agriculture-pledge": {
     "source": "thestar.com.my",
     "bias_label": "Right",
-    "bias_score": 0.4096,
-    "bias_signed": 0.4096
+    "bias_score": 0.5075,
+    "bias_signed": 0.2159,
+    "prob_left": 0.2915,
+    "prob_center": 0.201,
+    "prob_right": 0.5075
   },
   "https://www.scmp.com/news/us/article/3355222/us-farmers-seek-firmer-soybean-guarantees-despite-xi-trump-agriculture-pledge": {
     "source": "scmp.com",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.3447,
-    "bias_signed": -0.3447
+    "bias_signed": -0.0306,
+    "prob_left": 0.3447,
+    "prob_center": 0.3412,
+    "prob_right": 0.3141
   },
   "https://reason.com/2026/05/27/trumps-trade-war-caused-a-15-billion-decline-in-u-s-farm-sales-to-china/": {
     "source": "reason.com",
     "bias_label": "Left",
-    "bias_score": 0.5209,
-    "bias_signed": -0.5209
+    "bias_score": 0.5985,
+    "bias_signed": -0.4609,
+    "prob_left": 0.5985,
+    "prob_center": 0.2638,
+    "prob_right": 0.1377
   },
   "https://www.nytimes.com/2026/05/31/us/politics/trump-administration-exodus-of-lawyers.html": {
     "source": "New York Times",
     "bias_label": "Center",
     "bias_score": 0.5099,
-    "bias_signed": 0.0
+    "bias_signed": -0.1416,
+    "prob_left": 0.3158,
+    "prob_center": 0.5099,
+    "prob_right": 0.1742
   },
   "https://www.nytimes.com/2026/05/30/us/politics/trump-iran-peace-framework.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.6997,
-    "bias_signed": 0.6997
+    "bias_signed": 0.523,
+    "prob_left": 0.1767,
+    "prob_center": 0.1236,
+    "prob_right": 0.6997
   },
   "https://globalnews.ca/news/11871773/mark-carney-donald-trump-cusma-review/": {
     "source": "globalnews.ca",
     "bias_label": "Right",
-    "bias_score": 0.8379,
-    "bias_signed": 0.8379
+    "bias_score": 0.677,
+    "bias_signed": 0.4676,
+    "prob_left": 0.2094,
+    "prob_center": 0.1135,
+    "prob_right": 0.677
   },
   "https://www.nytimes.com/2026/05/27/us/politics/trade-court-customs-chief-tariff-refunds.html": {
     "source": "New York Times",
-    "bias_label": "Right",
+    "bias_label": "Center",
     "bias_score": 0.4643,
-    "bias_signed": 0.4643
+    "bias_signed": 0.051,
+    "prob_left": 0.4133,
+    "prob_center": 0.1224,
+    "prob_right": 0.4643
   },
   "https://fortune.com/2026/05/29/tomato-prices-tariffs-iran-war-costs-eggs/": {
     "source": "Fortune",
     "bias_label": "Left",
     "bias_score": 0.5087,
-    "bias_signed": -0.5087
+    "bias_signed": -0.258,
+    "prob_left": 0.5087,
+    "prob_center": 0.2406,
+    "prob_right": 0.2507
   },
   "https://www.aljazeera.com/economy/2026/5/29/canada-sidelined-in-usmca-renegotiations-as-domestic-economy-dips": {
     "source": "Al Jazeera English",
-    "bias_label": "Left",
-    "bias_score": 0.5337,
-    "bias_signed": -0.5337
+    "bias_label": "Center",
+    "bias_score": 0.3842,
+    "bias_signed": -0.1412,
+    "prob_left": 0.3842,
+    "prob_center": 0.3728,
+    "prob_right": 0.243
   },
   "https://www.cbc.ca/news/canada/tomato-prices-trump-9.7216440": {
     "source": "CBC News",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4032,
-    "bias_signed": -0.4032
+    "bias_signed": -0.0394,
+    "prob_left": 0.4032,
+    "prob_center": 0.2329,
+    "prob_right": 0.3639
   },
   "https://www.nytimes.com/2026/05/29/world/europe/europe-china-trade-war-electric-cars.html": {
     "source": "New York Times",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4472,
-    "bias_signed": -0.4472
+    "bias_signed": -0.299,
+    "prob_left": 0.4472,
+    "prob_center": 0.4047,
+    "prob_right": 0.1481
   },
   "https://www.nytimes.com/2026/05/30/world/europe/europe-belgium-potato-surplus.html": {
     "source": "New York Times",
     "bias_label": "Left",
     "bias_score": 0.5201,
-    "bias_signed": -0.5201
+    "bias_signed": -0.2014,
+    "prob_left": 0.5201,
+    "prob_center": 0.1612,
+    "prob_right": 0.3187
   },
   "https://www.nytimes.com/2026/05/28/world/middleeast/trump-abraham-accords.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.6449,
-    "bias_signed": 0.6449
+    "bias_signed": 0.4885,
+    "prob_left": 0.1564,
+    "prob_center": 0.1987,
+    "prob_right": 0.6449
   },
   "https://www.independent.co.uk/voices/trump-iran-oman-hormuz-war-israel-b2985316.html": {
     "source": "independent.co.uk",
     "bias_label": "Center",
-    "bias_score": 0.9385,
-    "bias_signed": 0.0
+    "bias_score": 0.5896,
+    "bias_signed": -0.2895,
+    "prob_left": 0.35,
+    "prob_center": 0.5896,
+    "prob_right": 0.0604
   },
   "https://www.dailysabah.com/business/economy/china-touts-stronger-trade-ties-says-canada-can-surpass-export-target": {
     "source": "Daily Sabah",
     "bias_label": "Right",
-    "bias_score": 0.7403,
-    "bias_signed": 0.7403
+    "bias_score": 0.7288,
+    "bias_signed": 0.616,
+    "prob_left": 0.1128,
+    "prob_center": 0.1584,
+    "prob_right": 0.7288
   },
   "https://time.com/article/2026/05/27/america-wto-save-global-trading-system/": {
     "source": "time.com",
     "bias_label": "Center",
     "bias_score": 0.9824,
-    "bias_signed": 0.0
+    "bias_signed": -0.001,
+    "prob_left": 0.0093,
+    "prob_center": 0.9824,
+    "prob_right": 0.0083
   },
   "https://www.nytimes.com/2026/05/06/us/politics/jd-vance-iowa-2028.html": {
     "source": "New York Times",
     "bias_label": "Right",
     "bias_score": 0.5924,
-    "bias_signed": 0.5924
+    "bias_signed": 0.3961,
+    "prob_left": 0.1963,
+    "prob_center": 0.2113,
+    "prob_right": 0.5924
   },
   "https://www.nytimes.com/2026/05/28/us/politics/up-for-grabs-can-democrats-sway-young-men-who-have-soured-on-trump.html": {
     "source": "New York Times",
-    "bias_label": "Left",
+    "bias_label": "Center",
     "bias_score": 0.4517,
-    "bias_signed": -0.4517
+    "bias_signed": -0.0573,
+    "prob_left": 0.4517,
+    "prob_center": 0.154,
+    "prob_right": 0.3944
   },
   "https://www.nytimes.com/2026/05/30/business/dealbook/family-business-counselors.html": {
     "source": "New York Times",
     "bias_label": "Left",
     "bias_score": 0.7243,
-    "bias_signed": -0.7243
+    "bias_signed": -0.6131,
+    "prob_left": 0.7243,
+    "prob_center": 0.1645,
+    "prob_right": 0.1112
   }
 }
